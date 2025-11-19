@@ -1,5 +1,17 @@
 // Component: horizontal cards for pillar selection.
-const SystemsList = ({ systems, selectedSystemId, onSelectSystem, onAddNew }) => {
+const SystemsList = ({ systems, selectedSystemId, onSelectSystem, onAddNew, onReorder }) => {
+  const handleDragStart = (event, systemId) => {
+    event.dataTransfer.setData('text/system-id', systemId);
+    event.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDrop = (event, targetId) => {
+    event.preventDefault();
+    const draggedId = event.dataTransfer.getData('text/system-id');
+    if (!draggedId || draggedId === targetId) return;
+    onReorder(draggedId, targetId);
+  };
+
   return (
     <div className="card">
       <div className="card-header row spaced align-center">
@@ -18,6 +30,10 @@ const SystemsList = ({ systems, selectedSystemId, onSelectSystem, onAddNew }) =>
             type="button"
             className={`pillar-card ${selectedSystemId === system.id ? 'active' : ''}`}
             onClick={() => onSelectSystem(system.id)}
+            draggable
+            onDragStart={(e) => handleDragStart(e, system.id)}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => handleDrop(e, system.id)}
           >
             <div className="row gap-8 align-center">
               <span className="system-dot" style={{ background: system.color }} />

@@ -1,6 +1,5 @@
 // Component: habits for the selected system with simple inline editor.
 import { useEffect, useState } from 'react';
-import { PURPOSES } from '../utils/analytics';
 import { generateId } from '../utils/ids';
 import { todayString } from '../utils/date';
 
@@ -18,7 +17,6 @@ const emptyHabit = (systemId) => ({
   id: generateId('habit'),
   systemId,
   name: '',
-  purpose: PURPOSES[0],
   frequency: { type: 'daily', daysOfWeek: [] },
   durationMinutes: 20,
   notes: '',
@@ -78,6 +76,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
       systemId: system.id,
       frequencyType: editing.frequency.type,
       daysOfWeek: editing.frequency.daysOfWeek || [],
+      purpose: undefined,
     });
     setEditing(null);
   };

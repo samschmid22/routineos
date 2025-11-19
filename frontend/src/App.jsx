@@ -76,6 +76,18 @@ function App() {
     setSelectedSystemId(draft.id);
   };
 
+  const reorderSystems = (draggedId, targetId) => {
+    setSystems((prev) => {
+      const current = [...prev];
+      const fromIndex = current.findIndex((s) => s.id === draggedId);
+      const toIndex = current.findIndex((s) => s.id === targetId);
+      if (fromIndex === -1 || toIndex === -1) return prev;
+      const [moved] = current.splice(fromIndex, 1);
+      current.splice(toIndex, 0, moved);
+      return current;
+    });
+  };
+
   const saveSystem = () => {
     if (!systemDraft || !systemDraft.name.trim()) return;
     const exists = systems.some((sys) => sys.id === systemDraft.id);
@@ -193,6 +205,7 @@ function App() {
             selectedSystemId={selectedSystemId}
             onSelectSystem={setSelectedSystemId}
             onAddNew={startNewSystem}
+            onReorder={reorderSystems}
           />
           <div className="grid split">
             <SystemEditor

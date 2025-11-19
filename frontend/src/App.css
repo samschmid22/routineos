@@ -1022,13 +1022,14 @@ h4 {
   }
 }
 .status-check {
-  width: 70px;
-  height: 70px;
-  border-radius: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
   border: 1px solid var(--card-border);
   background: var(--card-subtle);
   color: var(--muted);
   font-weight: 800;
+  font-size: 1.5rem;
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -1043,8 +1044,8 @@ h4 {
 }
 
 .status-check.small {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
-  font-size: 1rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  font-size: 1.3rem;
 }

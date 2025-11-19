@@ -1,7 +1,10 @@
 // Component: edit/create a single system.
 import { useEffect, useState } from 'react';
 
-const ICONS = ['☀︎', '☾', '⬤', '◆', '▲', '✦', '■', '▣'];
+const ICONS = [
+  '☀️', '🌙', '⭐️', '✨', '🔥', '⚡️', '💼', '🧠', '🏋️', '💪', '🏃‍♂️', '🧘‍♂️', '📚', '📝', '🧭', '🎯', '🧹',
+  '🏠', '🌿', '💧', '🍎', '💊', '💵', '💡', '🛠️', '🧰', '📈', '📊', '🗓️', '⏰', '🧴', '🦷', '🛏️', '🧴', '🥗',
+];
 
 const SystemEditor = ({ system, onChange, onSave, onDelete, isNew }) => {
   const [local, setLocal] = useState(system);
@@ -71,19 +74,18 @@ const SystemEditor = ({ system, onChange, onSave, onDelete, isNew }) => {
           </label>
           <label className="stack xs icon-picker">
             <span className="label">Symbol</span>
-            <div className="icon-select">
-              <select
-                className="input icon-dropdown"
-                value={local?.icon || ICONS[0]}
-                onChange={(e) => updateField('icon', e.target.value)}
-              >
-                {ICONS.map((icon) => (
-                  <option key={icon} value={icon}>
-                    {icon}
-                  </option>
-                ))}
-              </select>
-              <span className="icon-preview solid">{local?.icon || ICONS[0]}</span>
+            <div className="icons-grid">
+              {ICONS.map((icon) => (
+                <button
+                  key={icon}
+                  type="button"
+                  className={`icon-btn ${local?.icon === icon ? 'active' : ''}`}
+                  onClick={() => updateField('icon', icon)}
+                  aria-label={`Symbol ${icon}`}
+                >
+                  {icon}
+                </button>
+              ))}
             </div>
           </label>
         </div>

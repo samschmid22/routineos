@@ -1,72 +1,5 @@
 // Component: renders today's habits, allowing expandable sub-habit checklists that inherit status.
-import { useEffect, useRef, useState } from 'react';
-
-const STATUS_LABELS = {
-  notStarted: 'Not completed',
-  completed: 'Completed',
-};
-
-const STATUS_OPTIONS = ['notStarted', 'completed'];
-
-const normalizeStatus = (value) => (STATUS_OPTIONS.includes(value) ? value : 'notStarted');
-
-const StatusSelect = ({ current, onChange, size = 'wide' }) => {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-  const displayStatus = normalizeStatus(current);
-
-  useEffect(() => {
-    if (!open) return undefined;
-    const handleClick = (event) => {
-      if (!ref.current || ref.current.contains(event.target)) return;
-      setOpen(false);
-    };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [open]);
-
-  const handleSelect = (value) => {
-    onChange(value);
-    setOpen(false);
-  };
-
-  return (
-    <div className={`status-dropdown ${size} ${open ? 'open' : ''}`} ref={ref}>
-      <button type="button" className="status-trigger" onClick={() => setOpen((prev) => !prev)}>
-        <span>{STATUS_LABELS[displayStatus]}</span>
-        <span className="caret">▾</span>
-      </button>
-      {open && (
-        <div className="status-menu">
-          {STATUS_OPTIONS.map((status) => (
-            <button
-              key={status}
-              type="button"
-              className={displayStatus === status ? 'active' : ''}
-              onClick={() => handleSelect(status)}
-            >
-              {STATUS_LABELS[status]}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const StatusCheckbox = ({ status, onToggle }) => {
-  const normalized = status === 'completed' ? 'completed' : 'notStarted';
-  return (
-    <button
-      type="button"
-      className={`status-checkbox ${normalized === 'completed' ? 'checked' : ''}`}
-      onClick={onToggle}
-      aria-pressed={normalized === 'completed'}
-    >
-      {normalized === 'completed' && <span className="checkmark">✓</span>}
-    </button>
-  );
-};
+import { useState } from 'react';
 
 const TodayView = ({
   habitsForToday,
@@ -86,16 +19,6 @@ const TodayView = ({
     setExpandedHabits((prev) =>
       prev.includes(habitId) ? prev.filter((id) => id !== habitId) : [...prev, habitId],
     );
-  };
-
-  const handleHabitCheckbox = (habitId, currentStatus) => {
-    const normalized = currentStatus === 'completed' ? 'completed' : 'notStarted';
-    onStatusChange(habitId, normalized === 'completed' ? 'notStarted' : 'completed');
-  };
-
-  const handleSubHabitCheckbox = (habitId, subHabitId, currentStatus) => {
-    const normalized = currentStatus === 'completed' ? 'completed' : 'notStarted';
-    onSubHabitStatusChange(habitId, subHabitId, normalized === 'completed' ? 'notStarted' : 'completed');
   };
 
   const moveHabit = (habitId, direction) => {
@@ -162,11 +85,14 @@ const TodayView = ({
                   </div>
                 </div>
                 <div className="row gap-10 align-center habit-actions">
-                  <StatusSelect
-                    current={status === 'completed' ? 'completed' : 'notStarted'}
-                    onChange={(newStatus) => onStatusChange(habit.id, newStatus)}
-                  />
-                  <StatusCheckbox status={status} onToggle={() => handleHabitCheckbox(habit.id, status)} />
+                  <select
+                    className="input status-basic"
+                    value={status === 'completed' ? 'completed' : 'notStarted'}
+                    onChange={(event) => onStatusChange(habit.id, event.target.value)}
+                  >
+                    <option value="notStarted">Not completed</option>
+                    <option value="completed">Completed</option>
+                  </select>
                   {habit.notes && (
                     <button
                       type="button"
@@ -205,15 +131,14 @@ const TodayView = ({
                           <strong>{sub.name}</strong>
                         </div>
                         <div className="row gap-8 align-center">
-                          <StatusSelect
-                            size="compact"
-                            current={subStatus}
-                            onChange={(newStatus) => onSubHabitStatusChange(habit.id, sub.id, newStatus)}
-                          />
-                          <StatusCheckbox
-                            status={subStatus}
-                            onToggle={() => handleSubHabitCheckbox(habit.id, sub.id, subStatus)}
-                          />
+                          <select
+                            className="input status-basic compact"
+                            value={subStatus}
+                            onChange={(event) => onSubHabitStatusChange(habit.id, sub.id, event.target.value)}
+                          >
+                            <option value="notStarted">Not completed</option>
+                            <option value="completed">Completed</option>
+                          </select>
                         </div>
                       </div>
                     );

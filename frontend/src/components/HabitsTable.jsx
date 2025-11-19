@@ -60,7 +60,10 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
   const startEdit = (habit) =>
     setEditing({
       ...habit,
-      frequency: habit.frequency || { type: habit.frequencyType || 'daily', daysOfWeek: habit.daysOfWeek || [] },
+      frequency: {
+        type: habit.frequency?.type || habit.frequencyType || 'daily',
+        daysOfWeek: habit.frequency?.daysOfWeek || habit.daysOfWeek || [],
+      },
     });
 
   const toggleDay = (value) => {
@@ -82,11 +85,11 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
   };
 
   return (
-    <div className="card">
-      <div className="card-header row spaced align-center">
-        <div>
-          <p className="eyebrow">Habits</p>
-          <h2>{system.name}</h2>
+      <div className="card">
+        <div className="card-header row spaced align-center">
+          <div>
+            <p className="eyebrow">Habits</p>
+            <h2>{system.name}</h2>
         </div>
         <button type="button" className="btn-primary" onClick={startNew}>
           + Add habit
@@ -104,20 +107,6 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
                 onChange={(e) => setEditing({ ...editing, name: e.target.value })}
                 placeholder="Gym"
               />
-            </label>
-            <label className="stack xs">
-              <span className="label">Purpose</span>
-              <select
-                className="input"
-                value={editing.purpose}
-                onChange={(e) => setEditing({ ...editing, purpose: e.target.value })}
-              >
-                {PURPOSES.map((purpose) => (
-                  <option key={purpose} value={purpose}>
-                    {purpose}
-                  </option>
-                ))}
-              </select>
             </label>
           </div>
 

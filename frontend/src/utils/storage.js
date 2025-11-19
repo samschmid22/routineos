@@ -1,0 +1,52 @@
+// Utility: thin wrappers over localStorage for systems, habits, today state, and theme.
+const KEYS = {
+  systems: 'routineos_systems',
+  habits: 'routineos_habits',
+  today: 'routineos_today_state',
+  theme: 'routineos_theme',
+};
+
+const safeParse = (value, fallback) => {
+  try {
+    return value ? JSON.parse(value) : fallback;
+  } catch (error) {
+    console.error('Failed to parse stored data', error);
+    return fallback;
+  }
+};
+
+export const loadSystems = (fallback) => {
+  const stored = window.localStorage.getItem(KEYS.systems);
+  return safeParse(stored, fallback);
+};
+
+export const saveSystems = (systems) => {
+  window.localStorage.setItem(KEYS.systems, JSON.stringify(systems));
+};
+
+export const loadHabits = (fallback) => {
+  const stored = window.localStorage.getItem(KEYS.habits);
+  return safeParse(stored, fallback);
+};
+
+export const saveHabits = (habits) => {
+  window.localStorage.setItem(KEYS.habits, JSON.stringify(habits));
+};
+
+export const loadTodayState = (fallback) => {
+  const stored = window.localStorage.getItem(KEYS.today);
+  return safeParse(stored, fallback);
+};
+
+export const saveTodayState = (state) => {
+  window.localStorage.setItem(KEYS.today, JSON.stringify(state));
+};
+
+export const loadTheme = (fallback) => {
+  const stored = window.localStorage.getItem(KEYS.theme);
+  return stored || fallback;
+};
+
+export const saveTheme = (theme) => {
+  window.localStorage.setItem(KEYS.theme, theme);
+};

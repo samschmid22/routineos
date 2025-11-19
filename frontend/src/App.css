@@ -440,7 +440,7 @@ h4 {
   background: transparent;
   border: none;
   padding: 8px 12px;
-  color: var(--page);
+  color: #0b0b0b;
   cursor: pointer;
   opacity: 0.6;
 }
@@ -453,7 +453,7 @@ h4 {
 
 .toggle.active {
   background: linear-gradient(90deg, #ef4444, #f97316);
-  color: var(--icon-contrast);
+  color: #0b0b0b;
   opacity: 1;
 }
 

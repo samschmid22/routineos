@@ -5,6 +5,7 @@ const KEYS = {
   today: 'routineos_today_state',
   subHabits: 'routineos_subhabit_statuses',
   theme: 'routineos_theme',
+  todayOrder: 'routineos_today_order',
 };
 
 const safeParse = (value, fallback) => {
@@ -59,4 +60,13 @@ export const loadSubHabitStatuses = (fallback) => {
 
 export const saveSubHabitStatuses = (state) => {
   window.localStorage.setItem(KEYS.subHabits, JSON.stringify(state));
+};
+
+export const loadTodayOrder = (fallback) => {
+  const stored = window.localStorage.getItem(KEYS.todayOrder);
+  return safeParse(stored, fallback);
+};
+
+export const saveTodayOrder = (order) => {
+  window.localStorage.setItem(KEYS.todayOrder, JSON.stringify(order));
 };

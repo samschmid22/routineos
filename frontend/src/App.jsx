@@ -15,10 +15,12 @@ import {
   loadSystems,
   loadTheme,
   loadSubHabitStatuses,
+  loadTodayOrder,
   saveHabits,
   saveSystems,
   saveTheme,
   saveSubHabitStatuses,
+  saveTodayOrder,
 } from './utils/storage';
 import './App.css';
 
@@ -29,6 +31,7 @@ function App() {
   const [systems, setSystems] = useState([]);
   const [habits, setHabits] = useState([]);
   const [subHabitStatuses, setSubHabitStatuses] = useState({});
+  const [todayOrder, setTodayOrder] = useState([]);
   const [selectedSystemId, setSelectedSystemId] = useState(null);
   const [systemDraft, setSystemDraft] = useState(null);
   const [hydrated, setHydrated] = useState(false);
@@ -41,12 +44,17 @@ function App() {
     const storedSystems = loadSystems(mockData.systems);
     const storedHabits = loadHabits(mockData.habits);
     const storedSubStatuses = loadSubHabitStatuses({});
+    const storedOrder = loadTodayOrder([]);
 
-    setSystems(storedSystems.length ? storedSystems : mockData.systems);
-    setHabits(storedHabits.length ? storedHabits : mockData.habits);
+    const nextSystems = storedSystems.length ? storedSystems : mockData.systems;
+    const nextHabits = storedHabits.length ? storedHabits : mockData.habits;
+
+    setSystems(nextSystems);
+    setHabits(nextHabits);
     setSubHabitStatuses(storedSubStatuses);
+    setTodayOrder(storedOrder.length ? storedOrder : nextHabits.map((habit) => habit.id));
 
-    const initialSystem = (storedSystems.length ? storedSystems : mockData.systems)[0];
+    const initialSystem = nextSystems[0];
     setSelectedSystemId(initialSystem?.id || null);
     setSystemDraft(initialSystem || null);
     setHydrated(true);
@@ -58,12 +66,24 @@ function App() {
     saveSystems(systems);
     saveHabits(habits);
     saveSubHabitStatuses(subHabitStatuses);
-  }, [systems, habits, subHabitStatuses, hydrated]);
+    saveTodayOrder(todayOrder);
+  }, [systems, habits, subHabitStatuses, todayOrder, hydrated]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     saveTheme(theme);
   }, [theme]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    setTodayOrder((prev) => {
+      const habitIds = habits.map((habit) => habit.id);
+      const filtered = prev.filter((id) => habitIds.includes(id));
+      const missing = habitIds.filter((id) => !filtered.includes(id));
+      if (!missing.length && filtered.length === prev.length) return prev;
+      return [...filtered, ...missing];
+    });
+  }, [habits, hydrated]);
 
   const currentSystem = systems.find((sys) => sys.id === selectedSystemId) || null;
   const currentHabits = habits.filter((habit) => habit.systemId === currentSystem?.id);
@@ -187,13 +207,23 @@ function App() {
 
   const todayHabits = useMemo(() => {
     const date = todayString();
-    return habits
+    const todays = habits
       .filter((habit) => isHabitScheduledForDate(habit, date))
       .map((habit) => ({
         habit,
         status: getEffectiveHabitStatus(habit, date, subHabitStatuses),
       }));
-  }, [habits, subHabitStatuses]);
+    return todays.sort((a, b) => {
+      const idxA = todayOrder.indexOf(a.habit.id);
+      const idxB = todayOrder.indexOf(b.habit.id);
+      if (idxA === -1 && idxB === -1) {
+        return a.habit.name.localeCompare(b.habit.name);
+      }
+      if (idxA === -1) return 1;
+      if (idxB === -1) return -1;
+      return idxA - idxB;
+    });
+  }, [habits, subHabitStatuses, todayOrder]);
 
   const statusMap = useMemo(() => {
     const date = todayString();
@@ -239,6 +269,28 @@ function App() {
     }
   };
 
+  const reorderTodayHabits = (draggedId, targetId = null) => {
+    if (!draggedId) return;
+    setTodayOrder((prev) => {
+      const habitIds = habits.map((habit) => habit.id);
+      const filtered = prev.filter((id) => habitIds.includes(id));
+      habitIds.forEach((id) => {
+        if (!filtered.includes(id)) filtered.push(id);
+      });
+      const fromIndex = filtered.indexOf(draggedId);
+      if (fromIndex === -1) return filtered;
+      const updated = [...filtered];
+      const [moved] = updated.splice(fromIndex, 1);
+      if (targetId && updated.includes(targetId)) {
+        const toIndex = updated.indexOf(targetId);
+        updated.splice(toIndex, 0, moved);
+      } else {
+        updated.push(moved);
+      }
+      return updated;
+    });
+  };
+
   return (
     <div className={`app theme-${theme}`}>
       <header className="header">
@@ -281,6 +333,7 @@ function App() {
           subHabitStatuses={subHabitStatuses}
           onStatusChange={handleStatusChange}
           onSubHabitStatusChange={handleSubHabitStatusChange}
+          onReorder={reorderTodayHabits}
         />
       )}
 

@@ -44,43 +44,46 @@ const SubHabitsEditor = ({ value = [], onChange }) => {
       </div>
       {value.length === 0 && <p className="muted small">No sub-habits yet.</p>}
       <div className="stack sm">
-        {value.map((sub, index) => (
-          <div key={sub.id} className="subhabit-card">
-            <div className="row spaced align-center">
-              <strong>Item {index + 1}</strong>
-              <div className="row gap-6">
-                <button type="button" className="btn-ghost small-btn" onClick={() => move(sub.id, 'up')}>
-                  ↑
-                </button>
-                <button type="button" className="btn-ghost small-btn" onClick={() => move(sub.id, 'down')}>
-                  ↓
-                </button>
-                <button type="button" className="btn-ghost danger small-btn" onClick={() => removeSubHabit(sub.id)}>
-                  Delete
-                </button>
+        {value.map((sub, index) => {
+          const displayName = sub.name?.trim() ? sub.name : `Item ${index + 1}`;
+          return (
+            <div key={sub.id} className="subhabit-card">
+              <div className="row spaced align-center">
+                <strong>{displayName}</strong>
+                <div className="row gap-6">
+                  <button type="button" className="btn-ghost small-btn" onClick={() => move(sub.id, 'up')}>
+                    ↑
+                  </button>
+                  <button type="button" className="btn-ghost small-btn" onClick={() => move(sub.id, 'down')}>
+                    ↓
+                  </button>
+                  <button type="button" className="btn-ghost danger small-btn" onClick={() => removeSubHabit(sub.id)}>
+                    Delete
+                  </button>
+                </div>
               </div>
+              <label className="stack xs">
+                <span className="label">Name</span>
+                <input
+                  className="input"
+                  value={sub.name}
+                  onChange={(e) => updateSubHabit(sub.id, { name: e.target.value })}
+                  placeholder="e.g., Clean counters"
+                />
+              </label>
+              <label className="stack xs">
+                <span className="label">Notes</span>
+                <textarea
+                  className="input"
+                  rows={2}
+                  value={sub.notes || ''}
+                  onChange={(e) => updateSubHabit(sub.id, { notes: e.target.value })}
+                  placeholder="Optional context"
+                />
+              </label>
             </div>
-            <label className="stack xs">
-              <span className="label">Name</span>
-              <input
-                className="input"
-                value={sub.name}
-                onChange={(e) => updateSubHabit(sub.id, { name: e.target.value })}
-                placeholder="e.g., Clean counters"
-              />
-            </label>
-            <label className="stack xs">
-              <span className="label">Notes</span>
-              <textarea
-                className="input"
-                rows={2}
-                value={sub.notes || ''}
-                onChange={(e) => updateSubHabit(sub.id, { notes: e.target.value })}
-                placeholder="Optional context"
-              />
-            </label>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

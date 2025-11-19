@@ -1,5 +1,5 @@
 // Component: edit/create a single system.
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const ICONS = [
   '☀️', '🌙', '⭐️', '✨', '🔥', '⚡️', '💼', '🧠', '🏋️', '💪', '🏃‍♂️', '🧘‍♂️', '📚', '📝', '🧭', '🎯', '🧹',
@@ -10,10 +10,22 @@ const ICONS = [
 const SystemEditor = ({ system, onChange, onSave, onDelete, isNew }) => {
   const [local, setLocal] = useState(system);
   const [showPicker, setShowPicker] = useState(false);
+  const pickerRef = useRef(null);
 
   useEffect(() => {
     setLocal(system);
+    setShowPicker(false);
   }, [system]);
+
+  useEffect(() => {
+    if (!showPicker) return undefined;
+    const handleClick = (event) => {
+      if (!pickerRef.current || pickerRef.current.contains(event.target)) return;
+      setShowPicker(false);
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showPicker]);
 
   if (!system) {
     return (
@@ -62,7 +74,7 @@ const SystemEditor = ({ system, onChange, onSave, onDelete, isNew }) => {
             placeholder="Why this system exists"
           />
         </label>
-        <div className="row gap-8 wrap align-center">
+        <div className="row gap-16 wrap align-center color-symbol-row">
           <label className="stack xs">
             <span className="label">Color</span>
             <button
@@ -79,7 +91,7 @@ const SystemEditor = ({ system, onChange, onSave, onDelete, isNew }) => {
               />
             </button>
           </label>
-          <label className="stack xs icon-picker">
+          <label className="stack xs icon-picker" ref={pickerRef}>
             <span className="label">Symbol</span>
             <div className="symbol-picker">
               <button

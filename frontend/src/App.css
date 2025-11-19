@@ -82,6 +82,7 @@ h4 {
 .card.subtle {
   background: var(--card-subtle);
   border-style: dashed;
+  width: 100%;
 }
 
 .hoverable:hover {

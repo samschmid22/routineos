@@ -109,16 +109,19 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
         </div>
       )}
 
-      <label className="stack xs">
-        <span className="label">Notes</span>
-        <textarea
-          className="input"
-          rows={2}
-          value={editing.notes}
-          onChange={(e) => setEditing({ ...editing, notes: e.target.value })}
-          placeholder="What does good look like?"
-        />
-      </label>
+      <div className="grid two">
+        <label className="stack xs">
+          <span className="label">Notes</span>
+          <textarea
+            className="input"
+            rows={2}
+            value={editing.notes}
+            onChange={(e) => setEditing({ ...editing, notes: e.target.value })}
+            placeholder="What does good look like?"
+          />
+        </label>
+        <div />{/* spacer to balance the grid */}
+      </div>
 
       <div className="row gap-8 wrap">
         <button type="button" className="btn-primary" onClick={save}>

@@ -211,7 +211,7 @@ function App() {
       .filter((habit) => isHabitScheduledForDate(habit, date))
       .map((habit) => ({
         habit,
-        status: getEffectiveHabitStatus(habit, date, subHabitStatuses),
+        status: habit.status || 'notStarted',
       }));
     return todays.sort((a, b) => {
       const idxA = todayOrder.indexOf(a.habit.id);
@@ -223,7 +223,7 @@ function App() {
       if (idxB === -1) return -1;
       return idxA - idxB;
     });
-  }, [habits, subHabitStatuses, todayOrder]);
+  }, [habits, todayOrder]);
 
   const statusMap = useMemo(() => {
     const date = todayString();
@@ -234,7 +234,6 @@ function App() {
   }, [habits, subHabitStatuses]);
 
   const handleStatusChange = (habitId, status) => {
-    if (!HABIT_STATUSES.includes(status)) return;
     const date = todayString();
     const habit = habits.find((h) => h.id === habitId);
     if (!habit) return;

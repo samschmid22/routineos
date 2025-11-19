@@ -639,7 +639,7 @@ h4 {
 }
 
 .habit-actions {
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
 }
 

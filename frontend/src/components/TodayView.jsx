@@ -1,26 +1,19 @@
-// Component: renders today's scheduled habits grouped by time block with status controls.
+// Component: renders today's habits as a luxurious wide list with status dropdowns and details toggles.
+import { useState } from 'react';
 import { STATUSES, TIME_BLOCKS } from '../utils/analytics';
 
-const PurposePill = ({ purpose }) => (
-  <span className={`pill purpose-${purpose.toLowerCase()}`}>{purpose}</span>
-);
-
-const StatusButtons = ({ current, onChange }) => (
-  <div className="status-row">
+const StatusSelect = ({ current, onChange }) => (
+  <select className="input status-select" value={current} onChange={(e) => onChange(e.target.value)}>
     {STATUSES.map((status) => (
-      <button
-        key={status}
-        type="button"
-        className={`chip ${current === status ? 'active' : ''}`}
-        onClick={() => onChange(status)}
-      >
-        {status}
-      </button>
+      <option key={status} value={status}>
+        {status.replace(/([A-Z])/g, ' $1').trim()}
+      </option>
     ))}
-  </div>
+  </select>
 );
 
 const TodayView = ({ habitsForToday, systems, onStatusChange }) => {
+  const [openDetails, setOpenDetails] = useState([]);
   const systemMap = systems.reduce((acc, system) => ({ ...acc, [system.id]: system }), {});
   const sorted = [...habitsForToday].sort((a, b) => {
     const order = TIME_BLOCKS.indexOf(a.habit.timeBlock) - TIME_BLOCKS.indexOf(b.habit.timeBlock);
@@ -32,7 +25,7 @@ const TodayView = ({ habitsForToday, systems, onStatusChange }) => {
       <div className="card-header">
         <div>
           <p className="eyebrow">Today</p>
-          <h2>Habits list</h2>
+          <h2 className="section-title">Habits</h2>
         </div>
       </div>
       {sorted.length === 0 && <div className="muted">No habits scheduled for today.</div>}
@@ -41,24 +34,33 @@ const TodayView = ({ habitsForToday, systems, onStatusChange }) => {
           <div key={habit.id} className="card subtle hoverable habit-wide">
             <div className="row spaced align-start">
               <div className="stack xs">
-                <div className="row gap-8 align-center wrap">
-                  <h3>{habit.name}</h3>
-                  <span className="pill ghost">{habit.timeBlock}</span>
+                <h3>{habit.name}</h3>
+                <div className="row gap-8 wrap">
+                  <span className="pill ghost">
+                    <span className="system-dot tiny" style={{ background: systemMap[habit.systemId]?.color }} />
+                    {systemMap[habit.systemId]?.name || 'System'}
+                  </span>
+                  {habit.timeBlock && <span className="pill ghost small-pill">{habit.timeBlock}</span>}
                 </div>
               </div>
-              <StatusButtons current={status} onChange={(newStatus) => onStatusChange(habit.id, newStatus)} />
-            </div>
-            <div className="row spaced align-center wrap">
-              <div className="row gap-8 wrap">
-                <span className="pill ghost">
-                  <span className="system-dot tiny" style={{ background: systemMap[habit.systemId]?.color }} />
-                  {systemMap[habit.systemId]?.name || 'System'}
-                </span>
-                <PurposePill purpose={habit.purpose} />
+              <div className="row gap-8 align-center">
+                <StatusSelect current={status} onChange={(newStatus) => onStatusChange(habit.id, newStatus)} />
+                {habit.notes && (
+                  <button
+                    type="button"
+                    className="btn-ghost small-btn"
+                    onClick={() =>
+                      setOpenDetails((prev) =>
+                        prev.includes(habit.id) ? prev.filter((id) => id !== habit.id) : [...prev, habit.id],
+                      )
+                    }
+                  >
+                    {openDetails.includes(habit.id) ? 'Hide details' : 'Details'}
+                  </button>
+                )}
               </div>
-              <span className="pill ghost">{habit.durationMinutes} min</span>
             </div>
-            {habit.notes && <p className="muted small">{habit.notes}</p>}
+            {openDetails.includes(habit.id) && habit.notes && <p className="muted small">{habit.notes}</p>}
           </div>
         ))}
       </div>

@@ -33,15 +33,19 @@ h1 {
   margin: 0 0 6px;
   font-size: 2.4rem;
   letter-spacing: 0.02em;
+  font-family: 'Inter', 'SF Pro Display', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 700;
 }
 
 .hero-title {
   font-size: 2.75rem;
   font-weight: 800;
+  letter-spacing: 0.01em;
 }
 
 .hero-subtitle {
   font-size: 1rem;
+  font-weight: 600;
 }
 
 h2 {
@@ -89,6 +93,10 @@ h4 {
   margin-bottom: 8px;
 }
 
+.top-bar {
+  align-items: center;
+}
+
 .tabs {
   display: inline-flex;
   background: var(--tab-bg);
@@ -113,6 +121,7 @@ h4 {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   opacity: 0.75;
+  font-family: 'Inter', 'SF Pro Display', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .tab.active {
@@ -193,6 +202,12 @@ h4 {
   flex-wrap: wrap;
 }
 
+.section-title {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+}
+
 .input {
   width: 100%;
   padding: 10px 12px;
@@ -200,6 +215,10 @@ h4 {
   border: 1px solid var(--field-border);
   background: var(--field-bg);
   color: var(--text);
+}
+
+.status-select {
+  min-width: 150px;
 }
 
 .color-input {
@@ -214,6 +233,7 @@ h4 {
 .label {
   color: var(--muted);
   font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .btn-primary {
@@ -290,6 +310,11 @@ h4 {
   transform: scale(1.02);
 }
 
+.small-pill {
+  padding: 4px 8px;
+  font-size: 0.85rem;
+}
+
 .system-row {
   display: flex;
   align-items: flex-start;
@@ -340,7 +365,7 @@ h4 {
 .table-head,
 .table-row {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 0.8fr 1.2fr 0.8fr 0.8fr;
+  grid-template-columns: 1.8fr 1fr 1.1fr 0.8fr 1.2fr;
   gap: 12px;
   align-items: center;
 }
@@ -371,16 +396,17 @@ h4 {
 
 .theme-toggle {
   display: inline-flex;
-  border: 1px solid var(--card-border);
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
+  background: linear-gradient(90deg, #ef4444, #f97316);
+  box-shadow: 0 10px 24px rgba(239, 68, 68, 0.35);
 }
 
 .toggle {
   background: transparent;
   border: none;
   padding: 8px 12px;
-  color: var(--text);
+  color: var(--page);
   cursor: pointer;
   opacity: 0.6;
 }
@@ -469,24 +495,28 @@ h4 {
   resize: vertical;
 }
 
-.icons {
+.icon-select {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(36px, 1fr));
-  gap: 6px;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
 }
 
-.icon-btn {
-  border: 1px solid var(--card-border);
-  background: var(--card-subtle);
-  border-radius: 10px;
-  padding: 6px;
-  cursor: pointer;
-  font-size: 1rem;
+.icon-dropdown {
+  background: var(--field-bg);
+  color: var(--text);
 }
 
-.icon-btn.active {
-  border-color: #f97316;
-  box-shadow: 0 6px 16px rgba(249, 115, 22, 0.25);
+.icon-preview {
+  min-width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #ef4444, #f97316);
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  color: var(--page);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.25);
 }
 
 .notes-panel {

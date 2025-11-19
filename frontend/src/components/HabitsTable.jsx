@@ -208,10 +208,9 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
         <div className="table-head">
           <div>Habit</div>
           <div>Purpose</div>
-          <div>Time</div>
           <div>Frequency</div>
           <div>Duration</div>
-          <div />
+          <div>Actions</div>
         </div>
         {habits.length === 0 && <div className="muted">No habits yet.</div>}
         {habits.map((habit) => {
@@ -222,7 +221,6 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
                 <strong>{habit.name}</strong>
               </div>
               <div>{habit.purpose}</div>
-              <div>{habit.timeBlock}</div>
               <div>{frequencyLabel(habit.frequency)}</div>
               <div>{habit.durationMinutes} min</div>
               <div className="row gap-6 wrap">
@@ -236,7 +234,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
                       )
                     }
                   >
-                    {showNotes ? 'Hide notes' : 'View notes'}
+                    {showNotes ? 'Hide details' : 'Details'}
                   </button>
                 )}
                 <button type="button" className="btn-ghost small-btn" onClick={() => startEdit(habit)}>

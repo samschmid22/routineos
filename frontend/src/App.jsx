@@ -134,31 +134,33 @@ function App() {
   return (
     <div className={`app theme-${theme}`}>
       <header className="header">
-        <div>
+        <div className="row spaced align-center top-bar">
           <p className="eyebrow brand">Routine OS</p>
-          <h1 className="hero-title">Operating system for your life</h1>
+          <div className="row gap-8 align-center">
+            <div className="theme-toggle" role="group" aria-label="Theme toggle">
+              <button
+                type="button"
+                className={`toggle icon-only ${theme === 'dark' ? 'active' : ''}`}
+                onClick={() => setTheme('dark')}
+              >
+                <span className="icon">🌙</span>
+              </button>
+              <button
+                type="button"
+                className={`toggle icon-only ${theme === 'light' ? 'active' : ''}`}
+                onClick={() => setTheme('light')}
+              >
+                <span className="icon">☀️</span>
+              </button>
+            </div>
+            <div className="date-chip">{formatDisplayDate(new Date())}</div>
+          </div>
+        </div>
+        <div>
+          <h1 className="hero-title">Run your life like a system</h1>
           <p className="muted hero-subtitle">
             Design elite routines, track what matters daily, and review your data like a pro.
           </p>
-        </div>
-        <div className="row gap-8 align-center">
-          <div className="theme-toggle" role="group" aria-label="Theme toggle">
-            <button
-              type="button"
-              className={`toggle icon-only ${theme === 'dark' ? 'active' : ''}`}
-              onClick={() => setTheme('dark')}
-            >
-              <span className="icon">🌙</span>
-            </button>
-            <button
-              type="button"
-              className={`toggle icon-only ${theme === 'light' ? 'active' : ''}`}
-              onClick={() => setTheme('light')}
-            >
-              <span className="icon">☀️</span>
-            </button>
-          </div>
-          <div className="date-chip">{formatDisplayDate(new Date())}</div>
         </div>
       </header>
 

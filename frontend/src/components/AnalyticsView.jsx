@@ -25,7 +25,7 @@ const AnalyticsView = ({ systems, habits, todayState }) => {
           <div className="card-header">
             <div>
               <p className="eyebrow">Analytics</p>
-              <h2>By purpose</h2>
+              <h2 className="section-title">BY PURPOSE</h2>
             </div>
           </div>
           <div className="stack sm">
@@ -51,7 +51,7 @@ const AnalyticsView = ({ systems, habits, todayState }) => {
           <div className="card-header">
             <div>
               <p className="eyebrow">Analytics</p>
-              <h2>By system</h2>
+              <h2 className="section-title">BY SYSTEM</h2>
             </div>
           </div>
           <div className="stack sm">

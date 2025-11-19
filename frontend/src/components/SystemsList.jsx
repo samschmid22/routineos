@@ -5,7 +5,7 @@ const SystemsList = ({ systems, selectedSystemId, onSelectSystem, onAddNew }) =>
       <div className="card-header row spaced align-center">
         <div>
           <p className="eyebrow">Your pillars</p>
-          <h2>Systems overview</h2>
+          <h2 className="section-title">SYSTEMS OVERVIEW</h2>
         </div>
         <button type="button" className="btn-primary" onClick={onAddNew}>
           + New system

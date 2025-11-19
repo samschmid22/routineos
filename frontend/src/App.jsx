@@ -231,10 +231,11 @@ function App() {
   const statusMap = useMemo(() => {
     const date = todayString();
     return habits.reduce((acc, habit) => {
-      acc[habit.id] = getEffectiveHabitStatus(habit, date, subHabitStatuses);
+      const isCompletedToday = habit.status === 'completed' && habit.lastCompletedOn === date;
+      acc[habit.id] = isCompletedToday ? 'completed' : 'notStarted';
       return acc;
     }, {});
-  }, [habits, subHabitStatuses]);
+  }, [habits]);
 
   const handleStatusChange = (habitId, status) => {
     const date = todayString();

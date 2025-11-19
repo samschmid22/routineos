@@ -28,6 +28,7 @@ function App() {
   const [habits, setHabits] = useState([]);
   const [selectedSystemId, setSelectedSystemId] = useState(null);
   const [systemDraft, setSystemDraft] = useState(null);
+  const [hydrated, setHydrated] = useState(false);
 
   // Hydrate state from localStorage or mock data once.
   useEffect(() => {
@@ -43,13 +44,15 @@ function App() {
     const initialSystem = (storedSystems.length ? storedSystems : mockData.systems)[0];
     setSelectedSystemId(initialSystem?.id || null);
     setSystemDraft(initialSystem || null);
+    setHydrated(true);
   }, []);
 
   // Persist on change.
   useEffect(() => {
+    if (!hydrated) return;
     saveSystems(systems);
     saveHabits(habits);
-  }, [systems, habits]);
+  }, [systems, habits, hydrated]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;

@@ -231,6 +231,11 @@ h4 {
 .status-select {
   min-width: 150px;
 }
+.status-select.wide {
+  min-width: 180px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
 
 .color-input {
   border-radius: 8px;
@@ -358,6 +363,9 @@ h4 {
   height: 10px;
   border-width: 1px;
 }
+.pill .system-dot {
+  margin-right: 4px;
+}
 
 .status-row {
   display: flex;
@@ -376,7 +384,7 @@ h4 {
 .table-head,
 .table-row {
   display: grid;
-  grid-template-columns: 1.8fr 1fr 1.1fr 0.8fr 1.2fr;
+  grid-template-columns: 1.8fr 1fr 1.2fr 0.8fr;
   gap: 12px;
   align-items: center;
 }
@@ -445,8 +453,15 @@ h4 {
 
 .toggle.active {
   background: linear-gradient(90deg, #ef4444, #f97316);
-  color: #fff;
+  color: var(--icon-contrast);
   opacity: 1;
+}
+
+.footer {
+  margin-top: 40px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 .date-chip {
@@ -474,7 +489,7 @@ h4 {
   grid-auto-columns: minmax(220px, 1fr);
   gap: 12px;
   overflow-x: auto;
-  padding-bottom: 6px;
+  padding-bottom: 14px;
 }
 
 .pillar-card {
@@ -521,28 +536,24 @@ h4 {
   resize: vertical;
 }
 
-.icon-select {
+.icons-grid {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: repeat(auto-fit, minmax(42px, 1fr));
   gap: 8px;
-  align-items: center;
 }
 
-.icon-dropdown {
-  background: var(--field-bg);
-  color: var(--text);
+.icon-btn {
+  border: 1px solid var(--card-border);
+  background: var(--card);
+  border-radius: 10px;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 1.2rem;
 }
 
-.icon-preview {
-  min-width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: linear-gradient(90deg, #ef4444, #f97316);
-  display: grid;
-  place-items: center;
-  font-size: 1.1rem;
-  color: var(--icon-contrast);
-  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.25);
+.icon-btn.active {
+  border-color: #f97316;
+  box-shadow: 0 6px 16px rgba(249, 115, 22, 0.3);
 }
 
 .notes-panel {
@@ -561,6 +572,13 @@ h4 {
 
 .notes-row {
   position: relative;
+  border-bottom: 1px solid var(--card-border);
+  padding-bottom: 6px;
+}
+
+.actions-row {
+  margin-top: 8px;
+  padding-left: 4px;
 }
 
 .coach-box {

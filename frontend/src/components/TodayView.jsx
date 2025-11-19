@@ -10,7 +10,7 @@ const StatusSelect = ({ current, onChange }) => {
     skipped: 'Skipped',
   };
   return (
-    <select className="input status-select" value={current} onChange={(e) => onChange(e.target.value)}>
+    <select className="input status-select wide" value={current} onChange={(e) => onChange(e.target.value)}>
       {HABIT_STATUSES.map((status) => (
         <option key={status} value={status}>
           {labelMap[status] || status}
@@ -52,7 +52,7 @@ const TodayView = ({ habitsForToday, systems, onStatusChange }) => {
                 {habit.notes && (
                   <button
                     type="button"
-                    className="btn-ghost small-btn"
+                    className="btn-primary small-btn"
                     onClick={() =>
                       setOpenDetails((prev) =>
                         prev.includes(habit.id) ? prev.filter((id) => id !== habit.id) : [...prev, habit.id],

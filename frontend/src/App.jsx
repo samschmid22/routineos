@@ -213,6 +213,8 @@ function App() {
       )}
 
       {activeTab === 'Analytics' && <AnalyticsView systems={systems} habits={habits} statusMap={statusMap} />}
+
+      <footer className="footer">Who you become is hidden in your daily actions.</footer>
     </div>
   );
 }

@@ -198,7 +198,6 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
           <div>Purpose</div>
           <div>Frequency</div>
           <div>Duration</div>
-          <div>Actions</div>
         </div>
         {habits.length === 0 && <div className="muted">No habits yet.</div>}
         {habits.map((habit) => {
@@ -211,11 +210,11 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
               <div>{habit.purpose}</div>
               <div className="muted small freq-text">{frequencyLabel(habit.frequency)}</div>
               <div>{habit.durationMinutes} min</div>
-              <div className="row gap-6 wrap">
+              <div className="row gap-6 wrap actions-row">
                 {habit.notes && (
                   <button
                     type="button"
-                    className="btn-ghost small-btn"
+                    className="btn-primary small-btn"
                     onClick={() =>
                       setOpenNotesIds((prev) =>
                         prev.includes(habit.id) ? prev.filter((id) => id !== habit.id) : [...prev, habit.id],

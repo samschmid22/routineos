@@ -494,6 +494,7 @@ h4 {
   gap: 12px;
   overflow-x: auto;
   padding-bottom: 14px;
+  margin-top: 10px;
 }
 
 .pillar-card {
@@ -558,6 +559,11 @@ h4 {
 .icon-btn.active {
   border-color: #f97316;
   box-shadow: 0 6px 16px rgba(249, 115, 22, 0.3);
+}
+
+.systems-heading {
+  margin-bottom: 8px;
+  display: inline-block;
 }
 
 .notes-panel {

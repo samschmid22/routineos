@@ -566,6 +566,10 @@ h4 {
   display: inline-block;
 }
 
+.habits-wrapper {
+  margin-top: 18px;
+}
+
 .notes-panel {
   grid-column: 1 / -1;
   padding: 10px;

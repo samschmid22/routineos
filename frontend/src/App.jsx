@@ -202,12 +202,14 @@ function App() {
               onDelete={deleteSystem}
               isNew={!systems.some((s) => s.id === systemDraft?.id)}
             />
-            <HabitsTable
-              system={systems.find((s) => s.id === selectedSystemId)}
-              habits={currentHabits}
-              onSaveHabit={upsertHabit}
-              onDeleteHabit={deleteHabit}
-            />
+            <div className="habits-wrapper">
+              <HabitsTable
+                system={systems.find((s) => s.id === selectedSystemId)}
+                habits={currentHabits}
+                onSaveHabit={upsertHabit}
+                onDeleteHabit={deleteHabit}
+              />
+            </div>
           </div>
         </div>
       )}

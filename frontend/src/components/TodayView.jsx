@@ -93,14 +93,6 @@ const TodayView = ({
                   >
                     ✓
                   </button>
-                  <select
-                    className="input status-basic"
-                    value={status === 'completed' ? 'completed' : 'notStarted'}
-                    onChange={(event) => onStatusChange(habit.id, event.target.value)}
-                  >
-                    <option value="notStarted">Not completed</option>
-                    <option value="completed">Completed</option>
-                  </select>
                   {habit.notes && (
                     <button
                       type="button"
@@ -149,14 +141,6 @@ const TodayView = ({
                           >
                             ✓
                           </button>
-                          <select
-                            className="input status-basic compact"
-                            value={subStatus}
-                            onChange={(event) => onSubHabitStatusChange(habit.id, sub.id, event.target.value)}
-                          >
-                            <option value="notStarted">Not completed</option>
-                            <option value="completed">Completed</option>
-                          </select>
                         </div>
                       </div>
                     );

@@ -242,6 +242,11 @@ h4 {
   padding-left: 12px;
   padding-right: 12px;
 }
+.status-select.compact {
+  min-width: 130px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
 
 .color-input {
   border-radius: 8px;
@@ -491,6 +496,77 @@ h4 {
 .habit-wide h3 {
   margin: 0;
   font-size: 1.2rem;
+}
+
+.checklist-pill {
+  font-size: 0.8rem;
+}
+
+.subhabits-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.subhabit-card {
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--card-subtle);
+}
+
+.subhabits-toggle {
+  margin-top: 8px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.chevron {
+  transition: transform 200ms ease;
+}
+
+.chevron.open {
+  transform: rotate(180deg);
+}
+
+.subhabits-panel {
+  overflow: hidden;
+  transition: max-height 240ms ease, opacity 240ms ease, padding 240ms ease;
+  max-height: 0;
+  opacity: 0;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  margin-top: 8px;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.subhabits-panel.open {
+  padding: 12px;
+  opacity: 1;
+}
+
+.subhabit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.subhabit-row:last-child {
+  border-bottom: none;
+}
+
+.subhabit-info {
+  flex: 1;
 }
 
 .pillars-row {

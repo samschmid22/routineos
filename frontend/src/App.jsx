@@ -14,9 +14,11 @@ import {
   loadHabits,
   loadSystems,
   loadTheme,
+  loadSubHabitStatuses,
   saveHabits,
   saveSystems,
   saveTheme,
+  saveSubHabitStatuses,
 } from './utils/storage';
 import './App.css';
 
@@ -26,6 +28,7 @@ function App() {
 
   const [systems, setSystems] = useState([]);
   const [habits, setHabits] = useState([]);
+  const [subHabitStatuses, setSubHabitStatuses] = useState({});
   const [selectedSystemId, setSelectedSystemId] = useState(null);
   const [systemDraft, setSystemDraft] = useState(null);
   const [hydrated, setHydrated] = useState(false);
@@ -37,9 +40,11 @@ function App() {
 
     const storedSystems = loadSystems(mockData.systems);
     const storedHabits = loadHabits(mockData.habits);
+    const storedSubStatuses = loadSubHabitStatuses({});
 
     setSystems(storedSystems.length ? storedSystems : mockData.systems);
     setHabits(storedHabits.length ? storedHabits : mockData.habits);
+    setSubHabitStatuses(storedSubStatuses);
 
     const initialSystem = (storedSystems.length ? storedSystems : mockData.systems)[0];
     setSelectedSystemId(initialSystem?.id || null);
@@ -52,7 +57,8 @@ function App() {
     if (!hydrated) return;
     saveSystems(systems);
     saveHabits(habits);
-  }, [systems, habits, hydrated]);
+    saveSubHabitStatuses(subHabitStatuses);
+  }, [systems, habits, subHabitStatuses, hydrated]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -113,17 +119,68 @@ function App() {
     setSystemDraft(fallback);
   };
 
+  const cleanupSubHabitStatuses = (habitId, removedIds = []) => {
+    if (!removedIds.length) return;
+    setSubHabitStatuses((prev) => {
+      const next = { ...prev };
+      removedIds.forEach((id) => {
+        delete next[id];
+      });
+      syncHabitStatusWithSubHabits(habitId, next);
+      return next;
+    });
+  };
+
+  const syncHabitStatusWithSubHabits = (habitId, nextStatuses) => {
+    const date = todayString();
+    setHabits((prev) =>
+      prev.map((habit) => {
+        if (habit.id !== habitId) return habit;
+        const derived = getEffectiveHabitStatus(habit, date, nextStatuses);
+        return {
+          ...habit,
+          status: derived,
+          lastCompletedOn: derived === 'completed' ? date : habit.lastCompletedOn,
+        };
+      }),
+    );
+  };
+
   const upsertHabit = (habit) => {
-    const exists = habits.some((h) => h.id === habit.id);
+    const previous = habits.find((h) => h.id === habit.id);
+    const exists = Boolean(previous);
     const next = exists ? habits.map((h) => (h.id === habit.id ? habit : h)) : [...habits, habit];
     setHabits(next);
+
+    if (previous?.subHabits?.length) {
+      const newIds = new Set((habit.subHabits || []).map((sub) => sub.id));
+      const removed = previous.subHabits.filter((sub) => !newIds.has(sub.id)).map((sub) => sub.id);
+      cleanupSubHabitStatuses(habit.id, removed);
+    }
   };
 
   const deleteHabit = (habitId) => {
+    const habit = habits.find((h) => h.id === habitId);
     setHabits((prev) => prev.filter((h) => h.id !== habitId));
-    setTodayState((prev) => {
+    if (habit?.subHabits) {
+      const removedIds = habit.subHabits.map((sub) => sub.id);
+      setSubHabitStatuses((prev) => {
+        const next = { ...prev };
+        removedIds.forEach((id) => delete next[id]);
+        return next;
+      });
+    }
+  };
+
+  const handleSubHabitStatusChange = (habitId, subHabitId, status) => {
+    setSubHabitStatuses((prev) => {
       const next = { ...prev };
-      delete next[habitId];
+      if (status === 'notStarted') {
+        delete next[subHabitId];
+      } else {
+        next[subHabitId] = status;
+      }
+      syncHabitStatusWithSubHabits(habitId, next);
       return next;
     });
   };
@@ -134,32 +191,52 @@ function App() {
       .filter((habit) => isHabitScheduledForDate(habit, date))
       .map((habit) => ({
         habit,
-        status: getEffectiveHabitStatus(habit, date),
+        status: getEffectiveHabitStatus(habit, date, subHabitStatuses),
       }));
-  }, [habits]);
+  }, [habits, subHabitStatuses]);
 
   const statusMap = useMemo(() => {
     const date = todayString();
     return habits.reduce((acc, habit) => {
-      acc[habit.id] = getEffectiveHabitStatus(habit, date);
+      acc[habit.id] = getEffectiveHabitStatus(habit, date, subHabitStatuses);
       return acc;
     }, {});
-  }, [habits]);
+  }, [habits, subHabitStatuses]);
 
   const handleStatusChange = (habitId, status) => {
     if (!HABIT_STATUSES.includes(status)) return;
     const date = todayString();
+    const habit = habits.find((h) => h.id === habitId);
+    if (!habit) return;
+
     setHabits((prev) =>
-      prev.map((habit) =>
-        habit.id === habitId
+      prev.map((h) =>
+        h.id === habitId
           ? {
-              ...habit,
+              ...h,
               status,
-              lastCompletedOn: status === 'completed' ? date : habit.lastCompletedOn,
+              lastCompletedOn: status === 'completed' ? date : h.lastCompletedOn,
             }
-          : habit,
+          : h,
       ),
     );
+
+    if (habit.subHabits?.length) {
+      setSubHabitStatuses((prev) => {
+        const next = { ...prev };
+        habit.subHabits.forEach((sub) => {
+          if (status === 'completed') {
+            next[sub.id] = 'completed';
+          } else if (status === 'notStarted') {
+            delete next[sub.id];
+          } else if (status === 'skipped') {
+            next[sub.id] = 'skipped';
+          }
+        });
+        syncHabitStatusWithSubHabits(habitId, next);
+        return next;
+      });
+    }
   };
 
   return (
@@ -198,7 +275,13 @@ function App() {
       <Tabs active={activeTab} onChange={setActiveTab} />
 
       {activeTab === 'Today' && (
-        <TodayView habitsForToday={todayHabits} systems={systems} onStatusChange={handleStatusChange} />
+        <TodayView
+          habitsForToday={todayHabits}
+          systems={systems}
+          subHabitStatuses={subHabitStatuses}
+          onStatusChange={handleStatusChange}
+          onSubHabitStatusChange={handleSubHabitStatusChange}
+        />
       )}
 
       {activeTab === 'Systems' && (

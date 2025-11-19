@@ -1,5 +1,5 @@
 // Component: horizontal cards for pillar selection.
-const SystemsList = ({ systems, selectedSystemId, onSelectSystem, onAddNew, onReorder }) => {
+const SystemsList = ({ systems, selectedSystemId, onSelectSystem, onAddNew, onReorder = () => {} }) => {
   const handleDragStart = (event, systemId) => {
     event.dataTransfer.setData('text/system-id', systemId);
     event.dataTransfer.effectAllowed = 'move';

@@ -127,6 +127,27 @@ const habits = [
     startDate: '2024-01-01',
     status: 'notStarted',
     lastCompletedOn: null,
+    subHabits: [
+      { id: 'sub-nails-1', name: 'Trim nails', notes: 'Use glass file', sortOrder: 0 },
+      { id: 'sub-nails-2', name: 'Moisturize hands', sortOrder: 1 },
+    ],
+  },
+  {
+    id: 'habit-weekly-clean',
+    systemId: 'system-reset',
+    name: 'Weekly clean',
+    purpose: 'Home',
+    frequency: { type: 'daysOfWeek', daysOfWeek: [6] },
+    durationMinutes: 45,
+    notes: 'Deep clean shared spaces',
+    startDate: '2024-01-01',
+    status: 'notStarted',
+    lastCompletedOn: null,
+    subHabits: [
+      { id: 'sub-clean-1', name: 'Wipe counters', sortOrder: 0 },
+      { id: 'sub-clean-2', name: 'Vacuum floors', sortOrder: 1 },
+      { id: 'sub-clean-3', name: 'Clean bathroom mirror', sortOrder: 2 },
+    ],
   },
 ];
 

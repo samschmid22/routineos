@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { generateId } from '../utils/ids';
 import { todayString } from '../utils/date';
+import SubHabitsEditor from './SubHabitsEditor';
 
 const DAYS = [
   { label: 'Sun', value: 0 },
@@ -23,6 +24,7 @@ const emptyHabit = (systemId) => ({
   startDate: todayString(),
   status: 'notStarted',
   lastCompletedOn: null,
+  subHabits: [],
 });
 
 const frequencyLabel = (frequency) => {
@@ -123,6 +125,11 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
         <div />{/* spacer to balance the grid */}
       </div>
 
+      <SubHabitsEditor
+        value={editing.subHabits || []}
+        onChange={(list) => setEditing({ ...editing, subHabits: list })}
+      />
+
       <div className="row gap-8 wrap">
         <button type="button" className="btn-primary" onClick={save}>
           Save habit
@@ -155,6 +162,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
         type: habit.frequency?.type || habit.frequencyType || 'daily',
         daysOfWeek: habit.frequency?.daysOfWeek || habit.daysOfWeek || [],
       },
+      subHabits: habit.subHabits || [],
     });
 
   const toggleDay = (value) => {

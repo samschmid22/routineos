@@ -3,6 +3,7 @@ const KEYS = {
   systems: 'routineos_systems',
   habits: 'routineos_habits',
   today: 'routineos_today_state',
+  subHabits: 'routineos_subhabit_statuses',
   theme: 'routineos_theme',
 };
 
@@ -49,4 +50,13 @@ export const loadTheme = (fallback) => {
 
 export const saveTheme = (theme) => {
   window.localStorage.setItem(KEYS.theme, theme);
+};
+
+export const loadSubHabitStatuses = (fallback) => {
+  const stored = window.localStorage.getItem(KEYS.subHabits);
+  return safeParse(stored, fallback);
+};
+
+export const saveSubHabitStatuses = (state) => {
+  window.localStorage.setItem(KEYS.subHabits, JSON.stringify(state));
 };

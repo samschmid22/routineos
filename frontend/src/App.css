@@ -91,8 +91,7 @@ h4 {
 }
 
 .hoverable:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
 }
 
 .card-header {
@@ -633,6 +632,12 @@ h4 {
   position: relative;
   cursor: default;
   overflow: visible;
+  z-index: 1;
+}
+
+.today-habit:hover,
+.today-habit:focus-within {
+  z-index: 25;
 }
 
 .habit-row {

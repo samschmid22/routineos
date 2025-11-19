@@ -31,7 +31,7 @@ const StatusSelect = ({ current, onChange, size = 'wide' }) => {
   };
 
   return (
-    <div className={`status-dropdown ${size}`} ref={ref}>
+    <div className={`status-dropdown ${size} ${open ? 'open' : ''}`} ref={ref}>
       <button type="button" className="status-trigger" onClick={() => setOpen((prev) => !prev)}>
         <span>{STATUS_LABELS[displayStatus]}</span>
         <span className="caret">▾</span>

@@ -238,6 +238,7 @@ function App() {
     const date = todayString();
     const habit = habits.find((h) => h.id === habitId);
     if (!habit) return;
+    console.log('Status change', habitId, status);
 
     setHabits((prev) =>
       prev.map((h) =>

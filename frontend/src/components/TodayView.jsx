@@ -10,7 +10,7 @@ const STATUS_OPTIONS = ['notStarted', 'completed'];
 
 const normalizeStatus = (value) => (STATUS_OPTIONS.includes(value) ? value : 'notStarted');
 
-const StatusSelect = ({ current, onChange, size = 'wide' }) => {
+const StatusSelect = ({ current, onChange, size = 'wide', onToggleOpen = () => {} }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const displayStatus = normalizeStatus(current);
@@ -24,6 +24,13 @@ const StatusSelect = ({ current, onChange, size = 'wide' }) => {
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, [open]);
+
+  useEffect(() => {
+    onToggleOpen(open);
+    return () => {
+      onToggleOpen(false);
+    };
+  }, [open, onToggleOpen]);
 
   const handleSelect = (value) => {
     onChange(value);
@@ -79,6 +86,7 @@ const TodayView = ({
   console.count('TodayView render');
   const [openDetails, setOpenDetails] = useState([]);
   const [expandedHabits, setExpandedHabits] = useState([]);
+  const [activeDropdown, setActiveDropdown] = useState(null);
 
   const systemMap = systems.reduce((acc, system) => ({ ...acc, [system.id]: system }), {});
 
@@ -127,7 +135,9 @@ const TodayView = ({
           return (
             <div
               key={habit.id}
-              className="card subtle hoverable habit-wide today-habit"
+              className={`card subtle hoverable habit-wide today-habit ${
+                activeDropdown === habit.id ? 'dropdown-open' : ''
+              }`}
             >
               <div className="row spaced align-start habit-row">
                 <div className="row gap-12 align-start habit-left">
@@ -168,6 +178,12 @@ const TodayView = ({
                   <StatusSelect
                     current={status === 'completed' ? 'completed' : 'notStarted'}
                     onChange={(newStatus) => onStatusChange(habit.id, newStatus)}
+                    onToggleOpen={(isOpen) =>
+                      setActiveDropdown((prev) => {
+                        if (isOpen) return habit.id;
+                        return prev === habit.id ? null : prev;
+                      })
+                    }
                   />
                   <StatusCheckbox status={status} onToggle={() => handleHabitCheckbox(habit.id, status)} />
                   {habit.notes && (

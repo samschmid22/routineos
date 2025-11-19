@@ -9,6 +9,7 @@ const ICONS = [
 
 const SystemEditor = ({ system, onChange, onSave, onDelete, isNew }) => {
   const [local, setLocal] = useState(system);
+  const [showPicker, setShowPicker] = useState(false);
 
   useEffect(() => {
     setLocal(system);
@@ -75,18 +76,36 @@ const SystemEditor = ({ system, onChange, onSave, onDelete, isNew }) => {
           </label>
           <label className="stack xs icon-picker">
             <span className="label">Symbol</span>
-            <div className="icons-grid">
-              {ICONS.map((icon) => (
-                <button
-                  key={icon}
-                  type="button"
-                  className={`icon-btn ${local?.icon === icon ? 'active' : ''}`}
-                  onClick={() => updateField('icon', icon)}
-                  aria-label={`Symbol ${icon}`}
-                >
-                  {icon}
-                </button>
-              ))}
+            <div className="symbol-picker">
+              <button
+                type="button"
+                className="symbol-trigger"
+                onClick={() => setShowPicker((prev) => !prev)}
+                aria-label="Choose symbol"
+              >
+                <span className="symbol-selected">{local?.icon || ICONS[0]}</span>
+                <span className="caret">▾</span>
+              </button>
+              {showPicker && (
+                <div className="emoji-popover">
+                  <div className="emoji-grid">
+                    {ICONS.map((icon) => (
+                      <button
+                        key={icon}
+                        type="button"
+                        className={`emoji-btn ${local?.icon === icon ? 'active' : ''}`}
+                        onClick={() => {
+                          updateField('icon', icon);
+                          setShowPicker(false);
+                        }}
+                        aria-label={`Symbol ${icon}`}
+                      >
+                        {icon}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </label>
         </div>

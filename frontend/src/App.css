@@ -547,13 +547,55 @@ h4 {
   display: inline-block;
 }
 
-.icons-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(44px, 1fr));
-  gap: 10px;
+.symbol-picker {
+  position: relative;
 }
 
-.icon-btn {
+.symbol-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 140px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  background: var(--card-subtle);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.symbol-selected {
+  font-size: 1.8rem;
+}
+
+.caret {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.emoji-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 10;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  max-height: 260px;
+  overflow: auto;
+  min-width: 220px;
+}
+
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(44px, 1fr));
+  gap: 8px;
+}
+
+.emoji-btn {
   border: 1px solid var(--card-border);
   background: transparent;
   border-radius: 10px;
@@ -563,7 +605,7 @@ h4 {
   color: var(--text);
 }
 
-.icon-btn.active {
+.emoji-btn.active {
   border-color: #f97316;
   box-shadow: 0 6px 14px rgba(249, 115, 22, 0.25);
 }

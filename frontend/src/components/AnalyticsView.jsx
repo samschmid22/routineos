@@ -7,15 +7,15 @@ const ProgressBar = ({ percentValue }) => (
   </div>
 );
 
-const AnalyticsView = ({ systems, habits, todayState }) => {
-  const byPurpose = completionByPurpose(habits, todayState);
-  const bySystem = completionBySystem(habits, systems, todayState);
+const AnalyticsView = ({ systems, habits, statusMap }) => {
+  const byPurpose = completionByPurpose(habits, statusMap);
+  const bySystem = completionBySystem(habits, systems, statusMap);
 
   const completedCounts = habits
-    .map((habit) => ({ habit, completed: todayState[habit.id] === 'Completed', skipped: todayState[habit.id] === 'Skipped' }))
+    .map((habit) => ({ habit, completed: statusMap[habit.id] === 'completed', skipped: statusMap[habit.id] === 'skipped' }))
     .sort((a, b) => Number(b.completed) - Number(a.completed));
   const skippedCounts = habits
-    .map((habit) => ({ habit, skipped: todayState[habit.id] === 'Skipped' }))
+    .map((habit) => ({ habit, skipped: statusMap[habit.id] === 'skipped' }))
     .sort((a, b) => Number(b.skipped) - Number(a.skipped));
 
   return (
@@ -112,7 +112,7 @@ const AnalyticsView = ({ systems, habits, todayState }) => {
                 {completedCounts.slice(0, 3).map(({ habit }, idx) => (
                   <div key={habit.id} className="row spaced small">
                     <span>{idx + 1}. {habit.name}</span>
-                    <span className="muted small">{todayState[habit.id] === 'Completed' ? '100%' : '—'}</span>
+                    <span className="muted small">{statusMap[habit.id] === 'completed' ? '100%' : '—'}</span>
                   </div>
                 ))}
               </div>
@@ -123,7 +123,7 @@ const AnalyticsView = ({ systems, habits, todayState }) => {
                 {skippedCounts.slice(0, 3).map(({ habit }, idx) => (
                   <div key={habit.id} className="row spaced small">
                     <span>{idx + 1}. {habit.name}</span>
-                    <span className="muted small">{todayState[habit.id] === 'Skipped' ? '100%' : '—'}</span>
+                    <span className="muted small">{statusMap[habit.id] === 'skipped' ? '100%' : '—'}</span>
                   </div>
                 ))}
               </div>

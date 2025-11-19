@@ -28,24 +28,39 @@ export const formatDisplayDate = (date) => {
   return `${weekday} · ${month} ${day} · ${year}`;
 };
 
-export const isHabitScheduledForDate = (habit, dateString) => {
-  if (!habit || !habit.frequency) return false;
+export const startOfDayString = (date) => {
+  const d = new Date(date);
+  return formatDate(d);
+};
 
+export const daysBetween = (from, to) => {
+  const start = new Date(`${from}T00:00:00`);
+  const end = new Date(`${to}T00:00:00`);
+  const diffMs = end.getTime() - start.getTime();
+  return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+};
+
+export const getWeekdayIndex = (dateString) => {
+  return new Date(`${dateString}T00:00:00`).getDay();
+};
+
+export const isHabitScheduledForDate = (habit, dateString) => {
+  if (!habit) return false;
   const target = new Date(`${dateString}T00:00:00`);
   const start = habit.startDate ? new Date(`${habit.startDate}T00:00:00`) : target;
   const dayOfWeek = target.getDay();
+  const freqType = habit.frequency?.type || habit.frequencyType;
+  const daysOfWeek = habit.frequency?.daysOfWeek || habit.daysOfWeek || [];
 
-  if (habit.frequency.type === 'daily') return true;
+  if (freqType === 'daily') return true;
 
-  if (habit.frequency.type === 'daysOfWeek') {
-    return Array.isArray(habit.frequency.daysOfWeek) && habit.frequency.daysOfWeek.includes(dayOfWeek);
+  if (freqType === 'everyOtherDay') {
+    const daysFromStart = Math.floor((target.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    return daysFromStart % 2 === 0;
   }
 
-  if (habit.frequency.type === 'everyXDays') {
-    const interval = Number(habit.frequency.intervalDays) || 0;
-    if (interval <= 0) return false;
-    const daysFromStart = Math.floor((target.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-    return daysFromStart >= 0 && daysFromStart % interval === 0;
+  if (freqType === 'daysOfWeek') {
+    return Array.isArray(daysOfWeek) && daysOfWeek.includes(dayOfWeek);
   }
 
   return false;

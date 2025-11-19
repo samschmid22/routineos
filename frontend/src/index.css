@@ -26,17 +26,18 @@ a {
 
 :root,
 :root[data-theme='dark'] {
-  --page: #05070b;
-  --card: #0f172a;
-  --card-subtle: #111827;
-  --card-border: rgba(255, 255, 255, 0.08);
-  --text: #f9fafb;
-  --muted: #cbd5e1;
-  --field-bg: #0b1220;
+  --page: #050505;
+  --card: #111111;
+  --card-subtle: #181818;
+  --card-border: rgba(255, 255, 255, 0.06);
+  --text: #f7f7f7;
+  --muted: #cfcfcf;
+  --field-bg: #0d0d0d;
   --field-border: rgba(255, 255, 255, 0.1);
-  --tab-bg: rgba(255, 255, 255, 0.04);
-  --pill-bg: rgba(255, 255, 255, 0.06);
+  --tab-bg: rgba(255, 255, 255, 0.06);
+  --pill-bg: rgba(255, 255, 255, 0.05);
   --progress-bg: rgba(255, 255, 255, 0.08);
+  --icon-contrast: #ffffff;
 }
 
 :root[data-theme='light'] {
@@ -51,4 +52,5 @@ a {
   --tab-bg: #e5e7eb;
   --pill-bg: #f3f4f6;
   --progress-bg: #e5e7eb;
+  --icon-contrast: #0b0b0b;
 }

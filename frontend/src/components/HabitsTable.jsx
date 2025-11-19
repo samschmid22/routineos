@@ -1,6 +1,6 @@
 // Component: habits for the selected system with simple inline editor.
 import { useEffect, useState } from 'react';
-import { PURPOSES, TIME_BLOCKS } from '../utils/analytics';
+import { PURPOSES } from '../utils/analytics';
 import { generateId } from '../utils/ids';
 import { todayString } from '../utils/date';
 
@@ -19,21 +19,25 @@ const emptyHabit = (systemId) => ({
   systemId,
   name: '',
   purpose: PURPOSES[0],
-  timeBlock: TIME_BLOCKS[0],
-  frequency: { type: 'daily' },
+  frequency: { type: 'daily', daysOfWeek: [] },
   durationMinutes: 20,
   notes: '',
   startDate: todayString(),
+  status: 'notStarted',
+  lastCompletedOn: null,
 });
 
 const frequencyLabel = (frequency) => {
   if (!frequency) return 'Not set';
   if (frequency.type === 'daily') return 'Daily';
   if (frequency.type === 'daysOfWeek') {
-    const labels = (frequency.daysOfWeek || []).sort().map((d) => DAYS.find((day) => day.value === d)?.label);
-    return `Weekly: ${labels.join(', ')}`;
+    const labels = (frequency.daysOfWeek || [])
+      .sort()
+      .map((d) => DAYS.find((day) => day.value === d)?.label)
+      .filter(Boolean);
+    return labels.join(' ');
   }
-  if (frequency.type === 'everyXDays') return `Every ${frequency.intervalDays || 0} days`;
+  if (frequency.type === 'everyOtherDay') return 'Every 2 days';
   return 'Custom';
 };
 
@@ -55,7 +59,11 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
   }
 
   const startNew = () => setEditing(emptyHabit(system.id));
-  const startEdit = (habit) => setEditing({ ...habit });
+  const startEdit = (habit) =>
+    setEditing({
+      ...habit,
+      frequency: habit.frequency || { type: habit.frequencyType || 'daily', daysOfWeek: habit.daysOfWeek || [] },
+    });
 
   const toggleDay = (value) => {
     const current = editing.frequency.daysOfWeek || [];
@@ -65,7 +73,12 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
 
   const save = () => {
     if (!editing.name.trim()) return;
-    onSaveHabit({ ...editing, systemId: system.id });
+    onSaveHabit({
+      ...editing,
+      systemId: system.id,
+      frequencyType: editing.frequency.type,
+      daysOfWeek: editing.frequency.daysOfWeek || [],
+    });
     setEditing(null);
   };
 
@@ -109,31 +122,25 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
             </label>
           </div>
 
-          <div className="grid three">
-            <label className="stack xs">
-              <span className="label">Time block</span>
-              <select
-                className="input"
-                value={editing.timeBlock}
-                onChange={(e) => setEditing({ ...editing, timeBlock: e.target.value })}
-              >
-                {TIME_BLOCKS.map((block) => (
-                  <option key={block} value={block}>
-                    {block}
-                  </option>
-                ))}
-              </select>
-            </label>
+          <div className="grid two">
             <label className="stack xs">
               <span className="label">Frequency</span>
               <select
                 className="input"
                 value={editing.frequency.type}
-                onChange={(e) => setEditing({ ...editing, frequency: { type: e.target.value } })}
+                onChange={(e) =>
+                  setEditing({
+                    ...editing,
+                    frequency: {
+                      type: e.target.value,
+                      daysOfWeek: editing.frequency.daysOfWeek || [],
+                    },
+                  })
+                }
               >
                 <option value="daily">Daily</option>
+                <option value="everyOtherDay">Every other day</option>
                 <option value="daysOfWeek">Days of week</option>
-                <option value="everyXDays">Every X days</option>
               </select>
             </label>
             <label className="stack xs">
@@ -154,32 +161,13 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
                 <button
                   key={day.value}
                   type="button"
-                  className={`pill ${editing.frequency.daysOfWeek?.includes(day.value) ? 'active' : ''}`}
+                  className={`pill day-chip ${editing.frequency.daysOfWeek?.includes(day.value) ? 'active' : ''}`}
                   onClick={() => toggleDay(day.value)}
                 >
                   {day.label}
                 </button>
               ))}
             </div>
-          )}
-
-          {editing.frequency.type === 'everyXDays' && (
-            <label className="stack xs">
-              <span className="label">Repeat every</span>
-              <input
-                className="input"
-                type="number"
-                min="1"
-                value={editing.frequency.intervalDays || 1}
-                onChange={(e) =>
-                  setEditing({
-                    ...editing,
-                    frequency: { ...editing.frequency, intervalDays: Number(e.target.value) || 1 },
-                  })
-                }
-              />
-              <span className="muted small">days</span>
-            </label>
           )}
 
           <label className="stack xs">
@@ -221,7 +209,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
                 <strong>{habit.name}</strong>
               </div>
               <div>{habit.purpose}</div>
-              <div>{frequencyLabel(habit.frequency)}</div>
+              <div className="muted small freq-text">{frequencyLabel(habit.frequency)}</div>
               <div>{habit.durationMinutes} min</div>
               <div className="row gap-6 wrap">
                 {habit.notes && (

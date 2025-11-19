@@ -1,7 +1,7 @@
 // Component: edit/create a single system.
 import { useEffect, useState } from 'react';
 
-const ICONS = ['☀️', '🏋️', '🧠', '💼', '❤️', '🏠', '✨', '🌙'];
+const ICONS = ['☀︎', '☾', '⬤', '◆', '▲', '✦', '■', '▣'];
 
 const SystemEditor = ({ system, onChange, onSave, onDelete, isNew }) => {
   const [local, setLocal] = useState(system);

@@ -1,24 +1,29 @@
 // Component: renders today's habits as a luxurious wide list with status dropdowns and details toggles.
 import { useState } from 'react';
-import { STATUSES, TIME_BLOCKS } from '../utils/analytics';
+import { HABIT_STATUSES } from '../utils/status';
 
-const StatusSelect = ({ current, onChange }) => (
-  <select className="input status-select" value={current} onChange={(e) => onChange(e.target.value)}>
-    {STATUSES.map((status) => (
-      <option key={status} value={status}>
-        {status.replace(/([A-Z])/g, ' $1').trim()}
-      </option>
-    ))}
-  </select>
-);
+const StatusSelect = ({ current, onChange }) => {
+  const labelMap = {
+    notStarted: 'Not started',
+    ongoing: 'Ongoing',
+    completed: 'Completed',
+    skipped: 'Skipped',
+  };
+  return (
+    <select className="input status-select" value={current} onChange={(e) => onChange(e.target.value)}>
+      {HABIT_STATUSES.map((status) => (
+        <option key={status} value={status}>
+          {labelMap[status] || status}
+        </option>
+      ))}
+    </select>
+  );
+};
 
 const TodayView = ({ habitsForToday, systems, onStatusChange }) => {
   const [openDetails, setOpenDetails] = useState([]);
   const systemMap = systems.reduce((acc, system) => ({ ...acc, [system.id]: system }), {});
-  const sorted = [...habitsForToday].sort((a, b) => {
-    const order = TIME_BLOCKS.indexOf(a.habit.timeBlock) - TIME_BLOCKS.indexOf(b.habit.timeBlock);
-    return order !== 0 ? order : a.habit.name.localeCompare(b.habit.name);
-  });
+  const sorted = [...habitsForToday].sort((a, b) => a.habit.name.localeCompare(b.habit.name));
 
   return (
     <div className="card">
@@ -40,7 +45,6 @@ const TodayView = ({ habitsForToday, systems, onStatusChange }) => {
                     <span className="system-dot tiny" style={{ background: systemMap[habit.systemId]?.color }} />
                     {systemMap[habit.systemId]?.name || 'System'}
                   </span>
-                  {habit.timeBlock && <span className="pill ghost small-pill">{habit.timeBlock}</span>}
                 </div>
               </div>
               <div className="row gap-8 align-center">

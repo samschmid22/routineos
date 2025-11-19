@@ -1,11 +1,10 @@
-// Utility: compute completion rates by purpose and system using today's state.
+// Utility: compute completion rates by purpose and system using effective statuses.
 export const PURPOSES = ['Mind', 'Body', 'Intelligence', 'Money', 'Home'];
 export const TIME_BLOCKS = ['Morning', 'Midday', 'Evening'];
-export const STATUSES = ['NotStarted', 'Ongoing', 'Completed', 'Skipped'];
 
 const initBucket = () => ({ completed: 0, total: 0 });
 
-export const completionByPurpose = (habits, todayState) => {
+export const completionByPurpose = (habits, statusMap) => {
   const buckets = PURPOSES.reduce((acc, purpose) => {
     acc[purpose] = initBucket();
     return acc;
@@ -15,13 +14,13 @@ export const completionByPurpose = (habits, todayState) => {
     const bucket = buckets[habit.purpose];
     if (!bucket) return;
     bucket.total += 1;
-    if (todayState[habit.id] === 'Completed') bucket.completed += 1;
+    if (statusMap[habit.id] === 'completed') bucket.completed += 1;
   });
 
   return buckets;
 };
 
-export const completionBySystem = (habits, systems, todayState) => {
+export const completionBySystem = (habits, systems, statusMap) => {
   const buckets = systems.reduce((acc, system) => {
     acc[system.id] = initBucket();
     return acc;
@@ -31,7 +30,7 @@ export const completionBySystem = (habits, systems, todayState) => {
     const bucket = buckets[habit.systemId];
     if (!bucket) return;
     bucket.total += 1;
-    if (todayState[habit.id] === 'Completed') bucket.completed += 1;
+    if (statusMap[habit.id] === 'completed') bucket.completed += 1;
   });
 
   return buckets;

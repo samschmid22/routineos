@@ -7,18 +7,16 @@ import SystemsList from './components/SystemsList';
 import Tabs from './components/Tabs';
 import TodayView from './components/TodayView';
 import mockData from './mockData';
-import { STATUSES } from './utils/analytics';
 import { formatDisplayDate, isHabitScheduledForDate, todayString } from './utils/date';
 import { generateId } from './utils/ids';
+import { getEffectiveHabitStatus, HABIT_STATUSES } from './utils/status';
 import {
   loadHabits,
   loadSystems,
   loadTheme,
-  loadTodayState,
   saveHabits,
   saveSystems,
   saveTheme,
-  saveTodayState,
 } from './utils/storage';
 import './App.css';
 
@@ -28,7 +26,6 @@ function App() {
 
   const [systems, setSystems] = useState([]);
   const [habits, setHabits] = useState([]);
-  const [todayState, setTodayState] = useState({});
   const [selectedSystemId, setSelectedSystemId] = useState(null);
   const [systemDraft, setSystemDraft] = useState(null);
 
@@ -39,11 +36,9 @@ function App() {
 
     const storedSystems = loadSystems(mockData.systems);
     const storedHabits = loadHabits(mockData.habits);
-    const storedToday = loadTodayState({});
 
     setSystems(storedSystems.length ? storedSystems : mockData.systems);
     setHabits(storedHabits.length ? storedHabits : mockData.habits);
-    setTodayState(storedToday);
 
     const initialSystem = (storedSystems.length ? storedSystems : mockData.systems)[0];
     setSelectedSystemId(initialSystem?.id || null);
@@ -54,8 +49,7 @@ function App() {
   useEffect(() => {
     saveSystems(systems);
     saveHabits(habits);
-    saveTodayState(todayState);
-  }, [systems, habits, todayState]);
+  }, [systems, habits]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -123,12 +117,34 @@ function App() {
     const date = todayString();
     return habits
       .filter((habit) => isHabitScheduledForDate(habit, date))
-      .map((habit) => ({ habit, status: todayState[habit.id] || 'NotStarted' }));
-  }, [habits, todayState]);
+      .map((habit) => ({
+        habit,
+        status: getEffectiveHabitStatus(habit, date),
+      }));
+  }, [habits]);
+
+  const statusMap = useMemo(() => {
+    const date = todayString();
+    return habits.reduce((acc, habit) => {
+      acc[habit.id] = getEffectiveHabitStatus(habit, date);
+      return acc;
+    }, {});
+  }, [habits]);
 
   const handleStatusChange = (habitId, status) => {
-    if (!STATUSES.includes(status)) return;
-    setTodayState((prev) => ({ ...prev, [habitId]: status }));
+    if (!HABIT_STATUSES.includes(status)) return;
+    const date = todayString();
+    setHabits((prev) =>
+      prev.map((habit) =>
+        habit.id === habitId
+          ? {
+              ...habit,
+              status,
+              lastCompletedOn: status === 'completed' ? date : habit.lastCompletedOn,
+            }
+          : habit,
+      ),
+    );
   };
 
   return (
@@ -156,8 +172,8 @@ function App() {
             <div className="date-chip">{formatDisplayDate(new Date())}</div>
           </div>
         </div>
-        <div>
-          <h1 className="hero-title">Run your life like a system</h1>
+        <div className="title-block">
+          <h1 className="hero-title section-title">RUN YOUR LIFE LIKE A SYSTEM</h1>
           <p className="muted hero-subtitle">
             Design elite routines, track what matters daily, and review your data like a pro.
           </p>
@@ -178,7 +194,7 @@ function App() {
             onSelectSystem={setSelectedSystemId}
             onAddNew={startNewSystem}
           />
-          <div className="grid two">
+          <div className="grid split">
             <SystemEditor
               system={systemDraft}
               onChange={setSystemDraft}
@@ -196,7 +212,7 @@ function App() {
         </div>
       )}
 
-      {activeTab === 'Analytics' && <AnalyticsView systems={systems} habits={habits} todayState={todayState} />}
+      {activeTab === 'Analytics' && <AnalyticsView systems={systems} habits={habits} statusMap={statusMap} />}
     </div>
   );
 }

@@ -78,7 +78,6 @@ const TodayView = ({
 }) => {
   const [openDetails, setOpenDetails] = useState([]);
   const [expandedHabits, setExpandedHabits] = useState([]);
-  const [draggingId, setDraggingId] = useState(null);
 
   const systemMap = systems.reduce((acc, system) => ({ ...acc, [system.id]: system }), {});
 
@@ -98,39 +97,16 @@ const TodayView = ({
     onSubHabitStatusChange(habitId, subHabitId, normalized === 'completed' ? 'notStarted' : 'completed');
   };
 
-  const handleDragStart = (event, habitId) => {
-    event.stopPropagation();
-    if (event.dataTransfer) {
-      event.dataTransfer.effectAllowed = 'move';
-      event.dataTransfer.setData('text/plain', habitId);
-    }
-    setDraggingId(habitId);
-  };
-
-  const handleDrop = (event, targetId) => {
-    event.preventDefault();
-    if (event.dataTransfer) {
-      event.dataTransfer.dropEffect = 'move';
-    }
-    const dragged = event.dataTransfer.getData('text/plain') || draggingId;
-    if (dragged && dragged !== targetId) {
-      onReorder(dragged, targetId);
-    }
-    event.stopPropagation();
-    setDraggingId(null);
-  };
-
-  const handleListDrop = (event) => {
-    event.preventDefault();
-    if (event.dataTransfer) {
-      event.dataTransfer.dropEffect = 'move';
-    }
-    const dragged = event.dataTransfer.getData('text/plain') || draggingId;
-    if (dragged) {
-      onReorder(dragged, null);
-    }
-    event.stopPropagation();
-    setDraggingId(null);
+  const moveHabit = (habitId, direction) => {
+    const orderedIds = habitsForToday.map(({ habit }) => habit.id);
+    const index = orderedIds.indexOf(habitId);
+    if (index === -1) return;
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= orderedIds.length) return;
+    const next = [...orderedIds];
+    const [moved] = next.splice(index, 1);
+    next.splice(targetIndex, 0, moved);
+    onReorder(next);
   };
 
   return (
@@ -142,14 +118,7 @@ const TodayView = ({
         </div>
       </div>
       {habitsForToday.length === 0 && <div className="muted">No habits scheduled for today.</div>}
-      <div
-        className="stack md today-list"
-        onDragOver={(event) => {
-          event.preventDefault();
-          if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
-        }}
-        onDrop={handleListDrop}
-      >
+      <div className="stack md today-list">
         {habitsForToday.map(({ habit, status }) => {
           const hasSubHabits = Array.isArray(habit.subHabits) && habit.subHabits.length > 0;
           const isExpanded = expandedHabits.includes(habit.id);
@@ -158,25 +127,30 @@ const TodayView = ({
           return (
             <div
               key={habit.id}
-              className={`card subtle hoverable habit-wide today-habit ${draggingId === habit.id ? 'dragging' : ''}`}
-              onDragOver={(event) => {
-                event.preventDefault();
-                if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
-              }}
-              onDrop={(event) => handleDrop(event, habit.id)}
+              className="card subtle hoverable habit-wide today-habit"
             >
               <div className="row spaced align-start habit-row">
                 <div className="row gap-12 align-start habit-left">
-                  <button
-                    type="button"
-                    className="drag-handle"
-                    draggable
-                    onDragStart={(event) => handleDragStart(event, habit.id)}
-                    onDragEnd={() => setDraggingId(null)}
-                    aria-label="Reorder habit"
-                  >
-                    ⠿
-                  </button>
+                  <div className="reorder-buttons">
+                    <button
+                      type="button"
+                      className="btn-icon"
+                      onClick={() => moveHabit(habit.id, 'up')}
+                      disabled={habitsForToday[0]?.habit.id === habit.id}
+                      aria-label="Move habit up"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-icon"
+                      onClick={() => moveHabit(habit.id, 'down')}
+                      disabled={habitsForToday[habitsForToday.length - 1]?.habit.id === habit.id}
+                      aria-label="Move habit down"
+                    >
+                      ↓
+                    </button>
+                  </div>
                   <div className="stack xs">
                     <div className="row gap-6 align-center">
                       <h3>{habit.name}</h3>

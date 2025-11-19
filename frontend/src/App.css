@@ -309,6 +309,37 @@ h4 {
   transform: translateY(-1px);
 }
 
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.btn-icon:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.btn-icon:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.reorder-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .status-dropdown {
   position: relative;
   min-width: 200px;
@@ -601,10 +632,6 @@ h4 {
   isolation: isolate;
 }
 
-.today-habit.dragging {
-  opacity: 0.6;
-}
-
 .habit-row {
   gap: 12px;
 }
@@ -612,23 +639,6 @@ h4 {
 .habit-actions {
   flex-wrap: wrap;
   justify-content: flex-end;
-}
-
-.drag-handle {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1px dashed var(--card-border);
-  background: transparent;
-  color: var(--muted);
-  cursor: grab;
-  display: grid;
-  place-items: center;
-  font-size: 1.1rem;
-}
-
-.drag-handle:active {
-  cursor: grabbing;
 }
 
 .checklist-indicator {

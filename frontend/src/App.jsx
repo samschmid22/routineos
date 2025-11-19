@@ -269,25 +269,12 @@ function App() {
     }
   };
 
-  const reorderTodayHabits = (draggedId, targetId = null) => {
-    if (!draggedId) return;
-    setTodayOrder((prev) => {
+  const setManualTodayOrder = (orderedIds = []) => {
+    setTodayOrder(() => {
       const habitIds = habits.map((habit) => habit.id);
-      const filtered = prev.filter((id) => habitIds.includes(id));
-      habitIds.forEach((id) => {
-        if (!filtered.includes(id)) filtered.push(id);
-      });
-      const fromIndex = filtered.indexOf(draggedId);
-      if (fromIndex === -1) return filtered;
-      const updated = [...filtered];
-      const [moved] = updated.splice(fromIndex, 1);
-      if (targetId && updated.includes(targetId)) {
-        const toIndex = updated.indexOf(targetId);
-        updated.splice(toIndex, 0, moved);
-      } else {
-        updated.push(moved);
-      }
-      return updated;
+      const filtered = orderedIds.filter((id) => habitIds.includes(id));
+      const missing = habitIds.filter((id) => !filtered.includes(id));
+      return [...filtered, ...missing];
     });
   };
 
@@ -333,7 +320,7 @@ function App() {
           subHabitStatuses={subHabitStatuses}
           onStatusChange={handleStatusChange}
           onSubHabitStatusChange={handleSubHabitStatusChange}
-          onReorder={reorderTodayHabits}
+          onReorder={setManualTodayOrder}
         />
       )}
 

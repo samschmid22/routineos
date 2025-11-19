@@ -85,6 +85,11 @@ h4 {
   width: 100%;
 }
 
+.row-editor {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
 .hoverable:hover {
   transform: translateY(-2px);
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);

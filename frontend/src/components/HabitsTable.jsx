@@ -44,7 +44,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
   const [openNotesIds, setOpenNotesIds] = useState([]);
 
   const renderForm = () => (
-    <div className="card subtle">
+    <div className="card subtle row-editor">
       <div className="grid two">
         <label className="stack xs">
           <span className="label">Name</span>

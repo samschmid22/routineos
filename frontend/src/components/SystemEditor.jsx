@@ -29,6 +29,11 @@ const SystemEditor = ({ system, onChange, onSave, onDelete, isNew }) => {
     onChange(updated);
   };
 
+  const handleSelectIcon = (icon) => {
+    updateField('icon', icon);
+    setShowPicker(false);
+  };
+
   return (
     <div className="card">
       <div className="card-header">
@@ -94,10 +99,7 @@ const SystemEditor = ({ system, onChange, onSave, onDelete, isNew }) => {
                         key={icon}
                         type="button"
                         className={`emoji-btn ${local?.icon === icon ? 'active' : ''}`}
-                        onClick={() => {
-                          updateField('icon', icon);
-                          setShowPicker(false);
-                        }}
+                        onClick={() => handleSelectIcon(icon)}
                         aria-label={`Symbol ${icon}`}
                       >
                         {icon}

@@ -633,7 +633,6 @@ h4 {
   position: relative;
   cursor: default;
   overflow: visible;
-  isolation: isolate;
 }
 
 .habit-row {

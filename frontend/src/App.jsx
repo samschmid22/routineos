@@ -159,14 +159,14 @@ function App() {
                 className={`toggle icon-only ${theme === 'dark' ? 'active' : ''}`}
                 onClick={() => setTheme('dark')}
               >
-                <span className="icon">🌙</span>
+                <span className="icon">☾</span>
               </button>
               <button
                 type="button"
                 className={`toggle icon-only ${theme === 'light' ? 'active' : ''}`}
                 onClick={() => setTheme('light')}
               >
-                <span className="icon">☀️</span>
+                <span className="icon">☀︎</span>
               </button>
             </div>
             <div className="date-chip">{formatDisplayDate(new Date())}</div>

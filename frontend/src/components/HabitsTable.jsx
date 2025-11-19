@@ -43,6 +43,94 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
   const [editing, setEditing] = useState(null);
   const [openNotesIds, setOpenNotesIds] = useState([]);
 
+  const renderForm = () => (
+    <div className="card subtle">
+      <div className="grid two">
+        <label className="stack xs">
+          <span className="label">Name</span>
+          <input
+            className="input"
+            value={editing.name}
+            onChange={(e) => setEditing({ ...editing, name: e.target.value })}
+            placeholder="Gym"
+          />
+        </label>
+      </div>
+
+      <div className="grid two">
+        <label className="stack xs">
+          <span className="label">Frequency</span>
+          <select
+            className="input"
+            value={editing.frequency.type}
+            onChange={(e) =>
+              setEditing({
+                ...editing,
+                frequency: {
+                  type: e.target.value,
+                  daysOfWeek: editing.frequency.daysOfWeek || [],
+                },
+              })
+            }
+          >
+            <option value="daily">Daily</option>
+            <option value="everyOtherDay">Every other day</option>
+            <option value="daysOfWeek">Days of week</option>
+          </select>
+        </label>
+        <label className="stack xs">
+          <span className="label">Duration (min)</span>
+          <input
+            className="input"
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={editing.durationMinutes}
+            onChange={(e) => {
+              const digits = e.target.value.replace(/[^0-9]/g, '');
+              setEditing({ ...editing, durationMinutes: Number(digits) || 0 });
+            }}
+          />
+        </label>
+      </div>
+
+      {editing.frequency.type === 'daysOfWeek' && (
+        <div className="days-picker">
+          {DAYS.map((day) => (
+            <button
+              key={day.value}
+              type="button"
+              className={`pill day-chip ${editing.frequency.daysOfWeek?.includes(day.value) ? 'active' : ''}`}
+              onClick={() => toggleDay(day.value)}
+            >
+              {day.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <label className="stack xs">
+        <span className="label">Notes</span>
+        <textarea
+          className="input"
+          rows={2}
+          value={editing.notes}
+          onChange={(e) => setEditing({ ...editing, notes: e.target.value })}
+          placeholder="What does good look like?"
+        />
+      </label>
+
+      <div className="row gap-8 wrap">
+        <button type="button" className="btn-primary" onClick={save}>
+          Save habit
+        </button>
+        <button type="button" className="btn-ghost" onClick={() => setEditing(null)}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+
   useEffect(() => {
     setEditing(null);
     setOpenNotesIds([]);
@@ -84,105 +172,21 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
     setEditing(null);
   };
 
+  const isNewDraft = editing && !habits.some((h) => h.id === editing.id);
+
   return (
-      <div className="card">
-        <div className="card-header row spaced align-center">
-          <div>
-            <p className="eyebrow">Habits</p>
-            <h2>{system.name}</h2>
+    <div className="card">
+      <div className="card-header row spaced align-center">
+        <div>
+          <p className="eyebrow">Habits</p>
+          <h2>{system.name}</h2>
         </div>
         <button type="button" className="btn-primary" onClick={startNew}>
           + Add habit
         </button>
       </div>
 
-      {editing && (
-        <div className="card subtle">
-          <div className="grid two">
-            <label className="stack xs">
-              <span className="label">Name</span>
-              <input
-                className="input"
-                value={editing.name}
-                onChange={(e) => setEditing({ ...editing, name: e.target.value })}
-                placeholder="Gym"
-              />
-            </label>
-          </div>
-
-          <div className="grid two">
-            <label className="stack xs">
-              <span className="label">Frequency</span>
-              <select
-                className="input"
-                value={editing.frequency.type}
-                onChange={(e) =>
-                  setEditing({
-                    ...editing,
-                    frequency: {
-                      type: e.target.value,
-                      daysOfWeek: editing.frequency.daysOfWeek || [],
-                    },
-                  })
-                }
-              >
-                <option value="daily">Daily</option>
-                <option value="everyOtherDay">Every other day</option>
-                <option value="daysOfWeek">Days of week</option>
-              </select>
-            </label>
-            <label className="stack xs">
-              <span className="label">Duration (min)</span>
-              <input
-                className="input"
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={editing.durationMinutes}
-                onChange={(e) => {
-                  const digits = e.target.value.replace(/[^0-9]/g, '');
-                  setEditing({ ...editing, durationMinutes: Number(digits) || 0 });
-                }}
-              />
-            </label>
-          </div>
-
-          {editing.frequency.type === 'daysOfWeek' && (
-            <div className="days-picker">
-              {DAYS.map((day) => (
-                <button
-                  key={day.value}
-                  type="button"
-                  className={`pill day-chip ${editing.frequency.daysOfWeek?.includes(day.value) ? 'active' : ''}`}
-                  onClick={() => toggleDay(day.value)}
-                >
-                  {day.label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          <label className="stack xs">
-            <span className="label">Notes</span>
-            <textarea
-              className="input"
-              rows={2}
-              value={editing.notes}
-              onChange={(e) => setEditing({ ...editing, notes: e.target.value })}
-              placeholder="What does good look like?"
-            />
-          </label>
-
-          <div className="row gap-8 wrap">
-            <button type="button" className="btn-primary" onClick={save}>
-              Save habit
-            </button>
-            <button type="button" className="btn-ghost" onClick={() => setEditing(null)}>
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
+      {isNewDraft && renderForm()}
 
       <div className="table">
         <div className="table-head">
@@ -193,6 +197,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
         {habits.length === 0 && <div className="muted">No habits yet.</div>}
         {habits.map((habit) => {
           const showNotes = habit.notes && openNotesIds.includes(habit.id);
+          const isEditing = editing && editing.id === habit.id;
           return (
             <div key={habit.id} className="table-row notes-row">
               <div>
@@ -223,6 +228,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
                   </button>
                 </div>
               </div>
+              {isEditing && renderForm()}
               {showNotes && <div className="notes-panel">{habit.notes}</div>}
             </div>
           );

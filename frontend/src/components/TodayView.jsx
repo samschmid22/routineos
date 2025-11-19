@@ -1,17 +1,19 @@
 // Component: renders today's habits, allowing expandable sub-habit checklists that inherit status.
 import { useEffect, useRef, useState } from 'react';
-import { HABIT_STATUSES } from '../utils/status';
 
 const STATUS_LABELS = {
-  notStarted: 'Not started',
-  ongoing: 'Ongoing',
+  notStarted: 'Not completed',
   completed: 'Completed',
-  skipped: 'Skipped',
 };
+
+const STATUS_OPTIONS = ['notStarted', 'completed'];
+
+const normalizeStatus = (value) => (STATUS_OPTIONS.includes(value) ? value : 'notStarted');
 
 const StatusSelect = ({ current, onChange, size = 'wide' }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+  const displayStatus = normalizeStatus(current);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -31,16 +33,16 @@ const StatusSelect = ({ current, onChange, size = 'wide' }) => {
   return (
     <div className={`status-dropdown ${size}`} ref={ref}>
       <button type="button" className="status-trigger" onClick={() => setOpen((prev) => !prev)}>
-        <span>{STATUS_LABELS[current] || current}</span>
+        <span>{STATUS_LABELS[displayStatus]}</span>
         <span className="caret">▾</span>
       </button>
       {open && (
         <div className="status-menu">
-          {HABIT_STATUSES.map((status) => (
+          {STATUS_OPTIONS.map((status) => (
             <button
               key={status}
               type="button"
-              className={current === status ? 'active' : ''}
+              className={displayStatus === status ? 'active' : ''}
               onClick={() => handleSelect(status)}
             >
               {STATUS_LABELS[status]}
@@ -52,16 +54,19 @@ const StatusSelect = ({ current, onChange, size = 'wide' }) => {
   );
 };
 
-const StatusCheckbox = ({ status, onToggle }) => (
-  <button
-    type="button"
-    className={`status-checkbox ${status === 'completed' ? 'checked' : ''}`}
-    onClick={onToggle}
-    aria-pressed={status === 'completed'}
-  >
-    {status === 'completed' && <span className="checkmark">✓</span>}
-  </button>
-);
+const StatusCheckbox = ({ status, onToggle }) => {
+  const normalized = status === 'completed' ? 'completed' : 'notStarted';
+  return (
+    <button
+      type="button"
+      className={`status-checkbox ${normalized === 'completed' ? 'checked' : ''}`}
+      onClick={onToggle}
+      aria-pressed={normalized === 'completed'}
+    >
+      {normalized === 'completed' && <span className="checkmark">✓</span>}
+    </button>
+  );
+};
 
 const TodayView = ({
   habitsForToday,
@@ -84,34 +89,47 @@ const TodayView = ({
   };
 
   const handleHabitCheckbox = (habitId, currentStatus) => {
-    onStatusChange(habitId, currentStatus === 'completed' ? 'notStarted' : 'completed');
+    const normalized = currentStatus === 'completed' ? 'completed' : 'notStarted';
+    onStatusChange(habitId, normalized === 'completed' ? 'notStarted' : 'completed');
   };
 
   const handleSubHabitCheckbox = (habitId, subHabitId, currentStatus) => {
-    onSubHabitStatusChange(habitId, subHabitId, currentStatus === 'completed' ? 'notStarted' : 'completed');
+    const normalized = currentStatus === 'completed' ? 'completed' : 'notStarted';
+    onSubHabitStatusChange(habitId, subHabitId, normalized === 'completed' ? 'notStarted' : 'completed');
   };
 
   const handleDragStart = (event, habitId) => {
-    event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('text/plain', habitId);
+    event.stopPropagation();
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', habitId);
+    }
     setDraggingId(habitId);
   };
 
   const handleDrop = (event, targetId) => {
     event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
     const dragged = event.dataTransfer.getData('text/plain') || draggingId;
     if (dragged && dragged !== targetId) {
       onReorder(dragged, targetId);
     }
+    event.stopPropagation();
     setDraggingId(null);
   };
 
   const handleListDrop = (event) => {
     event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
     const dragged = event.dataTransfer.getData('text/plain') || draggingId;
     if (dragged) {
       onReorder(dragged, null);
     }
+    event.stopPropagation();
     setDraggingId(null);
   };
 
@@ -126,7 +144,10 @@ const TodayView = ({
       {habitsForToday.length === 0 && <div className="muted">No habits scheduled for today.</div>}
       <div
         className="stack md today-list"
-        onDragOver={(event) => event.preventDefault()}
+        onDragOver={(event) => {
+          event.preventDefault();
+          if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+        }}
         onDrop={handleListDrop}
       >
         {habitsForToday.map(({ habit, status }) => {
@@ -138,7 +159,10 @@ const TodayView = ({
             <div
               key={habit.id}
               className={`card subtle hoverable habit-wide today-habit ${draggingId === habit.id ? 'dragging' : ''}`}
-              onDragOver={(event) => event.preventDefault()}
+              onDragOver={(event) => {
+                event.preventDefault();
+                if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+              }}
               onDrop={(event) => handleDrop(event, habit.id)}
             >
               <div className="row spaced align-start habit-row">
@@ -167,7 +191,10 @@ const TodayView = ({
                   </div>
                 </div>
                 <div className="row gap-10 align-center habit-actions">
-                  <StatusSelect current={status} onChange={(newStatus) => onStatusChange(habit.id, newStatus)} />
+                  <StatusSelect
+                    current={status === 'completed' ? 'completed' : 'notStarted'}
+                    onChange={(newStatus) => onStatusChange(habit.id, newStatus)}
+                  />
                   <StatusCheckbox status={status} onToggle={() => handleHabitCheckbox(habit.id, status)} />
                   {habit.notes && (
                     <button
@@ -202,7 +229,8 @@ const TodayView = ({
                   style={{ maxHeight: isExpanded ? `${subPanelHeight}px` : 0 }}
                 >
                   {habit.subHabits.map((sub) => {
-                    const subStatus = subHabitStatuses[sub.id] || 'notStarted';
+                    const rawSubStatus = subHabitStatuses[sub.id] || 'notStarted';
+                    const subStatus = rawSubStatus === 'completed' ? 'completed' : 'notStarted';
                     return (
                       <div key={sub.id} className="subhabit-row">
                         <div className="subhabit-info">

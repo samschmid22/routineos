@@ -76,6 +76,7 @@ const TodayView = ({
   onSubHabitStatusChange,
   onReorder = () => {},
 }) => {
+  console.count('TodayView render');
   const [openDetails, setOpenDetails] = useState([]);
   const [expandedHabits, setExpandedHabits] = useState([]);
 
@@ -106,6 +107,7 @@ const TodayView = ({
     const next = [...orderedIds];
     const [moved] = next.splice(index, 1);
     next.splice(targetIndex, 0, moved);
+    console.log('moveHabit', { habitId, direction, next });
     onReorder(next);
   };
 
@@ -122,8 +124,6 @@ const TodayView = ({
         {habitsForToday.map(({ habit, status }) => {
           const hasSubHabits = Array.isArray(habit.subHabits) && habit.subHabits.length > 0;
           const isExpanded = expandedHabits.includes(habit.id);
-          const subPanelHeight = hasSubHabits ? habit.subHabits.length * 76 + 40 : 0;
-
           return (
             <div
               key={habit.id}
@@ -197,11 +197,8 @@ const TodayView = ({
                 </div>
               )}
 
-              {hasSubHabits && (
-                <div
-                  className={`subhabits-panel ${isExpanded ? 'open' : ''}`}
-                  style={{ maxHeight: isExpanded ? `${subPanelHeight}px` : 0 }}
-                >
+              {hasSubHabits && isExpanded && (
+                <div className="subhabits-panel static">
                   {habit.subHabits.map((sub) => {
                     const rawSubStatus = subHabitStatuses[sub.id] || 'notStarted';
                     const subStatus = rawSubStatus === 'completed' ? 'completed' : 'notStarted';

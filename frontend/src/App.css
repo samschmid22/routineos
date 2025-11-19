@@ -641,6 +641,8 @@ h4 {
 .habit-actions {
   flex-wrap: nowrap;
   justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
 }
 
 .checklist-indicator {
@@ -1022,8 +1024,54 @@ h4 {
 .status-basic {
   min-width: 200px;
   font-weight: 600;
+  background: var(--field-bg);
+  color: var(--text);
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  padding: 8px 14px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #f97316 50%),
+    linear-gradient(135deg, #f97316 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(50% - 3px), calc(100% - 10px) calc(50% - 3px);
+  background-size: 8px 8px, 8px 8px;
+  background-repeat: no-repeat;
+}
+
+.status-basic:focus {
+  outline: none;
+  border-color: #f97316;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.25);
 }
 
 .status-basic.compact {
   min-width: 160px;
+}
+
+.status-check {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  background: var(--card-subtle);
+  color: var(--muted);
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, border 160ms ease, box-shadow 160ms ease;
+}
+
+.status-check.completed {
+  background: linear-gradient(120deg, #ef4444, #f97316);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 10px 20px rgba(249, 115, 22, 0.35);
+}
+
+.status-check.small {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  font-size: 0.9rem;
 }

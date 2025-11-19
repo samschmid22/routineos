@@ -85,6 +85,14 @@ const TodayView = ({
                   </div>
                 </div>
                 <div className="row gap-10 align-center habit-actions">
+                  <button
+                    type="button"
+                    className={`status-check ${status === 'completed' ? 'completed' : ''}`}
+                    onClick={() => onStatusChange(habit.id, status === 'completed' ? 'notStarted' : 'completed')}
+                    aria-label={status === 'completed' ? 'Mark as not completed' : 'Mark as completed'}
+                  >
+                    ✓
+                  </button>
                   <select
                     className="input status-basic"
                     value={status === 'completed' ? 'completed' : 'notStarted'}
@@ -131,6 +139,16 @@ const TodayView = ({
                           <strong>{sub.name}</strong>
                         </div>
                         <div className="row gap-8 align-center">
+                          <button
+                            type="button"
+                            className={`status-check small ${subStatus === 'completed' ? 'completed' : ''}`}
+                            onClick={() =>
+                              onSubHabitStatusChange(habit.id, sub.id, subStatus === 'completed' ? 'notStarted' : 'completed')
+                            }
+                            aria-label={subStatus === 'completed' ? 'Mark as not completed' : 'Mark as completed'}
+                          >
+                            ✓
+                          </button>
                           <select
                             className="input status-basic compact"
                             value={subStatus}

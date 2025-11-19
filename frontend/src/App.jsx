@@ -209,10 +209,13 @@ function App() {
     const date = todayString();
     const todays = habits
       .filter((habit) => isHabitScheduledForDate(habit, date))
-      .map((habit) => ({
-        habit,
-        status: habit.status || 'notStarted',
-      }));
+      .map((habit) => {
+        const isCompletedToday = habit.status === 'completed' && habit.lastCompletedOn === date;
+        return {
+          habit,
+          status: isCompletedToday ? 'completed' : 'notStarted',
+        };
+      });
     return todays.sort((a, b) => {
       const idxA = todayOrder.indexOf(a.habit.id);
       const idxB = todayOrder.indexOf(b.habit.id);

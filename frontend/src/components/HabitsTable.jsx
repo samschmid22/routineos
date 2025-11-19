@@ -147,10 +147,14 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
               <span className="label">Duration (min)</span>
               <input
                 className="input"
-                type="number"
-                min="0"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 value={editing.durationMinutes}
-                onChange={(e) => setEditing({ ...editing, durationMinutes: Number(e.target.value) || 0 })}
+                onChange={(e) => {
+                  const digits = e.target.value.replace(/[^0-9]/g, '');
+                  setEditing({ ...editing, durationMinutes: Number(digits) || 0 });
+                }}
               />
             </label>
           </div>
@@ -195,9 +199,9 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
       <div className="table">
         <div className="table-head">
           <div>Habit</div>
-          <div>Purpose</div>
           <div>Frequency</div>
           <div>Duration</div>
+          <div>Actions</div>
         </div>
         {habits.length === 0 && <div className="muted">No habits yet.</div>}
         {habits.map((habit) => {
@@ -207,7 +211,6 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
               <div>
                 <strong>{habit.name}</strong>
               </div>
-              <div>{habit.purpose}</div>
               <div className="muted small freq-text">{frequencyLabel(habit.frequency)}</div>
               <div>{habit.durationMinutes} min</div>
               <div className="row gap-6 wrap actions-row">

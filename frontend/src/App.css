@@ -350,8 +350,8 @@ h4 {
 }
 
 .system-dot {
-  width: 14px;
-  height: 14px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: #f97316;
   border: 2px solid var(--card);

@@ -126,8 +126,10 @@ function App() {
 
     const payload = {
       name: input.name || 'New system',
-      category: input.category || 'General',
+      description: input.description || '',
       color: input.color || '#FF6347',
+      icon: input.icon || '✨',
+      order_index: systems.length,
       user_id: input.user_id ?? user?.id ?? null,
     };
 
@@ -138,12 +140,7 @@ function App() {
       return;
     }
 
-    const normalized = normalizeSystem({
-      ...data,
-      description: input.description || '',
-      icon: input.icon || '✨',
-      order_index: systems.length,
-    });
+    const normalized = normalizeSystem(data);
     setSystems((prev) => [...prev, normalized]);
     setSelectedSystemId(normalized.id);
     setSystemDraft(normalized);

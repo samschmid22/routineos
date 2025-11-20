@@ -11,6 +11,7 @@ export function ChatPanel({
   placeholder,
   className = '',
   onClose,
+  showHeader = true,
 }) {
   const messagesRef = useRef(null);
 
@@ -22,17 +23,19 @@ export function ChatPanel({
 
   return (
     <div className={`chat-panel ${className}`.trim()}>
-      <div className="chat-panel-header">
-        <div className="chat-panel-header-text">
-          {subtitle && <p className="eyebrow chat-panel-subtitle">{subtitle}</p>}
-          <h2 className="section-title chat-panel-title">{title}</h2>
+      {showHeader && (
+        <div className="chat-panel-header">
+          <div className="chat-panel-header-text">
+            {subtitle && <p className="eyebrow chat-panel-subtitle">{subtitle}</p>}
+            <h2 className="section-title chat-panel-title">{title}</h2>
+          </div>
+          {onClose && (
+            <button type="button" className="chat-panel-close" onClick={onClose} aria-label="Close chat">
+              ✕
+            </button>
+          )}
         </div>
-        {onClose && (
-          <button type="button" className="chat-panel-close" onClick={onClose} aria-label="Close chat">
-            ✕
-          </button>
-        )}
-      </div>
+      )}
       <div className="chat-panel-messages" ref={messagesRef}>
         {messages.map((message, index) => (
           <div key={`${message.role}-${index}`} className={`chat-bubble ${message.role}`}>

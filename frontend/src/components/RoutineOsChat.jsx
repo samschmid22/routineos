@@ -16,6 +16,7 @@ export function RoutineOsChat({
   placeholder = "Ask Routine OS Coach about today's habits...",
   onClose,
   className = '',
+  showHeader = true,
 }) {
   const [messages, setMessages] = useState(defaultIntro);
   const [input, setInput] = useState('');
@@ -65,6 +66,7 @@ export function RoutineOsChat({
       placeholder={placeholder}
       className={`${panelClassName} ${className}`.trim()}
       onClose={onClose}
+      showHeader={showHeader}
     />
   );
 }

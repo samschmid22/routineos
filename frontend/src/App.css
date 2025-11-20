@@ -907,8 +907,8 @@ h4 {
 }
 
 .analytics-ai-card {
-  height: 420px;
-  max-height: 420px;
+  height: 520px;
+  max-height: 520px;
   background: #050505;
   border-radius: 20px;
   border: 1px solid #262626;
@@ -934,6 +934,7 @@ h4 {
   flex: 1;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .coach-messages {

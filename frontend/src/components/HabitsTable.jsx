@@ -29,18 +29,23 @@ const emptyHabit = (systemId) => ({
   subHabits: [],
 });
 
-const frequencyLabel = (frequency) => {
-  if (!frequency) return 'Not set';
-  if (frequency.type === 'daily') return 'Daily';
-  if (frequency.type === 'daysOfWeek') {
-    const labels = (frequency.daysOfWeek || [])
+const frequencyLabel = (frequency, fallbackType, fallbackDays = []) => {
+  if (!frequency && !fallbackType) return 'Not set';
+  const type = typeof frequency === 'string' ? frequency : frequency?.type || fallbackType || '';
+  const days =
+    (typeof frequency === 'object' && Array.isArray(frequency.daysOfWeek) && frequency.daysOfWeek) || fallbackDays || [];
+  if (type === 'daily') return 'Every day';
+  if (type === 'everyOtherDay' || type === 'every_other_day' || type === 'every_other') return 'Every other day';
+  if (type === 'daysOfWeek' || type === 'days_of_week') {
+    const labels = days
       .sort()
       .map((d) => DAYS.find((day) => day.value === d)?.label)
       .filter(Boolean);
-    return labels.join(' ');
+    return labels.length ? labels.join(' ') : 'Specific days';
   }
-  if (frequency.type === 'everyOtherDay') return 'Every 2 days';
-  return 'Custom';
+  if (type === 'weekly') return 'Weekly';
+  if (type === 'monthly') return 'Monthly';
+  return type ? type : 'Custom';
 };
 
 const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
@@ -182,8 +187,10 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
   };
 
   const save = async () => {
-    if (!editing.name.trim()) return;
-    const frequencyValue = editing.frequency?.type || 'daily';
+    if (!editing?.name?.trim()) return;
+    const frequencyValue = editing.frequency?.type || editing.frequencyType || 'daily';
+    const daysOfWeekValue = editing.frequency?.daysOfWeek || editing.daysOfWeek || [];
+    const durationValue = Number(editing.durationMinutes) || 0;
 
     if (isNewDraft && user) {
       const insertPayload = {
@@ -191,8 +198,10 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
         system_id: system.id,
         name: editing.name,
         description: editing.notes || null,
+        frequencyType: frequencyValue,
         frequency: frequencyValue,
-        durationMinutes: editing.durationMinutes,
+        daysOfWeek: daysOfWeekValue,
+        durationMinutes: durationValue,
         status: editing.status || 'notStarted',
         order_index: currentHabits.length,
       };
@@ -216,8 +225,10 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
     const updatePayload = {
       name: editing.name,
       description: editing.notes || null,
+      frequencyType: frequencyValue,
       frequency: frequencyValue,
-      durationMinutes: editing.durationMinutes,
+      daysOfWeek: daysOfWeekValue,
+      durationMinutes: durationValue,
       status: editing.status || 'notStarted',
     };
 
@@ -267,7 +278,9 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
               <div>
                 <strong>{habit.name}</strong>
               </div>
-              <div className="muted small freq-text">{frequencyLabel(habit.frequency)}</div>
+              <div className="muted small freq-text">
+                {frequencyLabel(habit.frequency, habit.frequencyType, habit.daysOfWeek)}
+              </div>
               <div>{habit.durationMinutes} min</div>
               <div className="row gap-6 wrap actions-row">
                 <div className="row gap-6">

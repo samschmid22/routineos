@@ -30,13 +30,20 @@ const normalizeHabit = (habit) => {
     const fallbackType = typeof frequency === 'string' ? frequency : habit.frequencyType || 'daily';
     frequency = {
       type: fallbackType || 'daily',
-      daysOfWeek: habit.daysOfWeek || [],
+      daysOfWeek: habit.daysOfWeek || habit.days_of_week || [],
+    };
+  } else {
+    frequency = {
+      type: frequency.type || habit.frequencyType || 'daily',
+      daysOfWeek: frequency.daysOfWeek || habit.daysOfWeek || habit.days_of_week || [],
     };
   }
 
   return {
     ...habit,
     frequency,
+    daysOfWeek: frequency.daysOfWeek || [],
+    durationMinutes: habit.durationMinutes ?? habit.duration_minutes ?? 0,
     systemId: habit.systemId ?? habit.system_id,
   };
 };

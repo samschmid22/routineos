@@ -21,6 +21,8 @@ const emptyHabit = (systemId) => ({
   systemId,
   name: '',
   frequency: { type: 'daily', daysOfWeek: [] },
+  frequencyType: 'daily',
+  daysOfWeek: [],
   durationMinutes: 20,
   notes: '',
   startDate: todayString(),
@@ -48,18 +50,56 @@ const frequencyLabel = (frequency, fallbackType, fallbackDays = []) => {
   return type ? type : 'Custom';
 };
 
+const normalizeDaysForDraft = (value = []) =>
+  (Array.isArray(value) ? value : [])
+    .map((day) => {
+      const parsed = Number(day);
+      return Number.isNaN(parsed) ? day : parsed;
+    })
+    .filter((day) => day !== undefined && day !== null);
+
+const hydrateHabitRow = (habit, fallbackSystemId) => {
+  if (!habit) return null;
+  const frequencyType =
+    (typeof habit.frequency === 'string' && habit.frequency) ||
+    habit.frequency?.type ||
+    habit.frequencyType ||
+    habit.frequency_type ||
+    'daily';
+  const days =
+    (typeof habit.frequency === 'object' && normalizeDaysForDraft(habit.frequency.daysOfWeek)) ||
+    normalizeDaysForDraft(habit.daysOfWeek || habit.days_of_week || []);
+
+  return {
+    ...habit,
+    systemId: habit.systemId ?? habit.system_id ?? fallbackSystemId,
+    notes: habit.notes ?? habit.description ?? '',
+    durationMinutes: habit.durationMinutes ?? habit.duration_minutes ?? 0,
+    frequency: {
+      type: frequencyType,
+      daysOfWeek: days,
+    },
+    frequencyType,
+    daysOfWeek: days,
+    subHabits: habit.subHabits || [],
+  };
+};
+
 const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
   const [editing, setEditing] = useState(null);
   const [openNotesIds, setOpenNotesIds] = useState([]);
   const { user } = useAuth();
 
-  const renderForm = () => (
-    <div className="card subtle row-editor">
-      <div className="grid two">
-        <label className="stack xs">
-          <span className="label">Name</span>
-          <input
-            className="input"
+  const renderForm = () => {
+    if (!editing) return null;
+
+    return (
+      <div className="card subtle row-editor">
+        <div className="grid two">
+          <label className="stack xs">
+            <span className="label">Name</span>
+            <input
+              className="input"
             value={editing.name}
             onChange={(e) => setEditing({ ...editing, name: e.target.value })}
             placeholder="Gym"
@@ -67,97 +107,101 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
         </label>
       </div>
 
-      <div className="grid two">
-        <label className="stack xs">
-          <span className="label">Frequency</span>
-          <div className="select-shell">
-            <select
-              className="input select-input"
-              value={editing.frequency.type}
-              onChange={(e) =>
-                setEditing({
-                  ...editing,
-                  frequency: {
-                    type: e.target.value,
+        <div className="grid two">
+          <label className="stack xs">
+            <span className="label">Frequency</span>
+            <div className="select-shell">
+              <select
+                className="input select-input"
+                value={editing.frequency.type}
+                onChange={(e) => {
+                  const nextType = e.target.value;
+                  setEditing({
+                    ...editing,
+                    frequency: {
+                      type: nextType,
+                      daysOfWeek: editing.frequency.daysOfWeek || [],
+                    },
+                    frequencyType: nextType,
                     daysOfWeek: editing.frequency.daysOfWeek || [],
-                  },
-                })
-              }
-            >
-              <option value="daily">Every day</option>
-              <option value="everyOtherDay">Every other day</option>
-              <option value="daysOfWeek">Specific days of the week</option>
-            </select>
-            <span className="select-caret" aria-hidden="true">
-              ⌄
-            </span>
-          </div>
-        </label>
-        <div />
-      </div>
-
-      {editing.frequency.type === 'daysOfWeek' && (
-        <div className="days-picker">
-          {DAYS.map((day) => (
-            <button
-              key={day.value}
-              type="button"
-              className={`pill day-chip ${editing.frequency.daysOfWeek?.includes(day.value) ? 'active' : ''}`}
-              onClick={() => toggleDay(day.value)}
-            >
-              {day.label}
-            </button>
-          ))}
+                  });
+                }}
+              >
+                <option value="daily">Every day</option>
+                <option value="everyOtherDay">Every other day</option>
+                <option value="daysOfWeek">Specific days of the week</option>
+              </select>
+              <span className="select-caret" aria-hidden="true">
+                ⌄
+              </span>
+            </div>
+          </label>
+          <div />
         </div>
-      )}
 
-      <div className="grid two">
-        <label className="stack xs">
-          <span className="label">Duration (min)</span>
-          <input
-            className="input"
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            value={editing.durationMinutes}
-            onChange={(e) => {
-              const digits = e.target.value.replace(/[^0-9]/g, '');
-              setEditing({ ...editing, durationMinutes: Number(digits) || 0 });
-            }}
-          />
-        </label>
-        <div />
+        {editing.frequency.type === 'daysOfWeek' && (
+          <div className="days-picker">
+            {DAYS.map((day) => (
+              <button
+                key={day.value}
+                type="button"
+                className={`pill day-chip ${editing.frequency.daysOfWeek?.includes(day.value) ? 'active' : ''}`}
+                onClick={() => toggleDay(day.value)}
+              >
+                {day.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div className="grid two">
+          <label className="stack xs">
+            <span className="label">Duration (min)</span>
+            <input
+              className="input"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              value={editing.durationMinutes}
+              onChange={(e) => {
+                const digits = e.target.value.replace(/[^0-9]/g, '');
+                setEditing({ ...editing, durationMinutes: Number(digits) || 0 });
+              }}
+            />
+          </label>
+          <div />
+        </div>
+
+        <div className="grid two">
+          <label className="stack xs">
+            <span className="label">Notes</span>
+            <textarea
+              className="input"
+              rows={2}
+              value={editing.notes}
+              onChange={(e) => setEditing({ ...editing, notes: e.target.value })}
+              placeholder="What does good look like?"
+            />
+          </label>
+          <div />{/* spacer to balance the grid */}
+        </div>
+
+        <SubHabitsEditor
+          value={editing.subHabits || []}
+          onChange={(list) => setEditing({ ...editing, subHabits: list })}
+        />
+
+        <div className="row gap-8 wrap">
+          <button type="button" className="btn-primary" onClick={save}>
+            Save habit
+          </button>
+          <button type="button" className="btn-ghost" onClick={() => setEditing(null)}>
+            Cancel
+          </button>
+        </div>
       </div>
-
-      <div className="grid two">
-        <label className="stack xs">
-          <span className="label">Notes</span>
-          <textarea
-            className="input"
-            rows={2}
-            value={editing.notes}
-            onChange={(e) => setEditing({ ...editing, notes: e.target.value })}
-            placeholder="What does good look like?"
-          />
-        </label>
-        <div />{/* spacer to balance the grid */}
-      </div>
-
-      <SubHabitsEditor
-        value={editing.subHabits || []}
-        onChange={(list) => setEditing({ ...editing, subHabits: list })}
-      />
-
-      <div className="row gap-8 wrap">
-        <button type="button" className="btn-primary" onClick={save}>
-          Save habit
-        </button>
-        <button type="button" className="btn-ghost" onClick={() => setEditing(null)}>
-          Cancel
-        </button>
-      </div>
-    </div>
-  );
+    );
+  };
 
   useEffect(() => {
     setEditing(null);
@@ -176,41 +220,26 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
 
   const startNew = () => setEditing(emptyHabit(system.id));
   const startEdit = (habit) => {
-    setEditing({
-      id: habit.id,
-      systemId: habit.systemId || habit.system_id || system.id,
-      name: habit.name || '',
-      notes: habit.notes ?? habit.description ?? '',
-      status: habit.status || 'notStarted',
-      durationMinutes: habit.durationMinutes ?? habit.duration_minutes ?? 0,
-      frequency: {
-        type:
-          (typeof habit.frequency === 'string' && habit.frequency) ||
-          habit.frequency?.type ||
-          habit.frequencyType ||
-          habit.frequency_type ||
-          'daily',
-        daysOfWeek:
-          (typeof habit.frequency === 'object' && habit.frequency?.daysOfWeek) ||
-          habit.daysOfWeek ||
-          habit.days_of_week ||
-          [],
-      },
-      startDate: habit.startDate || habit.start_date || todayString(),
-      subHabits: habit.subHabits || [],
-    });
+    const hydrated = hydrateHabitRow(habit, system.id);
+    setEditing(hydrated);
   };
 
   const toggleDay = (value) => {
+    if (!editing) return;
     const current = editing.frequency.daysOfWeek || [];
     const next = current.includes(value) ? current.filter((d) => d !== value) : [...current, value];
-    setEditing({ ...editing, frequency: { ...editing.frequency, daysOfWeek: next } });
+    setEditing({
+      ...editing,
+      frequency: { ...editing.frequency, daysOfWeek: next },
+      daysOfWeek: next,
+    });
   };
 
   const save = async () => {
     if (!editing?.name?.trim()) return;
     const frequencyValue = editing.frequency?.type || editing.frequencyType || 'daily';
     const daysOfWeekValue = editing.frequency?.daysOfWeek || editing.daysOfWeek || [];
+    const daysForDb = Array.isArray(daysOfWeekValue) ? daysOfWeekValue.map((day) => day.toString()) : [];
     const durationValue = Number(editing.durationMinutes) || 0;
 
     if (isNewDraft && user) {
@@ -221,7 +250,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
         description: editing.notes || null,
         frequency: frequencyValue,
         frequency_type: frequencyValue,
-        days_of_week: daysOfWeekValue,
+        days_of_week: daysForDb,
         duration_minutes: durationValue,
         status: editing.status || 'notStarted',
         order_index: currentHabits.length,
@@ -234,11 +263,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
         return;
       }
 
-      const normalized = {
-        ...data,
-        systemId: data.systemId ?? data.system_id,
-        durationMinutes: data.durationMinutes ?? data.duration_minutes ?? editing.durationMinutes,
-      };
+      const normalized = hydrateHabitRow(data, system.id);
       onSaveHabit(normalized);
       setEditing(null);
       return;
@@ -249,7 +274,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
       description: editing.notes || null,
       frequency: frequencyValue,
       frequency_type: frequencyValue,
-      days_of_week: daysOfWeekValue,
+      days_of_week: daysForDb,
       duration_minutes: durationValue,
       status: editing.status || 'notStarted',
     };
@@ -261,11 +286,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
       return;
     }
 
-    const normalized = {
-      ...data,
-      systemId: data.systemId ?? data.system_id,
-      durationMinutes: data.durationMinutes ?? data.duration_minutes ?? editing.durationMinutes,
-    };
+    const normalized = hydrateHabitRow(data, system.id);
     onSaveHabit(normalized);
     setEditing(null);
   };

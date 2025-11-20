@@ -24,20 +24,27 @@ const normalizeSystem = (system) => ({
   order_index: system.order_index ?? 0,
 });
 
+const normalizeDays = (value = []) =>
+  (Array.isArray(value) ? value : [])
+    .map((day) => {
+      const parsed = Number(day);
+      return Number.isNaN(parsed) ? day : parsed;
+    })
+    .filter((day) => day !== undefined && day !== null);
+
 const normalizeHabit = (habit) => {
-  let frequency = habit.frequency;
-  if (typeof frequency === 'string' || !frequency) {
-    const fallbackType = typeof frequency === 'string' ? frequency : habit.frequencyType || 'daily';
-    frequency = {
-      type: fallbackType || 'daily',
-      daysOfWeek: habit.daysOfWeek || habit.days_of_week || [],
-    };
-  } else {
-    frequency = {
-      type: frequency.type || habit.frequencyType || 'daily',
-      daysOfWeek: frequency.daysOfWeek || habit.daysOfWeek || habit.days_of_week || [],
-    };
-  }
+  const fallbackDays = normalizeDays(habit.daysOfWeek || habit.days_of_week || []);
+  const fallbackType =
+    habit.frequency_type ||
+    habit.frequencyType ||
+    (typeof habit.frequency === 'string' ? habit.frequency : habit.frequency?.type) ||
+    'daily';
+
+  const frequency = {
+    type: fallbackType,
+    daysOfWeek:
+      (typeof habit.frequency === 'object' && normalizeDays(habit.frequency.daysOfWeek)) || fallbackDays,
+  };
 
   return {
     ...habit,
@@ -137,12 +144,20 @@ function App() {
   const currentSystem = systems.find((sys) => sys.id === selectedSystemId) || null;
   const currentHabits = habits.filter((habit) => habit.systemId === currentSystem?.id);
 
-  // Auto-select the first available system if none is selected.
+  // Keep the selected system in sync with the loaded list.
   useEffect(() => {
-    if (!selectedSystemId && systems.length > 0) {
+    if (systems.length === 0) {
+      if (selectedSystemId !== null) {
+        setSelectedSystemId(null);
+      }
+      return;
+    }
+
+    const exists = systems.some((sys) => sys.id === selectedSystemId);
+    if (!exists) {
       setSelectedSystemId(systems[0].id);
     }
-  }, [selectedSystemId, systems]);
+  }, [systems, selectedSystemId]);
 
   // Sync draft when selection changes.
   useEffect(() => {

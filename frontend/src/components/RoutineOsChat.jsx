@@ -7,7 +7,12 @@ const defaultIntro = [
   },
 ];
 
-export function RoutineOsChat({ todayContext }) {
+export function RoutineOsChat({
+  todayContext,
+  wrapperClassName = '',
+  messagesClassName = '',
+  inputClassName = '',
+}) {
   const [messages, setMessages] = useState(defaultIntro);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -55,8 +60,8 @@ export function RoutineOsChat({ todayContext }) {
   };
 
   return (
-    <div className="routineos-chat">
-      <div className="chat-messages">
+    <div className={`routineos-chat ${wrapperClassName}`.trim()}>
+      <div className={`chat-messages ${messagesClassName}`.trim()}>
         {messages.map((message, index) => (
           <div key={`${message.role}-${index}`} className={`chat-bubble ${message.role}`}>
             {message.content}
@@ -65,7 +70,7 @@ export function RoutineOsChat({ todayContext }) {
         {loading && <div className="chat-bubble assistant">Thinking...</div>}
         <div ref={messagesEndRef} />
       </div>
-      <form className="chat-input-row" onSubmit={handleSubmit}>
+      <form className={`chat-input-row ${inputClassName}`.trim()} onSubmit={handleSubmit}>
         <input
           value={input}
           onChange={(event) => setInput(event.target.value)}

@@ -2,15 +2,16 @@ import { RoutineOsChat } from './RoutineOsChat';
 
 const AiCoachPanel = ({ context }) => (
   <div className="card analytics-ai-card">
-    <div className="card-header">
-      <div>
-        <p className="eyebrow">Analytics</p>
-        <h2 className="section-title">Routine OS Coach</h2>
-      </div>
+    <div className="analytics-ai-header">
+      <p className="eyebrow">Analytics</p>
+      <h2 className="section-title">ROUTINE OS COACH</h2>
     </div>
-    <div className="ai-coach-chat">
-      <RoutineOsChat todayContext={context} />
-    </div>
+    <RoutineOsChat
+      todayContext={context}
+      wrapperClassName="analytics-ai-body"
+      messagesClassName="analytics-ai-messages"
+      inputClassName="analytics-ai-input-row"
+    />
   </div>
 );
 

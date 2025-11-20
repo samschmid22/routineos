@@ -14,8 +14,10 @@ export function RoutineOsChat({ todayContext }) {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    const endNode = messagesEndRef.current;
+    if (endNode?.parentElement) {
+      const container = endNode.parentElement;
+      container.scrollTop = container.scrollHeight;
     }
   }, [messages]);
 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
 const AuthPage = () => {
-  const [mode, setMode] = useState('login');
+  const [mode, setMode] = useState('signup');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -21,6 +21,7 @@ const AuthPage = () => {
         if (signUpError) throw signUpError;
       }
     } catch (err) {
+      console.error(err);
       setError(err.message);
     } finally {
       setLoading(false);

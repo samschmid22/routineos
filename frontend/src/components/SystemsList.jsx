@@ -35,7 +35,6 @@ const SystemsList = ({
             console.log('New system button clicked; onCreateSystem is:', typeof onCreateSystem);
             onCreateSystem({
               name: 'New system',
-              category: 'General',
               color: '#FF6347',
             });
           }}

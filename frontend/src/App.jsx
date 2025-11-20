@@ -121,20 +121,23 @@ function App() {
     setSystemDraft(currentSystem || null);
   }, [currentSystem]);
 
-  const createSystem = async (input = {}) => {
-    console.log('createSystem called with', input);
+  const createSystem = async (newSystemInput = {}) => {
+    console.log('createSystem called with', newSystemInput);
 
     const payload = {
-      name: input.name || 'New system',
-      category: input.category || 'General',
-      color: input.color || '#FF6347',
-      user_id: input.user_id ?? user?.id ?? null,
+      user_id: null,
+      name: newSystemInput.name || 'New system',
+      color: newSystemInput.color || '#FF6347',
+      icon: newSystemInput.icon || '★',
+      order_index: systems.length,
     };
+
+    console.log('createSystem payload:', payload);
 
     const { data, error } = await supabase.from('systems').insert([payload]).select().single();
 
     if (error) {
-      console.error('Supabase insert error (systems):', error);
+      console.error('Supabase insert error (systems):', error.message, error.details, error.hint);
       return;
     }
 

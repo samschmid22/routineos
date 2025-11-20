@@ -1,5 +1,5 @@
 // Component: horizontal cards for pillar selection.
-const SystemsList = ({ systems, selectedSystemId, onSelectSystem, onAddNew, onReorder = () => {} }) => {
+const SystemsList = ({ systems, selectedSystemId, onSelectSystem, onCreateSystem = () => {}, onReorder = () => {} }) => {
   const handleDragStart = (event, systemId) => {
     event.dataTransfer.setData('text/system-id', systemId);
     event.dataTransfer.effectAllowed = 'move';
@@ -22,10 +22,13 @@ const SystemsList = ({ systems, selectedSystemId, onSelectSystem, onAddNew, onRe
         <button
           type="button"
           className="btn-primary"
-          onClick={() => {
-            console.log('New System clicked');
-            alert('New System test click');
-          }}
+          onClick={() =>
+            onCreateSystem({
+              name: 'New system',
+              category: 'General',
+              color: '#F97316',
+            })
+          }
         >
           + New system
         </button>

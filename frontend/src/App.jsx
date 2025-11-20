@@ -9,23 +9,25 @@ import Tabs from './components/Tabs';
 import TodayView from './components/TodayView';
 import AuthPage from './components/AuthPage';
 import { useAuth } from './context/AuthContext.jsx';
-import mockData from './mockData';
 import { formatDisplayDate, isHabitScheduledForDate, todayString } from './utils/date';
-import { generateId } from './utils/ids';
 import { getEffectiveHabitStatus, HABIT_STATUSES } from './utils/status';
-import {
-  loadHabits,
-  loadSystems,
-  loadTheme,
-  loadSubHabitStatuses,
-  loadTodayOrder,
-  saveHabits,
-  saveSystems,
-  saveTheme,
-  saveSubHabitStatuses,
-  saveTodayOrder,
-} from './utils/storage';
+import { loadTheme, loadSubHabitStatuses, loadTodayOrder, saveTheme } from './utils/storage';
+import { supabase } from './lib/supabaseClient';
 import './App.css';
+
+const normalizeSystem = (system) => ({
+  id: system.id,
+  name: system.name,
+  description: system.description || '',
+  color: system.color || '#F97316',
+  icon: system.icon || '✨',
+  order_index: system.order_index ?? 0,
+});
+
+const normalizeHabit = (habit) => ({
+  ...habit,
+  systemId: habit.systemId ?? habit.system_id,
+});
 
 function App() {
   const { user, loading: authLoading } = useAuth();
@@ -41,38 +43,66 @@ function App() {
   const [hydrated, setHydrated] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
 
-  // Hydrate state from localStorage or mock data once.
+  // Load theme + local-only state once.
   useEffect(() => {
     const storedTheme = loadTheme('dark');
     setTheme(storedTheme);
-
-    const storedSystems = loadSystems(mockData.systems);
-    const storedHabits = loadHabits(mockData.habits);
     const storedSubStatuses = loadSubHabitStatuses({});
-    const storedOrder = loadTodayOrder([]);
-
-    const nextSystems = storedSystems.length ? storedSystems : mockData.systems;
-    const nextHabits = storedHabits.length ? storedHabits : mockData.habits;
-
-    setSystems(nextSystems);
-    setHabits(nextHabits);
     setSubHabitStatuses(storedSubStatuses);
-    setTodayOrder(storedOrder.length ? storedOrder : nextHabits.map((habit) => habit.id));
-
-    const initialSystem = nextSystems[0];
-    setSelectedSystemId(initialSystem?.id || null);
-    setSystemDraft(initialSystem || null);
-    setHydrated(true);
+    const storedOrder = loadTodayOrder([]);
+    setTodayOrder(storedOrder);
   }, []);
 
-  // Persist on change.
+  // Load systems & habits once per authenticated user id to avoid fetch loops.
   useEffect(() => {
-    if (!hydrated) return;
-    saveSystems(systems);
-    saveHabits(habits);
-    saveSubHabitStatuses(subHabitStatuses);
-    saveTodayOrder(todayOrder);
-  }, [systems, habits, subHabitStatuses, todayOrder, hydrated]);
+    if (!user?.id) return;
+    let isMounted = true;
+
+    const fetchData = async () => {
+      const [systemsRes, habitsRes] = await Promise.all([
+        supabase.from('systems').select('*').eq('user_id', user.id).order('order_index', { ascending: true }),
+        supabase.from('habits').select('*').eq('user_id', user.id).order('order_index', { ascending: true }),
+      ]);
+
+      if (!isMounted) return;
+
+      if (systemsRes.error) {
+        console.error('Error loading systems', systemsRes.error);
+        setSystems([]);
+      } else {
+        const normalizedSystems = (systemsRes.data || []).map(normalizeSystem);
+        setSystems(normalizedSystems);
+        const initialSystem = normalizedSystems[0] || null;
+        setSelectedSystemId(initialSystem?.id || null);
+        setSystemDraft(initialSystem);
+      }
+
+      if (habitsRes.error) {
+        console.error('Error loading habits', habitsRes.error);
+        setHabits([]);
+      } else {
+        const normalizedHabits = (habitsRes.data || []).map(normalizeHabit);
+        setHabits(normalizedHabits);
+      }
+
+      setHydrated(true);
+    };
+
+    fetchData();
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.id]);
+
+  // Ensure we can render Auth UI when logged out.
+  useEffect(() => {
+    if (user?.id) return;
+    setSystems([]);
+    setHabits([]);
+    setSelectedSystemId(null);
+    setSystemDraft(null);
+    setHydrated(true);
+  }, [user?.id]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -98,16 +128,32 @@ function App() {
     setSystemDraft(currentSystem || null);
   }, [currentSystem]);
 
-  const startNewSystem = () => {
-    const draft = {
-      id: generateId('system'),
-      name: '',
-      description: '',
-      color: '#F97316',
-      icon: '✨',
+  const createSystem = async (input = {}) => {
+    if (!user?.id) {
+      console.error('No user; cannot create system');
+      return;
+    }
+
+    const payload = {
+      user_id: user.id,
+      name: input.name || 'New system',
+      description: input.description || '',
+      color: input.color || '#F97316',
+      icon: input.icon || '✨',
+      order_index: systems.length,
     };
-    setSystemDraft(draft);
-    setSelectedSystemId(draft.id);
+
+    const { data, error } = await supabase.from('systems').insert([payload]).select().single();
+
+    if (error) {
+      console.error('Error creating system', error);
+      return;
+    }
+
+    const normalized = normalizeSystem(data);
+    setSystems((prev) => [...prev, normalized]);
+    setSelectedSystemId(normalized.id);
+    setSystemDraft(normalized);
   };
 
   const reorderSystems = (draggedId, targetId) => {
@@ -361,7 +407,7 @@ function App() {
             systems={systems}
             selectedSystemId={selectedSystemId}
             onSelectSystem={setSelectedSystemId}
-            onAddNew={startNewSystem}
+            onCreateSystem={createSystem}
             onReorder={reorderSystems}
           />
           <div className="grid split">

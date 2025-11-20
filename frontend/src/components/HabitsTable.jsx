@@ -46,26 +46,7 @@ const frequencyLabel = (frequency) => {
 const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
   const [editing, setEditing] = useState(null);
   const [openNotesIds, setOpenNotesIds] = useState([]);
-  const [remoteHabits, setRemoteHabits] = useState([]);
   const { user } = useAuth();
-
-  useEffect(() => {
-    if (!user) return;
-
-    const loadHabits = async () => {
-      const { data, error } = await supabase
-        .from('habits')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('order_index', { ascending: true });
-
-      if (!error && data) {
-        setRemoteHabits(data);
-      }
-    };
-
-    loadHabits();
-  }, [user]);
 
   const renderForm = () => (
     <div className="card subtle row-editor">
@@ -168,8 +149,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
     setOpenNotesIds([]);
   }, [system?.id]);
 
-  const filteredRemoteHabits = remoteHabits.filter((habit) => habit.system_id === system?.id);
-  const currentHabits = remoteHabits.length ? filteredRemoteHabits : habits;
+  const currentHabits = habits;
 
   if (!system) {
     return (
@@ -223,7 +203,11 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
         .single();
 
       if (!error && data) {
-        onSaveHabit(data);
+        const normalized = {
+          ...data,
+          systemId: data.systemId ?? data.system_id,
+        };
+        onSaveHabit(normalized);
         setEditing(null);
         return;
       }

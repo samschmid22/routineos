@@ -33,9 +33,11 @@ const AnalyticsView = ({ systems, habits, statusMap }) => {
       </div>
       <div className="stack md">
         <div className="card analytics-card">
-          <div className="analytics-card-header">
-            <p className="eyebrow">Analytics</p>
-            <h2 className="section-title">By system</h2>
+          <div className="card-header">
+            <div>
+              <p className="eyebrow">Analytics</p>
+              <h2 className="section-title">By system</h2>
+            </div>
           </div>
           <div className="stack sm">
             {systems.map((system) => {
@@ -58,9 +60,11 @@ const AnalyticsView = ({ systems, habits, statusMap }) => {
         </div>
 
         <div className="card analytics-card">
-          <div className="analytics-card-header">
-            <p className="eyebrow">Insights</p>
-            <h2 className="section-title">Habit stats</h2>
+          <div className="card-header">
+            <div>
+              <p className="eyebrow">Insights</p>
+              <h2 className="section-title">Habit stats</h2>
+            </div>
           </div>
             <div className="grid two mini-cards">
             <div className="mini-card">

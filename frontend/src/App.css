@@ -1190,25 +1190,18 @@ h4 {
   gap: 2px;
 }
 
-.analytics-card-header .card-subtitle {
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #888;
-}
-
 .chat-panel-header {
   padding: 10px 18px 6px;
   display: flex;
   align-items: center;
   gap: 8px;
+  border-bottom: 1px solid #262626;
 }
 
-.chat-panel-header .card-subtitle {
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #888;
+.chat-panel-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .analytics-card-title {

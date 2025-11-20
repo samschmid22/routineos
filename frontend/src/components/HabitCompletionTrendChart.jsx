@@ -21,9 +21,11 @@ const sampleCompletionData = [
 export function HabitCompletionTrendChart({ data = sampleCompletionData }) {
   return (
     <div className="completion-trend-card analytics-card">
-      <div className="analytics-card-header">
-        <p className="eyebrow">Analytics</p>
-        <h2 className="section-title">Completion trend</h2>
+      <div className="card-header">
+        <div>
+          <p className="eyebrow">Analytics</p>
+          <h2 className="section-title">Completion trend</h2>
+        </div>
         <span className="card-meta">Last 7 days</span>
       </div>
       <div className="completion-chart-wrapper">

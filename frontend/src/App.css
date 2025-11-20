@@ -1182,6 +1182,12 @@ h4 {
   border: 1px solid #262626;
 }
 
+:root[data-theme='light'] .analytics-card,
+:root[data-theme='light'] .completion-trend-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
 .analytics-card-header {
   padding: 10px 18px 6px;
   display: flex;

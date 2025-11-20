@@ -245,6 +245,32 @@ h4 {
   color: var(--text);
 }
 
+.select-shell {
+  position: relative;
+}
+
+.select-input {
+  appearance: none;
+  background: var(--field-bg);
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+.select-input:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.35);
+}
+
+.select-caret {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
 .color-input {
   border-radius: 8px;
   border: 1px solid var(--field-border);

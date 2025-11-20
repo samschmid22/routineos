@@ -65,23 +65,28 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
       <div className="grid two">
         <label className="stack xs">
           <span className="label">Frequency</span>
-          <select
-            className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
-            value={editing.frequency.type}
-            onChange={(e) =>
-              setEditing({
-                ...editing,
-                frequency: {
-                  type: e.target.value,
-                  daysOfWeek: editing.frequency.daysOfWeek || [],
-                },
-              })
-            }
-          >
-            <option value="daily">Every day</option>
-            <option value="everyOtherDay">Every other day</option>
-            <option value="daysOfWeek">Specific days of the week</option>
-          </select>
+          <div className="select-shell">
+            <select
+              className="input select-input"
+              value={editing.frequency.type}
+              onChange={(e) =>
+                setEditing({
+                  ...editing,
+                  frequency: {
+                    type: e.target.value,
+                    daysOfWeek: editing.frequency.daysOfWeek || [],
+                  },
+                })
+              }
+            >
+              <option value="daily">Every day</option>
+              <option value="everyOtherDay">Every other day</option>
+              <option value="daysOfWeek">Specific days of the week</option>
+            </select>
+            <span className="select-caret" aria-hidden="true">
+              ⌄
+            </span>
+          </div>
         </label>
         <label className="stack xs">
           <span className="label">Duration (min)</span>

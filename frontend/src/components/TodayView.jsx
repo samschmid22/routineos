@@ -77,7 +77,7 @@ const TodayView = ({
                       {hasSubHabits && <span className="checklist-indicator" aria-hidden="true">☑</span>}
                     </div>
                     <div className="row gap-8 wrap">
-                      <span className="pill ghost">
+                      <span className="pill ghost pill-system">
                         <span className="system-dot tiny" style={{ background: systemMap[habit.systemId]?.color }} />
                         {systemMap[habit.systemId]?.name || 'System'}
                       </span>

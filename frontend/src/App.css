@@ -442,6 +442,17 @@ h4 {
   border: 1px solid var(--card-border);
 }
 
+.pill-system {
+  font-size: 0.74rem;
+  padding: 4px 8px;
+  gap: 4px;
+}
+
+.pill-system .system-dot.tiny {
+  width: 8px;
+  height: 8px;
+}
+
 .pill.ghost {
   background: transparent;
 }

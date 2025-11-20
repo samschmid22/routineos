@@ -19,7 +19,14 @@ const SystemsList = ({ systems, selectedSystemId, onSelectSystem, onAddNew, onRe
           <p className="eyebrow">Your pillars</p>
           <h2 className="section-title systems-heading">SYSTEMS OVERVIEW</h2>
         </div>
-        <button type="button" className="btn-primary" onClick={onAddNew}>
+        <button
+          type="button"
+          className="btn-primary"
+          onClick={() => {
+            console.log('New System clicked');
+            alert('New System test click');
+          }}
+        >
           + New system
         </button>
       </div>

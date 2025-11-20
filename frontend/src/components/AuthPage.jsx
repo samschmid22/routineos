@@ -27,7 +27,7 @@ const AuthPage = () => {
       setLoading(false);
     }
   };
-
+//okay this is my authentication page
   return (
     <div className="auth-page-wrapper">
       <div className="auth-card">

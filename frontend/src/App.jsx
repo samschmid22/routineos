@@ -377,9 +377,11 @@ function App() {
 
       <footer className="footer">Who you become is hidden in your daily actions.</footer>
 
-      <button className="floating-chat-button" type="button" onClick={() => setChatOpen(true)}>
-        AI
-      </button>
+      {!chatOpen && (
+        <button className="floating-chat-button" type="button" onClick={() => setChatOpen(true)}>
+          AI
+        </button>
+      )}
       {chatOpen && (
         <div className="ai-chat-overlay">
           <div className="ai-chat-panel">

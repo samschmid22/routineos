@@ -36,6 +36,10 @@ Tone:
 
     const payloadMessages = [
       { role: 'system', content: systemPrompt },
+      {
+        role: 'system',
+        content: 'Keep answers short, focused, and under ~150 words unless the user explicitly asks for more detail.',
+      },
       ...(context
         ? [
             {

@@ -1,6 +1,6 @@
 // Component: analytics plus insights placeholders for deeper intelligence.
 import AiCoachPanel from './AiCoachPanel';
-import { TIME_BLOCKS, completionBySystem, percent } from '../utils/analytics';
+import { completionBySystem, percent } from '../utils/analytics';
 
 const ProgressBar = ({ percentValue }) => (
   <div className="progress">
@@ -18,9 +18,15 @@ const AnalyticsView = ({ systems, habits, statusMap }) => {
     .map((habit) => ({ habit, skipped: statusMap[habit.id] === 'skipped' }))
     .sort((a, b) => Number(b.skipped) - Number(a.skipped));
 
+  const coachContext = {
+    systems,
+    statusMap,
+    bySystem,
+  };
+
   return (
     <div className="analytics-grid">
-      <AiCoachPanel />
+      <AiCoachPanel context={coachContext} />
       <div className="stack md">
         <div className="card">
           <div className="card-header">

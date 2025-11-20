@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const defaultIntro = [
   {
@@ -11,6 +11,13 @@ export function RoutineOsChat({ todayContext }) {
   const [messages, setMessages] = useState(defaultIntro);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -54,6 +61,7 @@ export function RoutineOsChat({ todayContext }) {
           </div>
         ))}
         {loading && <div className="chat-bubble assistant">Thinking...</div>}
+        <div ref={messagesEndRef} />
       </div>
       <form className="chat-input-row" onSubmit={handleSubmit}>
         <input

@@ -906,6 +906,11 @@ h4 {
   min-height: 100%;
 }
 
+.ai-coach-chat {
+  flex: 1;
+  min-height: 320px;
+}
+
 .coach-messages {
   border: 1px dashed var(--card-border);
   border-radius: 16px;
@@ -1084,7 +1089,6 @@ h4 {
 .routineos-chat {
   display: flex;
   flex-direction: column;
-  gap: 12px;
   height: 100%;
 }
 
@@ -1093,37 +1097,37 @@ h4 {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 0 12px;
+  gap: 8px;
+  padding: 12px 16px;
 }
 
 .chat-bubble {
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-size: 0.95rem;
+  max-width: 80%;
+  padding: 8px 12px;
+  border-radius: 14px;
+  font-size: 0.85rem;
   line-height: 1.4;
-  width: fit-content;
-  max-width: 90%;
+  margin-bottom: 4px;
 }
 
 .chat-bubble.user {
-  align-self: flex-end;
-  background: linear-gradient(120deg, #ef4444, #f97316);
-  color: #fff;
+  margin-left: auto;
+  background: #1f1f1f;
+  color: #f5f5f5;
 }
 
 .chat-bubble.assistant {
-  align-self: flex-start;
-  background: rgba(148, 163, 184, 0.16);
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  color: var(--text);
+  margin-right: auto;
+  background: #101010;
+  border: 1px solid rgba(255, 106, 26, 0.25);
+  color: #f0f0f0;
 }
 
 .chat-input-row {
   display: flex;
-  gap: 10px;
-  padding: 12px;
-  border-top: 1px solid var(--card-border);
+  gap: 8px;
+  padding: 10px 12px 14px;
+  border-top: 1px solid #262626;
 }
 
 .chat-input-row input {
@@ -1178,8 +1182,8 @@ h4 {
 .ai-chat-panel {
   margin: 0 24px 90px 0;
   width: 340px;
-  max-height: 70vh;
-  background: #111111;
+  max-height: 60vh;
+  background: #050505;
   border-radius: 20px;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
   overflow: hidden;

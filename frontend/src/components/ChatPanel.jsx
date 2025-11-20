@@ -24,8 +24,8 @@ export function ChatPanel({
     <div className={`chat-panel ${className}`.trim()}>
       <div className="chat-panel-header">
         <div className="chat-panel-header-text">
-          {subtitle && <span className="card-subtitle">{subtitle}</span>}
-          <span className="chat-panel-title analytics-card-title">{title}</span>
+          {subtitle && <p className="eyebrow chat-panel-subtitle">{subtitle}</p>}
+          <h2 className="section-title chat-panel-title">{title}</h2>
         </div>
         {onClose && (
           <button type="button" className="chat-panel-close" onClick={onClose} aria-label="Close chat">

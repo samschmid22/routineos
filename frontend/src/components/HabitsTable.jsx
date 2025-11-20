@@ -216,6 +216,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
       const normalized = {
         ...data,
         systemId: data.systemId ?? data.system_id,
+        durationMinutes: data.durationMinutes ?? data.duration_minutes ?? editing.durationMinutes,
       };
       onSaveHabit(normalized);
       setEditing(null);
@@ -242,6 +243,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
     const normalized = {
       ...data,
       systemId: data.systemId ?? data.system_id,
+      durationMinutes: data.durationMinutes ?? data.duration_minutes ?? editing.durationMinutes,
     };
     onSaveHabit(normalized);
     setEditing(null);

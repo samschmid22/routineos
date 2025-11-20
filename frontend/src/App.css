@@ -906,29 +906,6 @@ h4 {
   min-height: 100%;
 }
 
-.analytics-ai-card {
-  height: 760px;
-  max-height: 760px;
-  background: #050505;
-  border-radius: 20px;
-  border: 1px solid #262626;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.analytics-ai-card .routineos-chat {
-  height: 100%;
-}
-
-.analytics-ai-card .chat-messages {
-  padding: 10px 14px;
-}
-
-.analytics-ai-card .chat-input-row {
-  padding: 8px 12px 10px;
-  border-top: 1px solid #262626;
-}
 
 .ai-coach-chat {
   flex: 1;
@@ -1241,8 +1218,9 @@ h4 {
 }
 
 .analytics-ai-card {
-  height: 260px;
-  max-height: 260px;
+  height: 70vh;
+  max-height: 70vh;
+  min-height: 70vh;
   background: #050505;
   border-radius: 20px;
   border: 1px solid #262626;
@@ -1251,15 +1229,25 @@ h4 {
   overflow: hidden;
 }
 
+.analytics-ai-card .card-header {
+  padding: 12px 16px 8px;
+  border-bottom: 1px solid #262626;
+}
+
 .analytics-ai-card .routineos-chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   height: 100%;
 }
 
 .analytics-ai-card .chat-messages {
+  flex: 1;
+  overflow-y: auto;
   padding: 10px 14px;
 }
 
 .analytics-ai-card .chat-input-row {
-  padding: 8px 12px 10px;
+  padding: 8px 16px 12px;
   border-top: 1px solid #262626;
 }

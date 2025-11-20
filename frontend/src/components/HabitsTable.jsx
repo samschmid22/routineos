@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { generateId } from '../utils/ids';
 import { todayString } from '../utils/date';
 import SubHabitsEditor from './SubHabitsEditor';
+import { supabase } from '../lib/supabaseClient';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const DAYS = [
   { label: 'Sun', value: 0 },
@@ -44,6 +46,26 @@ const frequencyLabel = (frequency) => {
 const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
   const [editing, setEditing] = useState(null);
   const [openNotesIds, setOpenNotesIds] = useState([]);
+  const [remoteHabits, setRemoteHabits] = useState([]);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) return;
+
+    const loadHabits = async () => {
+      const { data, error } = await supabase
+        .from('habits')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('order_index', { ascending: true });
+
+      if (!error && data) {
+        setRemoteHabits(data);
+      }
+    };
+
+    loadHabits();
+  }, [user]);
 
   const renderForm = () => (
     <div className="card subtle row-editor">
@@ -146,6 +168,8 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
     setOpenNotesIds([]);
   }, [system?.id]);
 
+  const currentHabits = remoteHabits.length ? remoteHabits : habits;
+
   if (!system) {
     return (
       <div className="card">
@@ -171,19 +195,44 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
     setEditing({ ...editing, frequency: { ...editing.frequency, daysOfWeek: next } });
   };
 
-  const save = () => {
+  const save = async () => {
     if (!editing.name.trim()) return;
-    onSaveHabit({
+    const payload = {
       ...editing,
       systemId: system.id,
       frequencyType: editing.frequency.type,
       daysOfWeek: editing.frequency.daysOfWeek || [],
       purpose: undefined,
-    });
+    };
+
+    if (isNewDraft && user) {
+      const { data, error } = await supabase
+        .from('habits')
+        .insert([
+          {
+            user_id: user.id,
+            system_id: system.id,
+            name: editing.name,
+            description: editing.notes || null,
+            frequency: 'daily',
+            order_index: currentHabits.length,
+          },
+        ])
+        .select()
+        .single();
+
+      if (!error && data) {
+        onSaveHabit(data);
+        setEditing(null);
+        return;
+      }
+    }
+
+    onSaveHabit(payload);
     setEditing(null);
   };
 
-  const isNewDraft = editing && !habits.some((h) => h.id === editing.id);
+  const isNewDraft = editing && !currentHabits.some((h) => h.id === editing.id);
 
   return (
     <div className="card">
@@ -205,8 +254,8 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
           <div>Frequency</div>
           <div>Duration</div>
         </div>
-        {habits.length === 0 && <div className="muted">No habits yet.</div>}
-        {habits.map((habit) => {
+        {currentHabits.length === 0 && <div className="muted">No habits yet.</div>}
+        {currentHabits.map((habit) => {
           const showNotes = habit.notes && openNotesIds.includes(habit.id);
           const isEditing = editing && editing.id === habit.id;
           return (

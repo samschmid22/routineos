@@ -1182,7 +1182,21 @@ h4 {
   border: 1px solid #262626;
 }
 
-.analytics-card-header,
+.analytics-card-header {
+  padding: 10px 18px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.analytics-card-header .card-subtitle {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #888;
+}
+
 .chat-panel-header {
   padding: 10px 18px 6px;
   display: flex;
@@ -1190,7 +1204,6 @@ h4 {
   gap: 8px;
 }
 
-.analytics-card-header .card-subtitle,
 .chat-panel-header .card-subtitle {
   font-size: 0.75rem;
   letter-spacing: 0.12em;

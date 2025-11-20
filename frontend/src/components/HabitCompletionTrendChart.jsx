@@ -23,7 +23,7 @@ export function HabitCompletionTrendChart({ data = sampleCompletionData }) {
     <div className="completion-trend-card analytics-card">
       <div className="analytics-card-header">
         <span className="card-subtitle">ANALYTICS</span>
-        <h3 className="analytics-only-title">COMPLETION TREND</h3>
+        <h3 className="analytics-card-title">COMPLETION TREND</h3>
         <span className="card-meta">Last 7 days</span>
       </div>
       <div className="completion-chart-wrapper">

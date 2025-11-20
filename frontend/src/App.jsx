@@ -382,23 +382,12 @@ function App() {
       </button>
       {chatOpen && (
         <div className="ai-chat-overlay">
-          <div className="ai-chat-panel">
-            <div className="ai-chat-header">
-              <span>Routine OS Coach</span>
-              <button
-                type="button"
-                className="ai-chat-close"
-                onClick={() => setChatOpen(false)}
-                aria-label="Close chat"
-              >
-                ✕
-              </button>
-            </div>
+          <div className="floating-ai-wrapper">
             <RoutineOsChat
               todayContext={todayContext}
-              wrapperClassName="ai-chat-body"
-              messagesClassName="ai-chat-messages"
-              inputClassName="ai-chat-input-row"
+              title="ROUTINE OS COACH"
+              placeholder="Ask Routine OS Coach about today"
+              onClose={() => setChatOpen(false)}
             />
           </div>
         </div>

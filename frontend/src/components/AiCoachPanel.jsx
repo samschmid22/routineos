@@ -1,18 +1,13 @@
 import { RoutineOsChat } from './RoutineOsChat';
 
 const AiCoachPanel = ({ context }) => (
-  <div className="card analytics-ai-card analytics-card">
-    <div className="analytics-card-header">
-      <span className="card-subtitle">ANALYTICS</span>
-      <h3 className="analytics-only-title">ROUTINE OS COACH</h3>
-    </div>
-    <div className="analytics-ai-body">
-      <RoutineOsChat
-        todayContext={context}
-        messagesClassName="analytics-ai-messages"
-        inputClassName="analytics-ai-input-row"
-      />
-    </div>
+  <div className="analytics-ai-wrapper">
+    <RoutineOsChat
+      todayContext={context}
+      title="ROUTINE OS COACH"
+      subtitle="ANALYTICS"
+      panelClassName="analytics-card"
+    />
   </div>
 );
 

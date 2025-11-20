@@ -1152,9 +1152,9 @@ h4 {
   cursor: pointer;
   background: radial-gradient(circle at 30% 0%, #ffb347, #ff6a1a);
   box-shadow: 0 0 25px rgba(255, 106, 26, 0.45);
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 0.9rem;
+  color: var(--background);
+  font-weight: 800;
+  font-size: 1.1rem;
   display: flex;
   align-items: center;
   justify-content: center;

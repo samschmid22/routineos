@@ -85,17 +85,6 @@ const AnalyticsView = ({ systems, habits, statusMap }) => {
             </div>
           </div>
           <div className="mini-card">
-            <h4>Completion by time</h4>
-            <div className="stack xs">
-              {TIME_BLOCKS.map((block) => (
-                <div key={block} className="row spaced small">
-                  <span>{block}</span>
-                  <span className="muted small">Coming soon</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="mini-card">
             <h4>Habit completion likelihood</h4>
             <p className="muted small">
               Estimate how likely you are to complete each habit based on past behavior (by weekday and time).

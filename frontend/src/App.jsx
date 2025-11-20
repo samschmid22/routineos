@@ -388,6 +388,7 @@ function App() {
               title="ROUTINE OS COACH"
               placeholder="Ask Routine OS Coach about today"
               onClose={() => setChatOpen(false)}
+              panelClassName="chat-panel-floating"
             />
           </div>
         </div>

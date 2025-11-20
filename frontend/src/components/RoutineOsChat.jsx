@@ -65,7 +65,6 @@ export function RoutineOsChat({
       placeholder={placeholder}
       className={`${panelClassName} ${className}`.trim()}
       onClose={onClose}
-      focusRef={focusRef}
     />
   );
 }

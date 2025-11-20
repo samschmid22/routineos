@@ -6,7 +6,7 @@ const AiCoachPanel = ({ context }) => (
       todayContext={context}
       title="ROUTINE OS COACH"
       subtitle="ANALYTICS"
-      panelClassName="analytics-card"
+      panelClassName="analytics-card analytics-ai-card"
     />
   </div>
 );

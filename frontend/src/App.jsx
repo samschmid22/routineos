@@ -126,7 +126,8 @@ function App() {
 
     const payload = {
       name: input.name || 'New system',
-      description: input.description || input.category || '',
+      description: input.description || '',
+      category: input.category || 'General',
       color: input.color || '#FF6347',
       icon: input.icon || '✨',
       order_index: systems.length,

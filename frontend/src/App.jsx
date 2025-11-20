@@ -36,6 +36,8 @@ function App() {
 
   const [systems, setSystems] = useState([]);
   const [habits, setHabits] = useState([]);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [dataError, setDataError] = useState(null);
   const [subHabitStatuses, setSubHabitStatuses] = useState({});
   const [todayOrder, setTodayOrder] = useState([]);
   const [selectedSystemId, setSelectedSystemId] = useState(null);
@@ -53,56 +55,47 @@ function App() {
     setTodayOrder(storedOrder);
   }, []);
 
-  // Load systems & habits once per authenticated user id to avoid fetch loops.
+  // Load systems & habits once on mount (no user filter for initial setup).
   useEffect(() => {
-    if (!user?.id) return;
     let isMounted = true;
 
-    const fetchData = async () => {
-      const [systemsRes, habitsRes] = await Promise.all([
-        supabase.from('systems').select('*').eq('user_id', user.id).order('order_index', { ascending: true }),
-        supabase.from('habits').select('*').eq('user_id', user.id).order('order_index', { ascending: true }),
-      ]);
+    const loadData = async () => {
+      setIsLoadingData(true);
+      setDataError(null);
+
+      const { data: systemsData, error: systemsError } = await supabase
+        .from('systems')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      const { data: habitsData, error: habitsError } = await supabase.from('habits').select('*');
 
       if (!isMounted) return;
 
-      if (systemsRes.error) {
-        console.error('Error loading systems', systemsRes.error);
-        setSystems([]);
-      } else {
-        const normalizedSystems = (systemsRes.data || []).map(normalizeSystem);
-        setSystems(normalizedSystems);
-        const initialSystem = normalizedSystems[0] || null;
-        setSelectedSystemId(initialSystem?.id || null);
-        setSystemDraft(initialSystem);
+      if (systemsError || habitsError) {
+        console.error('Error loading data', systemsError || habitsError);
+        setDataError(systemsError || habitsError);
+        setIsLoadingData(false);
+        setHydrated(true);
+        return;
       }
 
-      if (habitsRes.error) {
-        console.error('Error loading habits', habitsRes.error);
-        setHabits([]);
-      } else {
-        const normalizedHabits = (habitsRes.data || []).map(normalizeHabit);
-        setHabits(normalizedHabits);
-      }
-
+      const normalizedSystems = (systemsData || []).map(normalizeSystem);
+      const normalizedHabits = (habitsData || []).map(normalizeHabit);
+      setSystems(normalizedSystems);
+      setHabits(normalizedHabits);
+      const initialSystem = normalizedSystems[0] || null;
+      setSelectedSystemId(initialSystem?.id || null);
+      setSystemDraft(initialSystem);
       setHydrated(true);
+      setIsLoadingData(false);
     };
 
-    fetchData();
+    loadData();
     return () => {
       isMounted = false;
     };
-  }, [user?.id]);
-
-  // Ensure we can render Auth UI when logged out.
-  useEffect(() => {
-    if (user?.id) return;
-    setSystems([]);
-    setHabits([]);
-    setSelectedSystemId(null);
-    setSystemDraft(null);
-    setHydrated(true);
-  }, [user?.id]);
+  }, []);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -129,18 +122,13 @@ function App() {
   }, [currentSystem]);
 
   const createSystem = async (input = {}) => {
-    if (!user?.id) {
-      console.error('No user; cannot create system');
-      return;
-    }
+    console.log('createSystem called with', input);
 
     const payload = {
-      user_id: user.id,
       name: input.name || 'New system',
-      description: input.description || '',
-      color: input.color || '#F97316',
-      icon: input.icon || '✨',
-      order_index: systems.length,
+      category: input.category || 'General',
+      color: input.color || '#FF6347',
+      user_id: input.user_id ?? null,
     };
 
     const { data, error } = await supabase.from('systems').insert([payload]).select().single();
@@ -347,12 +335,19 @@ function App() {
     });
   };
 
-  if (authLoading || !hydrated) {
+  if (authLoading) {
     return <div className="auth-page-wrapper">Loading Routine OS...</div>;
   }
 
   if (!user) {
     return <AuthPage />;
+  }
+
+  if (isLoadingData || !hydrated) {
+    return <div className="auth-page-wrapper">Loading your data...</div>;
+  }
+  if (dataError) {
+    return <div className="auth-page-wrapper">Error loading data. Check console for details.</div>;
   }
 
   return (
@@ -405,6 +400,7 @@ function App() {
         <div className="stack md">
           <SystemsList
             systems={systems}
+            habits={habits}
             selectedSystemId={selectedSystemId}
             onSelectSystem={setSelectedSystemId}
             onCreateSystem={createSystem}

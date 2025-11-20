@@ -116,6 +116,13 @@ function App() {
   const currentSystem = systems.find((sys) => sys.id === selectedSystemId) || null;
   const currentHabits = habits.filter((habit) => habit.systemId === currentSystem?.id);
 
+  // Auto-select the first available system if none is selected.
+  useEffect(() => {
+    if (!selectedSystemId && systems.length > 0) {
+      setSelectedSystemId(systems[0].id);
+    }
+  }, [selectedSystemId, systems]);
+
   // Sync draft when selection changes.
   useEffect(() => {
     setSystemDraft(currentSystem || null);
@@ -143,7 +150,10 @@ function App() {
 
     console.log('Supabase insert success (systems):', data);
 
-    setSystems((prev) => [...prev, data]);
+    const normalized = normalizeSystem(data);
+    setSystems((prev) => [...prev, normalized]);
+    setSelectedSystemId(normalized.id);
+    setSystemDraft(normalized);
   };
 
   const reorderSystems = (draggedId, targetId) => {

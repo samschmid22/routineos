@@ -183,42 +183,54 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
 
   const save = async () => {
     if (!editing.name.trim()) return;
-    const payload = {
-      ...editing,
-      systemId: system.id,
-      frequencyType: editing.frequency.type,
-      daysOfWeek: editing.frequency.daysOfWeek || [],
-      purpose: undefined,
-    };
-
     if (isNewDraft && user) {
-      const { data, error } = await supabase
-        .from('habits')
-        .insert([
-          {
-            user_id: user.id,
-            system_id: system.id,
-            name: editing.name,
-            description: editing.notes || null,
-            frequency: 'daily',
-            order_index: currentHabits.length,
-          },
-        ])
-        .select()
-        .single();
+      const insertPayload = {
+        user_id: user.id,
+        system_id: system.id,
+        name: editing.name,
+        description: editing.notes || null,
+        frequency: editing.frequency,
+        durationMinutes: editing.durationMinutes,
+        status: editing.status || 'notStarted',
+        order_index: currentHabits.length,
+      };
 
-      if (!error && data) {
-        const normalized = {
-          ...data,
-          systemId: data.systemId ?? data.system_id,
-        };
-        onSaveHabit(normalized);
-        setEditing(null);
+      const { data, error } = await supabase.from('habits').insert([insertPayload]).select().single();
+
+      if (error) {
+        console.error('Supabase insert error (habits):', error.message, error.details, error.hint);
         return;
       }
+
+      const normalized = {
+        ...data,
+        systemId: data.systemId ?? data.system_id,
+      };
+      onSaveHabit(normalized);
+      setEditing(null);
+      return;
     }
 
-    onSaveHabit(payload);
+    const updatePayload = {
+      name: editing.name,
+      description: editing.notes || null,
+      frequency: editing.frequency,
+      durationMinutes: editing.durationMinutes,
+      status: editing.status || 'notStarted',
+    };
+
+    const { data, error } = await supabase.from('habits').update(updatePayload).eq('id', editing.id).select().single();
+
+    if (error) {
+      console.error('Supabase update error (habits):', error.message, error.details, error.hint);
+      return;
+    }
+
+    const normalized = {
+      ...data,
+      systemId: data.systemId ?? data.system_id,
+    };
+    onSaveHabit(normalized);
     setEditing(null);
   };
 

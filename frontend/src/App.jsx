@@ -24,10 +24,22 @@ const normalizeSystem = (system) => ({
   order_index: system.order_index ?? 0,
 });
 
-const normalizeHabit = (habit) => ({
-  ...habit,
-  systemId: habit.systemId ?? habit.system_id,
-});
+const normalizeHabit = (habit) => {
+  let frequency = habit.frequency;
+  if (typeof frequency === 'string' || !frequency) {
+    const fallbackType = typeof frequency === 'string' ? frequency : habit.frequencyType || 'daily';
+    frequency = {
+      type: fallbackType || 'daily',
+      daysOfWeek: habit.daysOfWeek || [],
+    };
+  }
+
+  return {
+    ...habit,
+    frequency,
+    systemId: habit.systemId ?? habit.system_id,
+  };
+};
 
 function App() {
   const { user, loading: authLoading } = useAuth();

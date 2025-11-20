@@ -183,13 +183,15 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
 
   const save = async () => {
     if (!editing.name.trim()) return;
+    const frequencyValue = editing.frequency?.type || 'daily';
+
     if (isNewDraft && user) {
       const insertPayload = {
         user_id: user.id,
         system_id: system.id,
         name: editing.name,
         description: editing.notes || null,
-        frequency: editing.frequency,
+        frequency: frequencyValue,
         durationMinutes: editing.durationMinutes,
         status: editing.status || 'notStarted',
         order_index: currentHabits.length,
@@ -214,7 +216,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
     const updatePayload = {
       name: editing.name,
       description: editing.notes || null,
-      frequency: editing.frequency,
+      frequency: frequencyValue,
       durationMinutes: editing.durationMinutes,
       status: editing.status || 'notStarted',
     };

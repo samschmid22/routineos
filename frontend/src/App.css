@@ -906,9 +906,34 @@ h4 {
   min-height: 100%;
 }
 
+.analytics-ai-card {
+  height: 260px;
+  max-height: 260px;
+  background: #050505;
+  border-radius: 20px;
+  border: 1px solid #262626;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.analytics-ai-card .routineos-chat {
+  height: 100%;
+}
+
+.analytics-ai-card .chat-messages {
+  padding: 10px 14px;
+}
+
+.analytics-ai-card .chat-input-row {
+  padding: 8px 12px 10px;
+  border-top: 1px solid #262626;
+}
+
 .ai-coach-chat {
   flex: 1;
-  min-height: 320px;
+  display: flex;
+  flex-direction: column;
 }
 
 .coach-messages {
@@ -1182,8 +1207,9 @@ h4 {
 
 .ai-chat-panel {
   margin: 0 24px 90px 0;
-  width: 340px;
-  max-height: 60vh;
+  width: 380px;
+  max-height: 70vh;
+  min-height: 260px;
   background: #050505;
   border-radius: 20px;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);

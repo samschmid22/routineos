@@ -4,13 +4,10 @@ const AiCoachPanel = ({ context }) => (
   <div className="card analytics-ai-card">
     <div className="card-header">
       <div>
-        <p className="eyebrow">Insights</p>
-        <h2 className="section-title">AI ROUTINE COACH</h2>
+        <p className="eyebrow">Analytics</p>
+        <h2 className="section-title">Routine OS Coach</h2>
       </div>
     </div>
-    <p className="muted small">
-      Collaborate with Routine OS Coach to interpret today’s systems, habits, and analytics.
-    </p>
     <div className="ai-coach-chat">
       <RoutineOsChat todayContext={context} />
     </div>

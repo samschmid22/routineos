@@ -1299,9 +1299,6 @@ h4 {
 }
 
 .completion-trend-card {
-  background: #050505;
-  border-radius: 20px;
-  border: 1px solid #262626;
   padding: 12px 18px 16px;
 }
 
@@ -1314,4 +1311,19 @@ h4 {
 .completion-chart-wrapper {
   margin-top: 4px;
   height: 220px;
+  background: transparent;
+}
+
+.ai-chat-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.analytics-card-header .analytics-only-title,
+.analytics-only-title {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #f5f5f5;
 }

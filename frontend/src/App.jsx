@@ -394,7 +394,12 @@ function App() {
                 ✕
               </button>
             </div>
-            <RoutineOsChat todayContext={todayContext} />
+            <RoutineOsChat
+              todayContext={todayContext}
+              wrapperClassName="ai-chat-body"
+              messagesClassName="ai-chat-messages"
+              inputClassName="ai-chat-input-row"
+            />
           </div>
         </div>
       )}

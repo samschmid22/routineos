@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import AnalyticsView from './components/AnalyticsView';
 import HabitsTable from './components/HabitsTable';
+import { RoutineOsChat } from './components/RoutineOsChat';
 import SystemEditor from './components/SystemEditor';
 import SystemsList from './components/SystemsList';
 import Tabs from './components/Tabs';
@@ -35,6 +36,7 @@ function App() {
   const [selectedSystemId, setSelectedSystemId] = useState(null);
   const [systemDraft, setSystemDraft] = useState(null);
   const [hydrated, setHydrated] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
 
   // Hydrate state from localStorage or mock data once.
   useEffect(() => {
@@ -237,6 +239,20 @@ function App() {
     }, {});
   }, [habits]);
 
+  const todayContext = useMemo(
+    () => ({
+      date: todayString(),
+      habits: todayHabits.map(({ habit, status }) => ({
+        id: habit.id,
+        name: habit.name,
+        systemId: habit.systemId,
+        status,
+      })),
+      systems,
+    }),
+    [todayHabits, systems],
+  );
+
   const handleStatusChange = (habitId, status) => {
     const date = todayString();
     const habit = habits.find((h) => h.id === habitId);
@@ -360,6 +376,20 @@ function App() {
       {activeTab === 'Analytics' && <AnalyticsView systems={systems} habits={habits} statusMap={statusMap} />}
 
       <footer className="footer">Who you become is hidden in your daily actions.</footer>
+
+      <button className="floating-chat-button" type="button" onClick={() => setChatOpen(true)}>
+        AI
+      </button>
+      {chatOpen && (
+        <div className="ai-chat-overlay">
+          <div className="ai-chat-panel">
+            <button type="button" className="ai-chat-close" onClick={() => setChatOpen(false)} aria-label="Close AI chat">
+              ✕
+            </button>
+            <RoutineOsChat todayContext={todayContext} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

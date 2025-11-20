@@ -907,8 +907,8 @@ h4 {
 }
 
 .analytics-ai-card {
-  height: 520px;
-  max-height: 520px;
+  height: 600px;
+  max-height: 600px;
   background: #050505;
   border-radius: 20px;
   border: 1px solid #262626;
@@ -1179,8 +1179,8 @@ h4 {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  width: 68px;
-  height: 68px;
+  width: 76px;
+  height: 76px;
   border-radius: 999px;
   border: none;
   cursor: pointer;

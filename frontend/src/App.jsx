@@ -377,17 +377,23 @@ function App() {
 
       <footer className="footer">Who you become is hidden in your daily actions.</footer>
 
-      {!chatOpen && (
-        <button className="floating-chat-button" type="button" onClick={() => setChatOpen(true)}>
-          AI
-        </button>
-      )}
+      <button className="floating-chat-button" type="button" onClick={() => setChatOpen(true)}>
+        AI
+      </button>
       {chatOpen && (
         <div className="ai-chat-overlay">
           <div className="ai-chat-panel">
-            <button type="button" className="ai-chat-close" onClick={() => setChatOpen(false)} aria-label="Close AI chat">
-              ✕
-            </button>
+            <div className="ai-chat-header">
+              <span>Routine OS Coach</span>
+              <button
+                type="button"
+                className="ai-chat-close"
+                onClick={() => setChatOpen(false)}
+                aria-label="Close chat"
+              >
+                ✕
+              </button>
+            </div>
             <RoutineOsChat todayContext={todayContext} />
           </div>
         </div>

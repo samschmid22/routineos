@@ -1,7 +1,7 @@
 import { RoutineOsChat } from './RoutineOsChat';
 
 const AiCoachPanel = ({ context }) => (
-  <div className="card ai-coach-panel">
+  <div className="card analytics-ai-card">
     <div className="card-header">
       <div>
         <p className="eyebrow">Insights</p>

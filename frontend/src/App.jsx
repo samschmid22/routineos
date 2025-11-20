@@ -126,9 +126,11 @@ function App() {
 
     const payload = {
       name: input.name || 'New system',
-      category: input.category || 'General',
+      description: input.description || input.category || '',
       color: input.color || '#FF6347',
-      user_id: input.user_id ?? null,
+      icon: input.icon || '✨',
+      order_index: systems.length,
+      user_id: input.user_id ?? user?.id ?? null,
     };
 
     const { data, error } = await supabase.from('systems').insert([payload]).select().single();

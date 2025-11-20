@@ -198,10 +198,10 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
         system_id: system.id,
         name: editing.name,
         description: editing.notes || null,
-        frequencyType: frequencyValue,
         frequency: frequencyValue,
-        daysOfWeek: daysOfWeekValue,
-        durationMinutes: durationValue,
+        frequency_type: frequencyValue,
+        days_of_week: daysOfWeekValue,
+        duration_minutes: durationValue,
         status: editing.status || 'notStarted',
         order_index: currentHabits.length,
       };
@@ -225,10 +225,10 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
     const updatePayload = {
       name: editing.name,
       description: editing.notes || null,
-      frequencyType: frequencyValue,
       frequency: frequencyValue,
-      daysOfWeek: daysOfWeekValue,
-      durationMinutes: durationValue,
+      frequency_type: frequencyValue,
+      days_of_week: daysOfWeekValue,
+      duration_minutes: durationValue,
       status: editing.status || 'notStarted',
     };
 

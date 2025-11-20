@@ -4,7 +4,7 @@ import { ChatPanel } from './ChatPanel';
 const defaultIntro = [
   {
     role: 'assistant',
-    content: 'I am Routine OS Coach. Ask me how to win today.',
+    content: 'Hello, I’m Clithzby. I’m here to help you stay consistent and win today. What would you like to work on first?',
   },
 ];
 

@@ -8,9 +8,9 @@ const AiCoachPanel = ({ context }) => (
     </div>
     <RoutineOsChat
       todayContext={context}
-      wrapperClassName="analytics-ai-body"
       messagesClassName="analytics-ai-messages"
       inputClassName="analytics-ai-input-row"
+      variant="analytics"
     />
   </div>
 );

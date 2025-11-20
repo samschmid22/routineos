@@ -12,6 +12,7 @@ export function RoutineOsChat({
   wrapperClassName = '',
   messagesClassName = '',
   inputClassName = '',
+  variant = 'default',
 }) {
   const [messages, setMessages] = useState(defaultIntro);
   const [input, setInput] = useState('');
@@ -58,6 +59,33 @@ export function RoutineOsChat({
       setLoading(false);
     }
   };
+
+  if (variant === 'analytics') {
+    return (
+      <>
+        <div className={`chat-messages ${messagesClassName}`.trim()}>
+          {messages.map((message, index) => (
+            <div key={`${message.role}-${index}`} className={`chat-bubble ${message.role}`}>
+              {message.content}
+            </div>
+          ))}
+          {loading && <div className="chat-bubble assistant">Thinking...</div>}
+          <div ref={messagesEndRef} />
+        </div>
+        <form className={`chat-input-row ${inputClassName}`.trim()} onSubmit={handleSubmit}>
+          <input
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            placeholder="Ask Routine OS Coach about today's habits..."
+            disabled={loading}
+          />
+          <button type="submit" disabled={loading}>
+            {loading ? 'Sending…' : 'Send'}
+          </button>
+        </form>
+      </>
+    );
+  }
 
   return (
     <div className={`routineos-chat ${wrapperClassName}`.trim()}>

@@ -1234,13 +1234,6 @@ h4 {
   flex-shrink: 0;
 }
 
-.analytics-ai-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
 .analytics-ai-messages {
   flex: 1;
   overflow-y: auto;

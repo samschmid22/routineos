@@ -42,7 +42,9 @@ const normalizeHabit = (habit) => {
   return {
     ...habit,
     frequency,
+    frequencyType: frequency.type,
     daysOfWeek: frequency.daysOfWeek || [],
+    notes: habit.notes ?? habit.description ?? '',
     durationMinutes: habit.durationMinutes ?? habit.duration_minutes ?? 0,
     systemId: habit.systemId ?? habit.system_id,
   };

@@ -7,6 +7,8 @@ import SystemEditor from './components/SystemEditor';
 import SystemsList from './components/SystemsList';
 import Tabs from './components/Tabs';
 import TodayView from './components/TodayView';
+import AuthPage from './components/AuthPage';
+import { useAuth } from './context/AuthContext.jsx';
 import mockData from './mockData';
 import { formatDisplayDate, isHabitScheduledForDate, todayString } from './utils/date';
 import { generateId } from './utils/ids';
@@ -26,6 +28,7 @@ import {
 import './App.css';
 
 function App() {
+  const { user, loading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState('Today');
   const [theme, setTheme] = useState('dark');
 
@@ -297,6 +300,14 @@ function App() {
       return [...filtered, ...missing];
     });
   };
+
+  if (authLoading || !hydrated) {
+    return <div className="auth-page-wrapper">Loading Routine OS...</div>;
+  }
+
+  if (!user) {
+    return <AuthPage />;
+  }
 
   return (
     <div className={`app theme-${theme}`}>

@@ -32,12 +32,10 @@ const AnalyticsView = ({ systems, habits, statusMap }) => {
         <HabitCompletionTrendChart />
       </div>
       <div className="stack md">
-        <div className="card">
-          <div className="card-header">
-            <div>
-              <p className="eyebrow">Analytics</p>
-              <h2 className="section-title">BY SYSTEM</h2>
-            </div>
+        <div className="card analytics-card">
+          <div className="analytics-card-header">
+            <span className="card-subtitle">ANALYTICS</span>
+            <h3 className="card-title">BY SYSTEM</h3>
           </div>
           <div className="stack sm">
             {systems.map((system) => {
@@ -59,13 +57,11 @@ const AnalyticsView = ({ systems, habits, statusMap }) => {
           </div>
         </div>
 
-          <div className="card">
-            <div className="card-header">
-              <div>
-                <p className="eyebrow">Insights</p>
-                <h2 className="section-title">HABIT STATS</h2>
-              </div>
-            </div>
+        <div className="card analytics-card">
+          <div className="analytics-card-header">
+            <span className="card-subtitle">INSIGHTS</span>
+            <h3 className="card-title">HABIT STATS</h3>
+          </div>
             <div className="grid two mini-cards">
             <div className="mini-card">
               <h4>Most completed</h4>

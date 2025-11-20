@@ -126,24 +126,21 @@ function App() {
 
     const payload = {
       name: input.name || 'New system',
-      description: input.description || '',
+      category: input.category || 'General',
       color: input.color || '#FF6347',
-      icon: input.icon || '✨',
-      order_index: systems.length,
       user_id: input.user_id ?? user?.id ?? null,
     };
 
     const { data, error } = await supabase.from('systems').insert([payload]).select().single();
 
     if (error) {
-      console.error('Error creating system', error);
+      console.error('Supabase insert error (systems):', error);
       return;
     }
 
-    const normalized = normalizeSystem(data);
-    setSystems((prev) => [...prev, normalized]);
-    setSelectedSystemId(normalized.id);
-    setSystemDraft(normalized);
+    console.log('Supabase insert success (systems):', data);
+
+    setSystems((prev) => [...prev, data]);
   };
 
   const reorderSystems = (draggedId, targetId) => {

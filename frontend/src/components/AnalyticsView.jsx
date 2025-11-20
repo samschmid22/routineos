@@ -59,14 +59,14 @@ const AnalyticsView = ({ systems, habits, statusMap }) => {
           </div>
         </div>
 
-        <div className="card">
-          <div className="card-header">
-            <div>
-              <p className="eyebrow">Insights</p>
-              <h2>Habit stats</h2>
+          <div className="card">
+            <div className="card-header">
+              <div>
+                <p className="eyebrow">Insights</p>
+                <h2 className="section-title">HABIT STATS</h2>
+              </div>
             </div>
-          </div>
-          <div className="grid two mini-cards">
+            <div className="grid two mini-cards">
             <div className="mini-card">
               <h4>Most completed</h4>
               <div className="stack xs">

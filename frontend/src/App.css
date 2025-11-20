@@ -1228,12 +1228,17 @@ h4 {
   padding: 0;
 }
 
+.analytics-ai-card,
+.completion-trend-card,
+.analytics .card {
+  background: #111111;
+  border-radius: 20px;
+  border: 1px solid #262626;
+}
+
 .analytics-ai-card {
   height: 400px;
   max-height: 400px;
-  background: #050505;
-  border-radius: 20px;
-  border: 1px solid #262626;
   display: flex;
   flex-direction: column;
   overflow: hidden;

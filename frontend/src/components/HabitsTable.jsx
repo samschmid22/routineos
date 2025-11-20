@@ -93,20 +93,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
             </span>
           </div>
         </label>
-        <label className="stack xs">
-          <span className="label">Duration (min)</span>
-          <input
-            className="input"
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            value={editing.durationMinutes}
-            onChange={(e) => {
-              const digits = e.target.value.replace(/[^0-9]/g, '');
-              setEditing({ ...editing, durationMinutes: Number(digits) || 0 });
-            }}
-          />
-        </label>
+        <div />
       </div>
 
       {editing.frequency.type === 'daysOfWeek' && (
@@ -123,6 +110,24 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
           ))}
         </div>
       )}
+
+      <div className="grid two">
+        <label className="stack xs">
+          <span className="label">Duration (min)</span>
+          <input
+            className="input"
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={editing.durationMinutes}
+            onChange={(e) => {
+              const digits = e.target.value.replace(/[^0-9]/g, '');
+              setEditing({ ...editing, durationMinutes: Number(digits) || 0 });
+            }}
+          />
+        </label>
+        <div />
+      </div>
 
       <div className="grid two">
         <label className="stack xs">
@@ -170,15 +175,31 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
   }
 
   const startNew = () => setEditing(emptyHabit(system.id));
-  const startEdit = (habit) =>
+  const startEdit = (habit) => {
     setEditing({
-      ...habit,
+      id: habit.id,
+      systemId: habit.systemId || habit.system_id || system.id,
+      name: habit.name || '',
+      notes: habit.notes ?? habit.description ?? '',
+      status: habit.status || 'notStarted',
+      durationMinutes: habit.durationMinutes ?? habit.duration_minutes ?? 0,
       frequency: {
-        type: habit.frequency?.type || habit.frequencyType || 'daily',
-        daysOfWeek: habit.frequency?.daysOfWeek || habit.daysOfWeek || [],
+        type:
+          (typeof habit.frequency === 'string' && habit.frequency) ||
+          habit.frequency?.type ||
+          habit.frequencyType ||
+          habit.frequency_type ||
+          'daily',
+        daysOfWeek:
+          (typeof habit.frequency === 'object' && habit.frequency?.daysOfWeek) ||
+          habit.daysOfWeek ||
+          habit.days_of_week ||
+          [],
       },
+      startDate: habit.startDate || habit.start_date || todayString(),
       subHabits: habit.subHabits || [],
     });
+  };
 
   const toggleDay = (value) => {
     const current = editing.frequency.daysOfWeek || [];

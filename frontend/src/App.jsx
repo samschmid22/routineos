@@ -83,33 +83,50 @@ function App() {
     setTodayOrder(storedOrder);
   }, []);
 
-  // Load systems & habits once on mount (no user filter for initial setup).
+  // Load systems & habits for the signed-in user.
   useEffect(() => {
-    let isMounted = true;
+    if (authLoading) return;
 
+    if (!user?.id) {
+      setSystems([]);
+      setHabits([]);
+      setSelectedSystemId(null);
+      setSystemDraft(null);
+      setDataError(null);
+      setHydrated(true);
+      setIsLoadingData(false);
+      return;
+    }
+
+    let isMounted = true;
     const loadData = async () => {
       setIsLoadingData(true);
       setDataError(null);
 
-      const { data: systemsData, error: systemsError } = await supabase
-        .from('systems')
-        .select('*')
-        .order('created_at', { ascending: true });
-
-      const { data: habitsData, error: habitsError } = await supabase.from('habits').select('*');
+      const [systemsRes, habitsRes] = await Promise.all([
+        supabase
+          .from('systems')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('order_index', { ascending: true }),
+        supabase
+          .from('habits')
+          .select('*')
+          .eq('user_id', user.id),
+      ]);
 
       if (!isMounted) return;
 
-      if (systemsError || habitsError) {
-        console.error('Error loading data', systemsError || habitsError);
-        setDataError(systemsError || habitsError);
+      if (systemsRes.error || habitsRes.error) {
+        console.error('Error loading data', systemsRes.error || habitsRes.error);
+        setDataError(systemsRes.error || habitsRes.error);
         setIsLoadingData(false);
         setHydrated(true);
         return;
       }
 
-      const normalizedSystems = (systemsData || []).map(normalizeSystem);
-      const normalizedHabits = (habitsData || []).map(normalizeHabit);
+      const normalizedSystems = (systemsRes.data || []).map(normalizeSystem);
+      const normalizedHabits = (habitsRes.data || []).map(normalizeHabit);
       setSystems(normalizedSystems);
       setHabits(normalizedHabits);
       const initialSystem = normalizedSystems[0] || null;
@@ -123,7 +140,7 @@ function App() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [user?.id, authLoading]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -165,10 +182,14 @@ function App() {
   }, [currentSystem]);
 
   const createSystem = async (newSystemInput = {}) => {
+    if (!user?.id) {
+      console.error('No user; cannot create system');
+      return;
+    }
     console.log('createSystem called with', newSystemInput);
 
     const payload = {
-      user_id: null,
+      user_id: user.id,
       name: newSystemInput.name || 'New system',
       color: newSystemInput.color || '#FF6347',
       icon: newSystemInput.icon || '★',

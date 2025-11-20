@@ -1245,3 +1245,21 @@ h4 {
   border-top: 1px solid #262626;
   flex-shrink: 0;
 }
+
+.completion-trend-card {
+  background: #050505;
+  border-radius: 20px;
+  border: 1px solid #262626;
+  padding: 12px 18px 16px;
+}
+
+.completion-trend-card .card-meta {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: #777;
+}
+
+.completion-chart-wrapper {
+  margin-top: 4px;
+  height: 220px;
+}

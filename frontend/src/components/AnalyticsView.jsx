@@ -1,5 +1,6 @@
 // Component: analytics plus insights placeholders for deeper intelligence.
 import AiCoachPanel from './AiCoachPanel';
+import { HabitCompletionTrendChart } from './HabitCompletionTrendChart';
 import { completionBySystem, percent } from '../utils/analytics';
 
 const ProgressBar = ({ percentValue }) => (
@@ -26,7 +27,10 @@ const AnalyticsView = ({ systems, habits, statusMap }) => {
 
   return (
     <div className="analytics-grid">
-      <AiCoachPanel context={coachContext} />
+      <div className="stack md">
+        <AiCoachPanel context={coachContext} />
+        <HabitCompletionTrendChart />
+      </div>
       <div className="stack md">
         <div className="card">
           <div className="card-header">

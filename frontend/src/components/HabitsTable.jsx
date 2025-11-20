@@ -85,7 +85,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
         <label className="stack xs">
           <span className="label">Frequency</span>
           <select
-            className="input"
+            className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
             value={editing.frequency.type}
             onChange={(e) =>
               setEditing({
@@ -97,9 +97,9 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
               })
             }
           >
-            <option value="daily">Daily</option>
+            <option value="daily">Every day</option>
             <option value="everyOtherDay">Every other day</option>
-            <option value="daysOfWeek">Days of week</option>
+            <option value="daysOfWeek">Specific days of the week</option>
           </select>
         </label>
         <label className="stack xs">
@@ -168,7 +168,8 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
     setOpenNotesIds([]);
   }, [system?.id]);
 
-  const currentHabits = remoteHabits.length ? remoteHabits : habits;
+  const filteredRemoteHabits = remoteHabits.filter((habit) => habit.system_id === system?.id);
+  const currentHabits = remoteHabits.length ? filteredRemoteHabits : habits;
 
   if (!system) {
     return (

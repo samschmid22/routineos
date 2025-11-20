@@ -225,19 +225,57 @@ function App() {
     });
   };
 
-  const saveSystem = () => {
+  const saveSystem = async () => {
     if (!systemDraft || !systemDraft.name.trim()) return;
-    const exists = systems.some((sys) => sys.id === systemDraft.id);
-    const next = exists
-      ? systems.map((sys) => (sys.id === systemDraft.id ? systemDraft : sys))
-      : [...systems, systemDraft];
+    if (!user?.id) {
+      console.error('No user; cannot save system');
+      return;
+    }
 
-    setSystems(next);
-    setSelectedSystemId(systemDraft.id);
+    const payload = {
+      name: systemDraft.name.trim(),
+      description: systemDraft.description || '',
+      color: systemDraft.color || '#F97316',
+      icon: systemDraft.icon || '✨',
+    };
+
+    const { data, error } = await supabase
+      .from('systems')
+      .update(payload)
+      .eq('id', systemDraft.id)
+      .eq('user_id', user.id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Supabase update error (systems):', error.message, error.details, error.hint);
+      return;
+    }
+
+    const normalized = normalizeSystem(data);
+    setSystems((prev) => prev.map((sys) => (sys.id === normalized.id ? normalized : sys)));
+    setSelectedSystemId(normalized.id);
+    setSystemDraft(normalized);
   };
 
-  const deleteSystem = () => {
+  const deleteSystem = async () => {
     if (!currentSystem) return;
+    if (!user?.id) {
+      console.error('No user; cannot delete system');
+      return;
+    }
+
+    const { error } = await supabase
+      .from('systems')
+      .delete()
+      .eq('id', currentSystem.id)
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error('Supabase delete error (systems):', error.message, error.details, error.hint);
+      return;
+    }
+
     const nextSystems = systems.filter((sys) => sys.id !== currentSystem.id);
     const nextHabits = habits.filter((habit) => habit.systemId !== currentSystem.id);
     setSystems(nextSystems);

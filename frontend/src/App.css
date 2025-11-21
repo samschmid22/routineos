@@ -1402,6 +1402,29 @@ h4 {
   font-size: 0.85rem;
 }
 
+.auth-info {
+  font-size: 0.85rem;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.auth-success {
+  color: #34d399;
+  font-size: 0.85rem;
+}
+
+.auth-link {
+  border: none;
+  background: transparent;
+  color: #f97316;
+  font-size: 0.8rem;
+  text-align: left;
+  padding: 0;
+  cursor: pointer;
+}
+
 .auth-toggle {
   border: none;
   background: transparent;
@@ -1409,4 +1432,110 @@ h4 {
   cursor: pointer;
   align-self: flex-start;
   font-size: 0.85rem;
+}
+
+.profile-menu {
+  position: relative;
+}
+
+.profile-trigger {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background: var(--field-bg);
+  color: var(--text);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  z-index: 1000;
+}
+
+.profile-dropdown button {
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.profile-dropdown button:hover {
+  background: var(--pill-bg);
+}
+
+.profile-panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 80px 16px;
+  z-index: 1100;
+}
+
+.profile-panel {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+}
+
+.profile-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.profile-panel-close {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.profile-panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profile-secondary-btn {
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  background: var(--field-bg);
+  color: var(--text);
+  padding: 8px 12px;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.profile-placeholder-pill {
+  border-radius: 999px;
+  border: 1px dashed var(--card-border);
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  color: var(--muted);
 }

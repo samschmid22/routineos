@@ -8,6 +8,7 @@ import SystemsList from './components/SystemsList';
 import Tabs from './components/Tabs';
 import TodayView from './components/TodayView';
 import AuthPage from './components/AuthPage';
+import ProfileMenu from './components/ProfileMenu';
 import { useAuth } from './context/AuthContext.jsx';
 import { formatDisplayDate, isHabitScheduledForDate, todayString } from './utils/date';
 import { getEffectiveHabitStatus, HABIT_STATUSES } from './utils/status';
@@ -489,6 +490,7 @@ function App() {
               </button>
             </div>
             <div className="date-chip">{formatDisplayDate(new Date())}</div>
+            <ProfileMenu />
           </div>
         </div>
         <div className="title-block">

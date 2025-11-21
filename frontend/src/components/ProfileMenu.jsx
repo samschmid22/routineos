@@ -6,6 +6,8 @@ const ProfileMenu = () => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [panel, setPanel] = useState(null);
+  const [pwForm, setPwForm] = useState({ current: '', next: '', confirm: '' });
+  const [pwStatus, setPwStatus] = useState({ loading: false, error: '', success: '' });
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -29,6 +31,37 @@ const ProfileMenu = () => {
       await supabase.auth.resetPasswordForEmail(user.email);
     } catch (err) {
       console.error('Password reset error', err);
+    }
+  };
+
+  const handlePasswordUpdate = async (event) => {
+    event.preventDefault();
+    setPwStatus({ loading: true, error: '', success: '' });
+    if (!pwForm.current || !pwForm.next || !pwForm.confirm) {
+      setPwStatus({ loading: false, error: 'All fields are required.', success: '' });
+      return;
+    }
+    if (pwForm.next !== pwForm.confirm) {
+      setPwStatus({ loading: false, error: 'New passwords do not match.', success: '' });
+      return;
+    }
+    try {
+      const { error: verifyError } = await supabase.auth.signInWithPassword({
+        email: user?.email,
+        password: pwForm.current,
+      });
+      if (verifyError) throw verifyError;
+      const { error: updateError } = await supabase.auth.updateUser({ password: pwForm.next });
+      if (updateError) throw updateError;
+      setPwForm({ current: '', next: '', confirm: '' });
+      setPwStatus({ loading: false, error: '', success: 'Password updated successfully.' });
+    } catch (err) {
+      console.error('Password update error', err);
+      setPwStatus({
+        loading: false,
+        error: "We couldn't update your password. Please check your current password and try again.",
+        success: '',
+      });
     }
   };
 
@@ -63,18 +96,55 @@ const ProfileMenu = () => {
               </button>
             </div>
             {panel === 'account' ? (
-              <div className="profile-panel-body">
-                <p>
-                  <span className="muted">Email:</span> {user?.email}
-                </p>
-                <p>
-                  <span className="muted">User ID:</span> {user?.id}
-                </p>
-                <button type="button" className="profile-secondary-btn" onClick={handlePasswordReset}>
-                  Send password reset email
-                </button>
-              </div>
-            ) : (
+          <div className="profile-panel-body">
+            <p>
+              <span className="muted">Email:</span> {user?.email}
+            </p>
+            <p>
+              <span className="muted">User ID:</span> {user?.id}
+            </p>
+            <button type="button" className="profile-secondary-btn" onClick={handlePasswordReset}>
+              Send password reset email
+            </button>
+            <form className="profile-password-form" onSubmit={handlePasswordUpdate}>
+              <label className="stack xs">
+                <span className="label">Current password</span>
+                <input
+                  className="input"
+                  type="password"
+                  value={pwForm.current}
+                  onChange={(e) => setPwForm((prev) => ({ ...prev, current: e.target.value }))}
+                  required
+                />
+              </label>
+              <label className="stack xs">
+                <span className="label">New password</span>
+                <input
+                  className="input"
+                  type="password"
+                  value={pwForm.next}
+                  onChange={(e) => setPwForm((prev) => ({ ...prev, next: e.target.value }))}
+                  required
+                />
+              </label>
+              <label className="stack xs">
+                <span className="label">Confirm new password</span>
+                <input
+                  className="input"
+                  type="password"
+                  value={pwForm.confirm}
+                  onChange={(e) => setPwForm((prev) => ({ ...prev, confirm: e.target.value }))}
+                  required
+                />
+                {pwStatus.error && <p className="auth-error">{pwStatus.error}</p>}
+                {pwStatus.success && <p className="auth-success">{pwStatus.success}</p>}
+              </label>
+              <button type="submit" className="profile-secondary-btn" disabled={pwStatus.loading}>
+                {pwStatus.loading ? 'Updating...' : 'Update password'}
+              </button>
+            </form>
+          </div>
+        ) : (
               <div className="profile-panel-body">
                 <p className="muted">Notification preferences coming soon.</p>
                 <div className="profile-placeholder-pill">Daily reminder emails</div>

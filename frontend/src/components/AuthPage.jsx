@@ -10,6 +10,9 @@ const AuthPage = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [showResend, setShowResend] = useState(false);
   const [resendStatus, setResendStatus] = useState('idle');
+  const [showReset, setShowReset] = useState(false);
+  const [resetStatus, setResetStatus] = useState('idle');
+  const [resetMessage, setResetMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
   const resetMessages = () => {
@@ -69,6 +72,24 @@ const AuthPage = () => {
   const toggleMode = () => {
     setMode(mode === 'login' ? 'signup' : 'login');
     resetMessages();
+    setShowReset(false);
+    setResetStatus('idle');
+    setResetMessage('');
+  };
+
+  const handleResetPassword = async (event) => {
+    event.preventDefault();
+    setResetStatus('sending');
+    setResetMessage('');
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email);
+    if (resetError) {
+      console.error(resetError);
+      setResetStatus('error');
+      setResetMessage("We couldn't send a reset link. Please try again.");
+      return;
+    }
+    setResetStatus('sent');
+    setResetMessage("If an account exists with that email, we've sent a password reset link.");
   };
 
   return (
@@ -112,6 +133,27 @@ const AuthPage = () => {
             </div>
           )}
           {successMessage && <p className="auth-success">{successMessage}</p>}
+          {mode === 'login' && (
+            <button type="button" className="auth-link" onClick={() => setShowReset((prev) => !prev)}>
+              Forgot password?
+            </button>
+          )}
+          {showReset && (
+            <form className="auth-reset" onSubmit={handleResetPassword}>
+              <label className="auth-label">
+                Reset email
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              </label>
+              {resetMessage && (
+                <p className={`auth-reset-message ${resetStatus === 'error' ? 'auth-error' : 'auth-info'}`}>
+                  {resetMessage}
+                </p>
+              )}
+              <button type="submit" className="btn-primary" disabled={resetStatus === 'sending'}>
+                {resetStatus === 'sending' ? 'Sending...' : 'Send reset link'}
+              </button>
+            </form>
+          )}
           <button type="submit" className="btn-primary" disabled={loading}>
             {loading ? 'Working...' : mode === 'login' ? 'Log in' : 'Sign up'}
           </button>

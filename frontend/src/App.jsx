@@ -240,6 +240,7 @@ function App() {
       .from('systems')
       .update(payload)
       .eq('id', systemDraft.id)
+      .eq('user_id', user.id)
       .select()
       .single();
 

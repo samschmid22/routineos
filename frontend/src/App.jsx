@@ -55,6 +55,7 @@ const normalizeHabit = (habit) => {
     notes: habit.notes ?? habit.description ?? '',
     durationMinutes: habit.durationMinutes ?? habit.duration_minutes ?? 0,
     intervalDays: habit.intervalDays ?? habit.interval_days ?? null,
+    subHabits: habit.subHabits ?? habit.sub_habits ?? [],
     systemId: habit.systemId ?? habit.system_id,
   };
 };

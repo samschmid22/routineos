@@ -54,6 +54,7 @@ const normalizeHabit = (habit) => {
     daysOfWeek: frequency.daysOfWeek || [],
     notes: habit.notes ?? habit.description ?? '',
     durationMinutes: habit.durationMinutes ?? habit.duration_minutes ?? 0,
+    intervalDays: habit.intervalDays ?? habit.interval_days ?? null,
     systemId: habit.systemId ?? habit.system_id,
   };
 };

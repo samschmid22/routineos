@@ -23,6 +23,7 @@ const emptyHabit = (systemId) => ({
   frequency: { type: 'daily', daysOfWeek: [] },
   frequencyType: 'daily',
   daysOfWeek: [],
+  intervalDays: 1,
   durationMinutes: 20,
   notes: '',
   startDate: todayString(),
@@ -31,7 +32,7 @@ const emptyHabit = (systemId) => ({
   subHabits: [],
 });
 
-const frequencyLabel = (frequency, fallbackType, fallbackDays = []) => {
+const frequencyLabel = (frequency, fallbackType, fallbackDays = [], intervalValue) => {
   if (!frequency && !fallbackType) return 'Not set';
   const type = typeof frequency === 'string' ? frequency : frequency?.type || fallbackType || '';
   const days =
@@ -44,6 +45,9 @@ const frequencyLabel = (frequency, fallbackType, fallbackDays = []) => {
       .map((d) => DAYS.find((day) => day.value === d)?.label)
       .filter(Boolean);
     return labels.length ? labels.join(' ') : 'Specific days';
+  }
+  if (type === 'every_x_days') {
+    return `Every ${intervalValue || 'X'} days`;
   }
   if (type === 'weekly') return 'Weekly';
   if (type === 'monthly') return 'Monthly';
@@ -70,11 +74,17 @@ const hydrateHabitRow = (habit, fallbackSystemId) => {
     (typeof habit.frequency === 'object' && normalizeDaysForDraft(habit.frequency.daysOfWeek)) ||
     normalizeDaysForDraft(habit.daysOfWeek || habit.days_of_week || []);
 
+  const fallbackInterval =
+    habit.intervalDays ??
+    habit.interval_days ??
+    (frequencyType === 'every_x_days' ? 1 : null);
+
   return {
     ...habit,
     systemId: habit.systemId ?? habit.system_id ?? fallbackSystemId,
     notes: habit.notes ?? habit.description ?? '',
     durationMinutes: habit.durationMinutes ?? habit.duration_minutes ?? 0,
+    intervalDays: fallbackInterval,
     frequency: {
       type: frequencyType,
       daysOfWeek: days,
@@ -118,17 +128,19 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
                   const nextType = e.target.value;
                   setEditing({
                     ...editing,
-          frequency: {
+                    frequency: {
                       type: nextType,
                       daysOfWeek: editing.frequency.daysOfWeek || [],
                     },
                     frequencyType: nextType,
                     daysOfWeek: editing.frequency.daysOfWeek || [],
+                    intervalDays: nextType === 'every_x_days' ? editing.intervalDays || 1 : editing.intervalDays || 1,
                   });
                 }}
               >
                 <option value="daily">Every day</option>
                 <option value="everyOtherDay">Every other day</option>
+                <option value="every_x_days">Every X days</option>
                 <option value="daysOfWeek">Specific days of the week</option>
               </select>
               <span className="select-caret" aria-hidden="true">
@@ -152,6 +164,24 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
               </button>
             ))}
           </div>
+        )}
+        {editing.frequency.type === 'every_x_days' && (
+          <label className="stack xs">
+            <span className="label">Number of days</span>
+            <input
+              className="input"
+              type="number"
+              min="1"
+              max="60"
+              value={editing.intervalDays}
+              onChange={(e) =>
+                setEditing({
+                  ...editing,
+                  intervalDays: Math.max(1, Number(e.target.value) || 1),
+                })
+              }
+            />
+          </label>
         )}
 
         <div className="grid two">
@@ -241,6 +271,8 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
     const daysOfWeekValue = editing.frequency?.daysOfWeek || editing.daysOfWeek || [];
     const daysForDb = Array.isArray(daysOfWeekValue) ? daysOfWeekValue.map((day) => day.toString()) : [];
     const durationValue = Number(editing.durationMinutes) || 0;
+    const intervalValue =
+      frequencyValue === 'every_x_days' ? Math.max(1, Number(editing.intervalDays) || 1) : null;
 
     if (isNewDraft && user) {
       const insertPayload = {
@@ -254,6 +286,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
         duration_minutes: durationValue,
         status: editing.status || 'notStarted',
         order_index: currentHabits.length,
+        interval_days: intervalValue,
         sub_habits: editing.subHabits || [], // UPDATED: persist subhabits on insert
       };
 
@@ -278,6 +311,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
       days_of_week: daysForDb,
       duration_minutes: durationValue,
       status: editing.status || 'notStarted',
+      interval_days: intervalValue,
       sub_habits: editing.subHabits || [], // UPDATED: persist subhabits on update
     };
 
@@ -325,7 +359,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
                 <strong>{habit.name}</strong>
               </div>
               <div className="muted small freq-text">
-                {frequencyLabel(habit.frequency, habit.frequencyType, habit.daysOfWeek)}
+                {frequencyLabel(habit.frequency, habit.frequencyType, habit.daysOfWeek, habit.intervalDays)}
               </div>
               <div>{habit.durationMinutes} min</div>
               <div className="row gap-6 wrap actions-row">

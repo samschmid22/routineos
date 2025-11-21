@@ -47,10 +47,12 @@ export const getWeekdayIndex = (dateString) => {
 export const isHabitScheduledForDate = (habit, dateString) => {
   if (!habit) return false;
   const target = new Date(`${dateString}T00:00:00`);
-  const start = habit.startDate ? new Date(`${habit.startDate}T00:00:00`) : target;
+  const startDateString = habit.startDate || habit.start_date || habit.created_at?.slice(0, 10) || dateString;
+  const start = new Date(`${startDateString}T00:00:00`);
   const dayOfWeek = target.getDay();
-  const freqType = habit.frequency?.type || habit.frequencyType;
+  const freqType = habit.frequency?.type || habit.frequencyType || habit.frequency;
   const daysOfWeek = habit.frequency?.daysOfWeek || habit.daysOfWeek || [];
+  const intervalDays = habit.intervalDays || habit.interval_days;
 
   if (freqType === 'daily') return true;
 
@@ -61,6 +63,12 @@ export const isHabitScheduledForDate = (habit, dateString) => {
 
   if (freqType === 'daysOfWeek') {
     return Array.isArray(daysOfWeek) && daysOfWeek.includes(dayOfWeek);
+  }
+
+  if (freqType === 'every_x_days') {
+    const daysFromStart = Math.floor((target.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    if (!intervalDays || intervalDays < 1) return false;
+    return daysFromStart >= 0 && daysFromStart % intervalDays === 0;
   }
 
   return false;

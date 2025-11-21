@@ -81,7 +81,7 @@ const hydrateHabitRow = (habit, fallbackSystemId) => {
     },
     frequencyType,
     daysOfWeek: days,
-    subHabits: habit.subHabits || [],
+    subHabits: habit.subHabits || habit.sub_habits || [], // UPDATED: hydrate from JSON column
   };
 };
 
@@ -100,12 +100,12 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
             <span className="label">Name</span>
             <input
               className="input"
-            value={editing.name}
-            onChange={(e) => setEditing({ ...editing, name: e.target.value })}
-            placeholder="Gym"
-          />
-        </label>
-      </div>
+              value={editing.name}
+              onChange={(e) => setEditing({ ...editing, name: e.target.value })}
+              placeholder="Gym"
+            />
+          </label>
+        </div>
 
         <div className="grid two">
           <label className="stack xs">
@@ -118,7 +118,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
                   const nextType = e.target.value;
                   setEditing({
                     ...editing,
-                    frequency: {
+          frequency: {
                       type: nextType,
                       daysOfWeek: editing.frequency.daysOfWeek || [],
                     },
@@ -254,6 +254,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
         duration_minutes: durationValue,
         status: editing.status || 'notStarted',
         order_index: currentHabits.length,
+        sub_habits: editing.subHabits || [], // UPDATED: persist subhabits on insert
       };
 
       const { data, error } = await supabase.from('habits').insert([insertPayload]).select().single();
@@ -277,6 +278,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
       days_of_week: daysForDb,
       duration_minutes: durationValue,
       status: editing.status || 'notStarted',
+      sub_habits: editing.subHabits || [], // UPDATED: persist subhabits on update
     };
 
     const { data, error } = await supabase.from('habits').update(updatePayload).eq('id', editing.id).select().single();

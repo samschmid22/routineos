@@ -253,6 +253,7 @@ function App() {
     setSystems((prev) => prev.map((sys) => (sys.id === normalized.id ? normalized : sys)));
     setSelectedSystemId(normalized.id);
     setSystemDraft(normalized);
+    await loadUserData();
   };
 
   const deleteSystem = async () => {

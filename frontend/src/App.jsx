@@ -240,7 +240,6 @@ function App() {
       .from('systems')
       .update(payload)
       .eq('id', systemDraft.id)
-      .eq('user_id', user.id)
       .select()
       .single();
 
@@ -262,22 +261,14 @@ function App() {
       return;
     }
 
-    const { error } = await supabase
-      .from('systems')
-      .delete()
-      .eq('id', currentSystem.id)
-      .eq('user_id', user.id);
+    const { error } = await supabase.from('systems').delete().eq('id', currentSystem.id);
 
     if (error) {
       console.error('Supabase delete error (systems):', error.message, error.details, error.hint);
       return;
     }
 
-    await supabase
-      .from('habits')
-      .delete()
-      .eq('system_id', currentSystem.id)
-      .eq('user_id', user.id);
+    await supabase.from('habits').delete().eq('system_id', currentSystem.id);
 
     const nextSystems = systems.filter((sys) => sys.id !== currentSystem.id);
     const nextHabits = habits.filter((habit) => habit.systemId !== currentSystem.id);
@@ -336,11 +327,7 @@ function App() {
 
     const habit = habits.find((h) => h.id === habitId);
 
-    const { error } = await supabase
-      .from('habits')
-      .delete()
-      .eq('id', habitId)
-      .eq('user_id', user.id);
+    const { error } = await supabase.from('habits').delete().eq('id', habitId);
 
     if (error) {
       console.error('Supabase delete error (habits):', error.message, error.details, error.hint);

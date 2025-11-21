@@ -110,8 +110,10 @@ function App() {
 
     const normalizedSystems = (systemsRes.data || []).map(normalizeSystem);
     const normalizedHabits = (habitsRes.data || []).map(normalizeHabit);
+    const systemIds = new Set(normalizedSystems.map((sys) => sys.id));
+    const filteredHabits = normalizedHabits.filter((habit) => systemIds.has(habit.systemId));
     setSystems(normalizedSystems);
-    setHabits(normalizedHabits);
+    setHabits(filteredHabits);
     const initialSystem = normalizedSystems[0] || null;
     setSelectedSystemId(initialSystem?.id || null);
     setSystemDraft(initialSystem);

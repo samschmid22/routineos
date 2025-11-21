@@ -74,7 +74,6 @@ const TodayView = ({
                   <div className="stack xs">
                     <div className="row gap-6 align-center">
                       <h3>{habit.name}</h3>
-                      {hasSubHabits && <span className="checklist-indicator" aria-hidden="true">☑</span>}
                     </div>
                     <div className="row gap-8 wrap">
                       <span className="pill ghost pill-system">

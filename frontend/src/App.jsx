@@ -1,5 +1,5 @@
 // App shell: handles navigation, theming, persistence, and passes data to views.
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import AnalyticsView from './components/AnalyticsView';
 import HabitsTable from './components/HabitsTable';
 import { RoutineOsChat } from './components/RoutineOsChat';
@@ -83,6 +83,42 @@ function App() {
     setTodayOrder(storedOrder);
   }, []);
 
+  const loadUserData = useCallback(async () => {
+    if (!user?.id) return;
+    setIsLoadingData(true);
+    setDataError(null);
+
+    const [systemsRes, habitsRes] = await Promise.all([
+      supabase
+        .from('systems')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('order_index', { ascending: true }),
+      supabase
+        .from('habits')
+        .select('*')
+        .eq('user_id', user.id),
+    ]);
+
+    if (systemsRes.error || habitsRes.error) {
+      console.error('Error loading data', systemsRes.error || habitsRes.error);
+      setDataError(systemsRes.error || habitsRes.error);
+      setIsLoadingData(false);
+      setHydrated(true);
+      return;
+    }
+
+    const normalizedSystems = (systemsRes.data || []).map(normalizeSystem);
+    const normalizedHabits = (habitsRes.data || []).map(normalizeHabit);
+    setSystems(normalizedSystems);
+    setHabits(normalizedHabits);
+    const initialSystem = normalizedSystems[0] || null;
+    setSelectedSystemId(initialSystem?.id || null);
+    setSystemDraft(initialSystem);
+    setHydrated(true);
+    setIsLoadingData(false);
+  }, [user?.id]);
+
   // Load systems & habits for the signed-in user.
   useEffect(() => {
     if (authLoading) return;
@@ -98,49 +134,8 @@ function App() {
       return;
     }
 
-    let isMounted = true;
-    const loadData = async () => {
-      setIsLoadingData(true);
-      setDataError(null);
-
-      const [systemsRes, habitsRes] = await Promise.all([
-        supabase
-          .from('systems')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('order_index', { ascending: true }),
-        supabase
-          .from('habits')
-          .select('*')
-          .eq('user_id', user.id),
-      ]);
-
-      if (!isMounted) return;
-
-      if (systemsRes.error || habitsRes.error) {
-        console.error('Error loading data', systemsRes.error || habitsRes.error);
-        setDataError(systemsRes.error || habitsRes.error);
-        setIsLoadingData(false);
-        setHydrated(true);
-        return;
-      }
-
-      const normalizedSystems = (systemsRes.data || []).map(normalizeSystem);
-      const normalizedHabits = (habitsRes.data || []).map(normalizeHabit);
-      setSystems(normalizedSystems);
-      setHabits(normalizedHabits);
-      const initialSystem = normalizedSystems[0] || null;
-      setSelectedSystemId(initialSystem?.id || null);
-      setSystemDraft(initialSystem);
-      setHydrated(true);
-      setIsLoadingData(false);
-    };
-
-    loadData();
-    return () => {
-      isMounted = false;
-    };
-  }, [user?.id, authLoading]);
+    loadUserData();
+  }, [user?.id, authLoading, loadUserData]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -276,6 +271,12 @@ function App() {
       return;
     }
 
+    await supabase
+      .from('habits')
+      .delete()
+      .eq('system_id', currentSystem.id)
+      .eq('user_id', user.id);
+
     const nextSystems = systems.filter((sys) => sys.id !== currentSystem.id);
     const nextHabits = habits.filter((habit) => habit.systemId !== currentSystem.id);
     setSystems(nextSystems);
@@ -325,8 +326,25 @@ function App() {
     }
   };
 
-  const deleteHabit = (habitId) => {
+  const deleteHabit = async (habitId) => {
+    if (!user?.id) {
+      console.error('No user; cannot delete habit');
+      return;
+    }
+
     const habit = habits.find((h) => h.id === habitId);
+
+    const { error } = await supabase
+      .from('habits')
+      .delete()
+      .eq('id', habitId)
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error('Supabase delete error (habits):', error.message, error.details, error.hint);
+      return;
+    }
+
     setHabits((prev) => prev.filter((h) => h.id !== habitId));
     if (habit?.subHabits) {
       const removedIds = habit.subHabits.map((sub) => sub.id);

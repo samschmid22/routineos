@@ -54,13 +54,26 @@ const frequencyLabel = (frequency, fallbackType, fallbackDays = [], intervalValu
   return type ? type : 'Custom';
 };
 
-const normalizeDaysForDraft = (value = []) =>
-  (Array.isArray(value) ? value : [])
+const normalizeDaysForDraft = (value = []) => {
+  let arrayValue = value;
+  if (!Array.isArray(arrayValue) && typeof arrayValue === 'string') {
+    try {
+      const parsed = JSON.parse(arrayValue);
+      arrayValue = Array.isArray(parsed) ? parsed : [];
+    } catch {
+      arrayValue = [];
+    }
+  } else if (!Array.isArray(arrayValue)) {
+    arrayValue = [];
+  }
+
+  return arrayValue
     .map((day) => {
       const parsed = Number(day);
       return Number.isNaN(parsed) ? day : parsed;
     })
     .filter((day) => day !== undefined && day !== null);
+};
 
 const hydrateHabitRow = (habit, fallbackSystemId) => {
   if (!habit) return null;

@@ -25,13 +25,26 @@ const normalizeSystem = (system) => ({
   order_index: system.order_index ?? 0,
 });
 
-const normalizeDays = (value = []) =>
-  (Array.isArray(value) ? value : [])
+const normalizeDays = (value = []) => {
+  let arrayValue = value;
+  if (!Array.isArray(arrayValue) && typeof arrayValue === 'string') {
+    try {
+      const parsed = JSON.parse(arrayValue);
+      arrayValue = Array.isArray(parsed) ? parsed : [];
+    } catch {
+      arrayValue = [];
+    }
+  } else if (!Array.isArray(arrayValue)) {
+    arrayValue = [];
+  }
+
+  return arrayValue
     .map((day) => {
       const parsed = Number(day);
       return Number.isNaN(parsed) ? day : parsed;
     })
     .filter((day) => day !== undefined && day !== null);
+};
 
 const normalizeHabit = (habit) => {
   const fallbackDays = normalizeDays(habit.daysOfWeek || habit.days_of_week || []);

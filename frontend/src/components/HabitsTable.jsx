@@ -269,7 +269,9 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
     if (!editing?.name?.trim()) return;
     const frequencyValue = editing.frequency?.type || editing.frequencyType || 'daily';
     const daysOfWeekValue = editing.frequency?.daysOfWeek || editing.daysOfWeek || [];
-    const daysForDb = Array.isArray(daysOfWeekValue) ? daysOfWeekValue.map((day) => day.toString()) : [];
+    const daysForDb = JSON.stringify(
+      Array.isArray(daysOfWeekValue) ? daysOfWeekValue.map((day) => day.toString()) : [],
+    );
     const durationValue = Number(editing.durationMinutes) || 0;
     const intervalValue =
       frequencyValue === 'every_x_days' ? Math.max(1, Number(editing.intervalDays) || 1) : null;

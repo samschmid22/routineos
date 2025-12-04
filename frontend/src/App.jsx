@@ -126,7 +126,13 @@ function App() {
     }
 
     const normalizedSystems = (systemsRes.data || []).map(normalizeSystem);
-    const normalizedHabits = (habitsRes.data || []).map(normalizeHabit);
+    const normalizedHabits = (habitsRes.data || [])
+      .map((habit) => ({
+        ...habit,
+        lastCompletedOn: habit.last_completed_on ?? habit.lastCompletedOn ?? null,
+      }))
+      .map(normalizeHabit);
+    console.log('Loaded habits from Supabase', normalizedHabits);
     const systemIds = new Set(normalizedSystems.map((sys) => sys.id));
     const filteredHabits = normalizedHabits.filter((habit) => systemIds.has(habit.systemId));
     setSystems(normalizedSystems);
@@ -316,32 +322,54 @@ function App() {
       prev.map((habit) => {
         if (habit.id !== habitId) return habit;
         const derived = getEffectiveHabitStatus(habit, date, nextStatuses);
+        const nextLastCompletedOn = derived === 'completed' ? date : null;
         return {
           ...habit,
           status: derived,
-          lastCompletedOn: derived === 'completed' ? date : habit.lastCompletedOn,
+          lastCompletedOn: nextLastCompletedOn,
+          last_completed_on: nextLastCompletedOn,
         };
       }),
     );
   };
 
   const persistHabitStatus = useCallback(
-    async (habitId, nextStatus, nextLastCompletedOn) => {
-      if (!user?.id) return;
+    async (habitId, newStatus) => {
+      const today = todayString();
+      const lastCompletedOn = newStatus === 'completed' ? today : null;
+      console.log('Updating habit status', { habitId, newStatus, lastCompletedOn });
+
+      if (!user?.id) {
+        setHabits((prev) =>
+          prev.map((habit) =>
+            habit.id === habitId ? { ...habit, status: newStatus, lastCompletedOn, last_completed_on: lastCompletedOn } : habit,
+          ),
+        );
+        return;
+      }
+
       try {
-        const payload = {
-          status: nextStatus,
-          lastCompletedOn: nextLastCompletedOn,
-          last_completed_on: nextLastCompletedOn,
-        };
         const { error } = await supabase
           .from('habits')
-          .update(payload)
+          .update({
+            status: newStatus,
+            last_completed_on: lastCompletedOn,
+          })
           .eq('id', habitId)
-          .eq('user_id', user.id);
+          .eq('user_id', user.id)
+          .select()
+          .single();
+
         if (error) {
-          console.error('Supabase update error (habit status):', error.message, error.details, error.hint);
+          console.error('Error updating habit status', { habitId, newStatus, error });
+          return;
         }
+
+        setHabits((prev) =>
+          prev.map((habit) =>
+            habit.id === habitId ? { ...habit, status: newStatus, lastCompletedOn, last_completed_on: lastCompletedOn } : habit,
+          ),
+        );
       } catch (error) {
         console.error('Unexpected habit status persistence error:', error);
       }
@@ -447,24 +475,10 @@ function App() {
     [todayHabits, systems],
   );
 
-  const handleStatusChange = (habitId, status) => {
-    const date = todayString();
+  const handleStatusChange = async (habitId, status) => {
     const habit = habits.find((h) => h.id === habitId);
     if (!habit) return;
     console.log('Status change', habitId, status);
-    const nextLastCompletedOn = status === 'completed' ? date : null;
-
-    setHabits((prev) =>
-      prev.map((h) =>
-        h.id === habitId
-          ? {
-              ...h,
-              status,
-              lastCompletedOn: nextLastCompletedOn,
-            }
-          : h,
-      ),
-    );
 
     if (habit.subHabits?.length) {
       setSubHabitStatuses((prev) => {
@@ -483,7 +497,7 @@ function App() {
       });
     }
 
-    persistHabitStatus(habitId, status, nextLastCompletedOn);
+    await persistHabitStatus(habitId, status);
   };
 
   const setManualTodayOrder = (orderedIds = []) => {

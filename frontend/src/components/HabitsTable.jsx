@@ -304,6 +304,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
         order_index: currentHabits.length,
         interval_days: intervalValue,
         sub_habits: editing.subHabits || [], // UPDATED: persist subhabits on insert
+        last_completed_on: editing.lastCompletedOn || null,
       };
 
       const { data, error } = await supabase.from('habits').insert([insertPayload]).select().single();
@@ -329,6 +330,7 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
       status: editing.status || 'notStarted',
       interval_days: intervalValue,
       sub_habits: editing.subHabits || [], // UPDATED: persist subhabits on update
+      last_completed_on: editing.lastCompletedOn || null,
     };
 
     const { data, error } = await supabase.from('habits').update(updatePayload).eq('id', editing.id).select().single();

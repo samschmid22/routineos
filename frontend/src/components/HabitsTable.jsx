@@ -105,6 +105,7 @@ const hydrateHabitRow = (habit, fallbackSystemId) => {
     frequencyType,
     daysOfWeek: days,
     subHabits: habit.subHabits || habit.sub_habits || [], // UPDATED: hydrate from JSON column
+    lastCompletedOn: habit.lastCompletedOn ?? habit.last_completed_on ?? null,
   };
 };
 

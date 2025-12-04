@@ -70,6 +70,7 @@ const normalizeHabit = (habit) => {
     intervalDays: habit.intervalDays ?? habit.interval_days ?? null,
     subHabits: habit.subHabits ?? habit.sub_habits ?? [],
     systemId: habit.systemId ?? habit.system_id,
+    lastCompletedOn: habit.lastCompletedOn ?? habit.last_completed_on ?? null,
   };
 };
 
@@ -331,6 +332,7 @@ function App() {
         const payload = {
           status: nextStatus,
           lastCompletedOn: nextLastCompletedOn,
+          last_completed_on: nextLastCompletedOn,
         };
         const { error } = await supabase
           .from('habits')
@@ -450,7 +452,7 @@ function App() {
     const habit = habits.find((h) => h.id === habitId);
     if (!habit) return;
     console.log('Status change', habitId, status);
-    const nextLastCompletedOn = status === 'completed' ? date : habit.lastCompletedOn;
+    const nextLastCompletedOn = status === 'completed' ? date : null;
 
     setHabits((prev) =>
       prev.map((h) =>

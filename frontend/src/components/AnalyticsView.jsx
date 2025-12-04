@@ -1,6 +1,7 @@
 // Component: analytics plus insights placeholders for deeper intelligence.
 import AiCoachPanel from './AiCoachPanel';
 import { HabitCompletionTrendChart } from './HabitCompletionTrendChart';
+import HabitCompletionLikelihood from './HabitCompletionLikelihood';
 import { completionBySystem, completionTrend, percent } from '../utils/analytics';
 
 const ProgressBar = ({ percentValue }) => (
@@ -95,13 +96,7 @@ const AnalyticsView = ({ systems, habits, statusMap }) => {
               </div>
             </div>
           </div>
-          <div className="mini-card">
-            <h4>Habit completion likelihood</h4>
-            <p className="muted small">
-              Estimate how likely you are to complete each habit based on past behavior (by weekday and time).
-            </p>
-            <div className="muted small">AI predictions coming soon.</div>
-          </div>
+          <HabitCompletionLikelihood habits={habits} systems={systems} statusMap={statusMap} />
         </div>
       </div>
     </div>

@@ -12,7 +12,7 @@ import ProfileMenu from './components/ProfileMenu';
 import { useAuth } from './context/AuthContext.jsx';
 import { formatDisplayDate, isHabitScheduledForDate, todayString } from './utils/date';
 import { getEffectiveHabitStatus, HABIT_STATUSES } from './utils/status';
-import { loadTheme, loadSubHabitStatuses, loadTodayOrder, saveTheme } from './utils/storage';
+import { loadTheme, loadSubHabitStatuses, loadTodayOrder, saveTheme, saveTodayOrder } from './utils/storage';
 import { supabase } from './lib/supabaseClient';
 import './App.css';
 
@@ -177,6 +177,11 @@ function App() {
       return [...filtered, ...missing];
     });
   }, [habits, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    saveTodayOrder(todayOrder);
+  }, [todayOrder, hydrated]);
 
   const currentSystem = systems.find((sys) => sys.id === selectedSystemId) || null;
   const currentHabits = habits.filter((habit) => habit.systemId === currentSystem?.id);

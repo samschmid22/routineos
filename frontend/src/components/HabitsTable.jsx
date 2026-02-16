@@ -109,7 +109,7 @@ const hydrateHabitRow = (habit, fallbackSystemId) => {
   };
 };
 
-const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
+const HabitsTable = ({ system, habits, nextOrderIndex, onSaveHabit, onDeleteHabit }) => {
   const [editing, setEditing] = useState(null);
   const [openNotesIds, setOpenNotesIds] = useState([]);
   const { user } = useAuth();
@@ -301,10 +301,10 @@ const HabitsTable = ({ system, habits, onSaveHabit, onDeleteHabit }) => {
         days_of_week: daysForDb,
         duration_minutes: durationValue,
         status: editing.status || 'notStarted',
-        order_index: currentHabits.length,
         interval_days: intervalValue,
         sub_habits: editing.subHabits || [], // UPDATED: persist subhabits on insert
         last_completed_on: editing.lastCompletedOn || null,
+        order_index: Number.isFinite(nextOrderIndex) ? nextOrderIndex : currentHabits.length,
       };
 
       const { data, error } = await supabase.from('habits').insert([insertPayload]).select().single();

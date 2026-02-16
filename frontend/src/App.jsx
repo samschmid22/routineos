@@ -90,6 +90,17 @@ function App() {
   const [hydrated, setHydrated] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
 
+  const orderIdsFromHabits = useCallback((items) => {
+    return [...items]
+      .sort((a, b) => {
+        const orderA = Number.isFinite(a.order_index) ? a.order_index : Number.POSITIVE_INFINITY;
+        const orderB = Number.isFinite(b.order_index) ? b.order_index : Number.POSITIVE_INFINITY;
+        if (orderA !== orderB) return orderA - orderB;
+        return (a.name || '').localeCompare(b.name || '');
+      })
+      .map((habit) => habit.id);
+  }, []);
+
   // Load theme + local-only state once.
   useEffect(() => {
     const storedTheme = loadTheme('dark');
@@ -114,7 +125,8 @@ function App() {
       supabase
         .from('habits')
         .select('*')
-        .eq('user_id', user.id),
+        .eq('user_id', user.id)
+        .order('order_index', { ascending: true }),
     ]);
 
     if (systemsRes.error || habitsRes.error) {
@@ -170,21 +182,53 @@ function App() {
   useEffect(() => {
     if (!hydrated) return;
     setTodayOrder((prev) => {
+      if (prev.length === 0) {
+        return orderIdsFromHabits(habits);
+      }
       const habitIds = habits.map((habit) => habit.id);
       const filtered = prev.filter((id) => habitIds.includes(id));
       const missing = habitIds.filter((id) => !filtered.includes(id));
       if (!missing.length && filtered.length === prev.length) return prev;
       return [...filtered, ...missing];
     });
-  }, [habits, hydrated]);
+  }, [habits, hydrated, orderIdsFromHabits]);
 
   useEffect(() => {
     if (!hydrated) return;
     saveTodayOrder(todayOrder);
   }, [todayOrder, hydrated]);
 
+  const persistHabitOrder = useCallback(
+    async (orderedIds) => {
+      if (!user?.id) return;
+      try {
+        const payload = orderedIds.map((id, index) => ({
+          id,
+          user_id: user.id,
+          order_index: index,
+        }));
+
+        const { error } = await supabase.from('habits').upsert(payload, { onConflict: 'id' });
+        if (error) {
+          console.error('Supabase order update error (habits):', error.message, error.details, error.hint);
+        }
+      } catch (error) {
+        console.error('Unexpected habit order persistence error:', error);
+      }
+    },
+    [user?.id],
+  );
+
   const currentSystem = systems.find((sys) => sys.id === selectedSystemId) || null;
   const currentHabits = habits.filter((habit) => habit.systemId === currentSystem?.id);
+  const nextHabitOrderIndex = useMemo(() => {
+    if (!habits.length) return 0;
+    const maxIndex = habits.reduce((max, habit) => {
+      const value = Number.isFinite(habit.order_index) ? habit.order_index : -1;
+      return Math.max(max, value);
+    }, -1);
+    return maxIndex + 1;
+  }, [habits]);
 
   // Keep the selected system in sync with the loaded list.
   useEffect(() => {
@@ -449,6 +493,9 @@ function App() {
       const idxA = todayOrder.indexOf(a.habit.id);
       const idxB = todayOrder.indexOf(b.habit.id);
       if (idxA === -1 && idxB === -1) {
+        const orderA = Number.isFinite(a.habit.order_index) ? a.habit.order_index : Number.POSITIVE_INFINITY;
+        const orderB = Number.isFinite(b.habit.order_index) ? b.habit.order_index : Number.POSITIVE_INFINITY;
+        if (orderA !== orderB) return orderA - orderB;
         return a.habit.name.localeCompare(b.habit.name);
       }
       if (idxA === -1) return 1;
@@ -506,12 +553,19 @@ function App() {
   };
 
   const setManualTodayOrder = (orderedIds = []) => {
-    setTodayOrder(() => {
-      const habitIds = habits.map((habit) => habit.id);
-      const filtered = orderedIds.filter((id) => habitIds.includes(id));
-      const missing = habitIds.filter((id) => !filtered.includes(id));
-      return [...filtered, ...missing];
+    const habitIds = habits.map((habit) => habit.id);
+    const filtered = orderedIds.filter((id) => habitIds.includes(id));
+    const missing = habitIds.filter((id) => !filtered.includes(id));
+    const nextOrder = [...filtered, ...missing];
+
+    setTodayOrder(nextOrder);
+    setHabits((prev) => {
+      const orderMap = new Map(nextOrder.map((id, index) => [id, index]));
+      return prev.map((habit) =>
+        orderMap.has(habit.id) ? { ...habit, order_index: orderMap.get(habit.id) } : habit,
+      );
     });
+    persistHabitOrder(nextOrder);
   };
 
   if (authLoading) {
@@ -598,6 +652,7 @@ function App() {
               <HabitsTable
                 system={systems.find((s) => s.id === selectedSystemId)}
                 habits={currentHabits}
+                nextOrderIndex={nextHabitOrderIndex}
                 onSaveHabit={upsertHabit}
                 onDeleteHabit={deleteHabit}
               />

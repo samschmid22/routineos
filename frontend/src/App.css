@@ -359,10 +359,35 @@ h4 {
   transform: none;
 }
 
-.reorder-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.drag-handle {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  background: transparent;
+  color: var(--muted);
+  cursor: grab;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0;
+  flex-shrink: 0;
+  transition: opacity 120ms ease, transform 120ms ease, border-color 120ms ease;
+}
+
+.drag-handle:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.drag-handle:focus-visible {
+  outline: 2px solid #f97316;
+  outline-offset: 2px;
 }
 
 .status-dropdown {
@@ -669,6 +694,15 @@ h4 {
   position: relative;
   cursor: default;
   overflow: visible;
+}
+
+.today-habit.dragging {
+  opacity: 0.72;
+}
+
+.today-habit.drop-target {
+  border-color: #f97316;
+  box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.35);
 }
 
 .habit-row {

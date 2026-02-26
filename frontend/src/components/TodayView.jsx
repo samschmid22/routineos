@@ -9,9 +9,10 @@ const TodayView = ({
   onSubHabitStatusChange,
   onReorder = () => {},
 }) => {
-  console.count('TodayView render');
   const [openDetails, setOpenDetails] = useState([]);
   const [expandedHabits, setExpandedHabits] = useState([]);
+  const [draggedHabitId, setDraggedHabitId] = useState(null);
+  const [dragOverHabitId, setDragOverHabitId] = useState(null);
 
   const systemMap = systems.reduce((acc, system) => ({ ...acc, [system.id]: system }), {});
 
@@ -21,17 +22,42 @@ const TodayView = ({
     );
   };
 
-  const moveHabit = (habitId, direction) => {
+  const reorderHabits = (draggedId, targetId) => {
+    if (!draggedId || !targetId || draggedId === targetId) return;
     const orderedIds = habitsForToday.map(({ habit }) => habit.id);
-    const index = orderedIds.indexOf(habitId);
-    if (index === -1) return;
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= orderedIds.length) return;
-    const next = [...orderedIds];
-    const [moved] = next.splice(index, 1);
-    next.splice(targetIndex, 0, moved);
-    console.log('moveHabit', { habitId, direction, next });
+    if (!orderedIds.includes(draggedId) || !orderedIds.includes(targetId)) return;
+
+    const next = orderedIds.filter((id) => id !== draggedId);
+    const targetIndex = next.indexOf(targetId);
+    next.splice(targetIndex, 0, draggedId);
     onReorder(next);
+  };
+
+  const handleDragStart = (event, habitId) => {
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', habitId);
+    setDraggedHabitId(habitId);
+    setDragOverHabitId(habitId);
+  };
+
+  const handleDragOver = (event, habitId) => {
+    if (!draggedHabitId || draggedHabitId === habitId) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+    setDragOverHabitId(habitId);
+  };
+
+  const handleDrop = (event, targetHabitId) => {
+    event.preventDefault();
+    const droppedHabitId = event.dataTransfer.getData('text/plain') || draggedHabitId;
+    reorderHabits(droppedHabitId, targetHabitId);
+    setDraggedHabitId(null);
+    setDragOverHabitId(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedHabitId(null);
+    setDragOverHabitId(null);
   };
 
   return (
@@ -48,29 +74,27 @@ const TodayView = ({
           const hasSubHabits = Array.isArray(habit.subHabits) && habit.subHabits.length > 0;
           const isExpanded = expandedHabits.includes(habit.id);
           return (
-            <div key={habit.id} className="card subtle hoverable habit-wide today-habit">
+            <div
+              key={habit.id}
+              className={`card subtle hoverable habit-wide today-habit ${
+                dragOverHabitId === habit.id && draggedHabitId !== habit.id ? 'drop-target' : ''
+              } ${draggedHabitId === habit.id ? 'dragging' : ''}`}
+              onDragOver={(event) => handleDragOver(event, habit.id)}
+              onDrop={(event) => handleDrop(event, habit.id)}
+            >
               <div className="row spaced align-start habit-row">
                 <div className="row gap-12 align-start habit-left">
-                  <div className="reorder-buttons">
-                    <button
-                      type="button"
-                      className="btn-icon"
-                      onClick={() => moveHabit(habit.id, 'up')}
-                      disabled={habitsForToday[0]?.habit.id === habit.id}
-                      aria-label="Move habit up"
-                    >
-                      ↑
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-icon"
-                      onClick={() => moveHabit(habit.id, 'down')}
-                      disabled={habitsForToday[habitsForToday.length - 1]?.habit.id === habit.id}
-                      aria-label="Move habit down"
-                    >
-                      ↓
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    className="drag-handle"
+                    draggable
+                    onDragStart={(event) => handleDragStart(event, habit.id)}
+                    onDragEnd={handleDragEnd}
+                    aria-label={`Drag to reorder ${habit.name}`}
+                    title="Drag to reorder"
+                  >
+                    ☰
+                  </button>
                   <div className="stack xs">
                     <div className="row gap-6 align-center">
                       <h3>{habit.name}</h3>

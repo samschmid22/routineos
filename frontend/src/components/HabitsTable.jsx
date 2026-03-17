@@ -385,7 +385,7 @@ const HabitsTable = ({ system, habits, nextOrderIndex, onSaveHabit, onDeleteHabi
                   {habit.notes && (
                     <button
                       type="button"
-                      className="btn-primary small-btn"
+                      className="btn-ghost small-btn"
                       onClick={() =>
                         setOpenNotesIds((prev) =>
                           prev.includes(habit.id) ? prev.filter((id) => id !== habit.id) : [...prev, habit.id],

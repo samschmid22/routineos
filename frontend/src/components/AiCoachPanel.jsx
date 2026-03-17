@@ -6,7 +6,7 @@ const AiCoachPanel = ({ context }) => (
       <div className="card-header">
         <div>
           <p className="eyebrow">Analytics</p>
-          <h2 className="section-title">ROUTINE OS COACH</h2>
+          <h2 className="section-title">Routine OS Coach</h2>
         </div>
       </div>
       <RoutineOsChat

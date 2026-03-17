@@ -77,8 +77,12 @@ const AuthPage = () => {
     setResetMessage('');
   };
 
-  const handleResetPassword = async (event) => {
-    event.preventDefault();
+  const handleResetPassword = async () => {
+    if (!email.trim()) {
+      setResetStatus('error');
+      setResetMessage('Enter your email first, then request a reset link.');
+      return;
+    }
     setResetStatus('sending');
     setResetMessage('');
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email);
@@ -139,7 +143,7 @@ const AuthPage = () => {
             </button>
           )}
           {showReset && (
-            <form className="auth-reset" onSubmit={handleResetPassword}>
+            <div className="auth-reset">
               <label className="auth-label">
                 Reset email
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
@@ -149,10 +153,15 @@ const AuthPage = () => {
                   {resetMessage}
                 </p>
               )}
-              <button type="submit" className="btn-primary" disabled={resetStatus === 'sending'}>
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={handleResetPassword}
+                disabled={resetStatus === 'sending'}
+              >
                 {resetStatus === 'sending' ? 'Sending...' : 'Send reset link'}
               </button>
-            </form>
+            </div>
           )}
           <button type="submit" className="btn-primary" disabled={loading}>
             {loading ? 'Working...' : mode === 'login' ? 'Log in' : 'Sign up'}

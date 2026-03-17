@@ -93,7 +93,7 @@ const TodayView = ({
                     aria-label={`Drag to reorder ${habit.name}`}
                     title="Drag to reorder"
                   >
-                    ☰
+                    ⋮⋮
                   </button>
                   <div className="stack xs">
                     <div className="row gap-6 align-center">
@@ -119,7 +119,7 @@ const TodayView = ({
                   {habit.notes && (
                     <button
                       type="button"
-                      className="btn-primary small-btn"
+                      className="btn-ghost small-btn"
                       onClick={() =>
                         setOpenDetails((prev) =>
                           prev.includes(habit.id) ? prev.filter((id) => id !== habit.id) : [...prev, habit.id],

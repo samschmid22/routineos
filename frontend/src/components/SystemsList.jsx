@@ -26,7 +26,7 @@ const SystemsList = ({
       <div className="card-header row spaced align-center">
         <div>
           <p className="eyebrow">Your pillars</p>
-          <h2 className="section-title systems-heading">SYSTEMS OVERVIEW</h2>
+          <h2 className="section-title systems-heading">Systems overview</h2>
         </div>
         <button
           type="button"
@@ -35,7 +35,7 @@ const SystemsList = ({
             console.log('New system button clicked; onCreateSystem is:', typeof onCreateSystem);
             onCreateSystem({
               name: 'New system',
-              color: '#FF6347',
+              color: '#FF7A20',
             });
           }}
         >

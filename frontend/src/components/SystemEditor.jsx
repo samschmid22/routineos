@@ -80,13 +80,13 @@ const SystemEditor = ({ system, onChange, onSave, onDelete, isNew }) => {
             <button
               type="button"
               className="color-swatch"
-              style={{ background: local?.color || '#F97316' }}
+              style={{ background: local?.color || '#FF7A20' }}
               onClick={() => {}}
             >
               <input
                 type="color"
                 className="color-input-overlay"
-                value={local?.color || '#F97316'}
+                value={local?.color || '#FF7A20'}
                 onChange={(e) => updateField('color', e.target.value)}
               />
             </button>

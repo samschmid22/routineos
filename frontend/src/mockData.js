@@ -1,6 +1,6 @@
 // Starter systems and habits to seed new users.
 const systems = [
-  { id: 'system-morning', name: 'Morning Routine', description: 'Anchors to start the day right', color: '#F97316', icon: '☀︎' },
+  { id: 'system-morning', name: 'Morning Routine', description: 'Anchors to start the day right', color: '#FF7A20', icon: '☀︎' },
   { id: 'system-body', name: 'Body', description: 'Movement, strength, recovery', color: '#22C55E', icon: '⬤' },
   { id: 'system-intelligence', name: 'Intelligence', description: 'Learning and practice', color: '#6366F1', icon: '◆' },
   { id: 'system-career', name: 'Career Growth', description: 'Skills and research', color: '#F59E0B', icon: '▲' },

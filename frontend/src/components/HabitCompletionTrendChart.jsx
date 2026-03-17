@@ -8,9 +8,29 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
+const getThemeTokens = () => {
+  if (typeof window === 'undefined') {
+    return {
+      accent: '#ff6a1a',
+      muted: '#aeb8c8',
+      card: '#1a212c',
+      border: 'rgba(226, 232, 240, 0.2)',
+    };
+  }
+
+  const styles = getComputedStyle(document.documentElement);
+  return {
+    accent: styles.getPropertyValue('--accent').trim() || '#ff6a1a',
+    muted: styles.getPropertyValue('--muted').trim() || '#aeb8c8',
+    card: styles.getPropertyValue('--card').trim() || '#1a212c',
+    border: styles.getPropertyValue('--card-border').trim() || 'rgba(226, 232, 240, 0.2)',
+  };
+};
+
 export function HabitCompletionTrendChart({ data = [] }) {
   const chartData = Array.isArray(data) ? data : [];
   const showEmptyState = chartData.length === 0 || chartData.every((day) => !day?.totalHabits);
+  const theme = getThemeTokens();
 
   return (
     <div className="completion-trend-card analytics-card">
@@ -29,17 +49,17 @@ export function HabitCompletionTrendChart({ data = [] }) {
             <AreaChart data={chartData} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="completionGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#ff6a1a" stopOpacity={0.9} />
-                  <stop offset="100%" stopColor="#ff6a1a" stopOpacity={0} />
+                  <stop offset="0%" stopColor={theme.accent} stopOpacity={0.85} />
+                  <stop offset="100%" stopColor={theme.accent} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#222" />
-              <XAxis dataKey="date" stroke="#777" />
-              <YAxis stroke="#777" tickFormatter={(v) => `${v}%`} domain={[0, 100]} />
+              <CartesianGrid strokeDasharray="4 4" stroke={theme.border} />
+              <XAxis dataKey="date" stroke={theme.muted} />
+              <YAxis stroke={theme.muted} tickFormatter={(v) => `${v}%`} domain={[0, 100]} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#050505',
-                  border: '1px solid #333',
+                  backgroundColor: theme.card,
+                  border: `1px solid ${theme.border}`,
                   borderRadius: 10,
                   fontSize: '0.8rem',
                 }}
@@ -60,10 +80,10 @@ export function HabitCompletionTrendChart({ data = [] }) {
               <Area
                 type="monotone"
                 dataKey="completionRate"
-                stroke="#ff6a1a"
+                stroke={theme.accent}
                 strokeWidth={2}
                 fill="url(#completionGradient)"
-                dot={{ r: 4, stroke: '#ff6a1a', strokeWidth: 2 }}
+                dot={{ r: 4, stroke: theme.accent, strokeWidth: 2 }}
                 activeDot={{ r: 5 }}
               />
             </AreaChart>

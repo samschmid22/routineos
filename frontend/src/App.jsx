@@ -20,7 +20,7 @@ const normalizeSystem = (system) => ({
   id: system.id,
   name: system.name,
   description: system.description || '',
-  color: system.color || '#F97316',
+  color: system.color || '#FF7A20',
   icon: system.icon || '✨',
   order_index: system.order_index ?? 0,
 });
@@ -241,7 +241,7 @@ function App() {
     const payload = {
       user_id: user.id,
       name: newSystemInput.name || 'New system',
-      color: newSystemInput.color || '#FF6347',
+      color: newSystemInput.color || '#FF7A20',
       icon: newSystemInput.icon || '★',
       order_index: systems.length,
     };
@@ -285,7 +285,7 @@ function App() {
     const payload = {
       name: systemDraft.name.trim(),
       description: systemDraft.description || '',
-      color: systemDraft.color || '#F97316',
+      color: systemDraft.color || '#FF7A20',
       icon: systemDraft.icon || '✨',
     };
 
@@ -581,9 +581,9 @@ function App() {
           </div>
         </div>
         <div className="title-block">
-          <h1 className="hero-title section-title">RUN YOUR LIFE LIKE A SYSTEM</h1>
+          <h1 className="hero-title section-title">Run your life like an operating system</h1>
           <p className="muted hero-subtitle">
-            Design elite routines, track what matters daily, and review your data like a pro.
+            Build clear routines, execute the right habits each day, and track progress with confidence.
           </p>
         </div>
       </header>
@@ -634,17 +634,17 @@ function App() {
 
       {activeTab === 'Analytics' && <AnalyticsView systems={systems} habits={habits} statusMap={statusMap} />}
 
-      <footer className="footer">Who you become is hidden in your daily actions.</footer>
+      <footer className="footer">Consistency compounds. Your standards become your identity.</footer>
 
       <button className="floating-chat-button" type="button" onClick={() => setChatOpen(true)}>
-        AI
+        Coach
       </button>
       {chatOpen && (
         <div className="ai-chat-overlay">
           <div className="floating-ai-wrapper">
             <RoutineOsChat
               todayContext={todayContext}
-              title="ROUTINE OS COACH"
+              title="Routine OS Coach"
               placeholder="Ask Routine OS Coach about today"
               onClose={() => setChatOpen(false)}
               panelClassName="chat-panel-floating"

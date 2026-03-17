@@ -1,22 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap');
+
 :root {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Manrope', 'Avenir Next', 'Segoe UI Variable', 'SF Pro Text', sans-serif;
   line-height: 1.6;
-  font-weight: 400;
+  font-weight: 500;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --accent: #ff6a1a;
+  --accent-strong: #ff7a20;
+  --accent-soft: rgba(255, 122, 32, 0.18);
+  --brand-gradient: linear-gradient(135deg, #ff5b1f 0%, #ff932d 100%);
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --shadow-md: 0 14px 30px rgba(10, 15, 24, 0.34);
+  --shadow-lg: 0 24px 54px rgba(10, 15, 24, 0.46);
+  --ring: 0 0 0 2px rgba(255, 122, 32, 0.4);
 }
 
 * {
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--page);
+  background-color: var(--page);
+  background-image:
+    radial-gradient(circle at 8% -12%, rgba(255, 122, 32, 0.16), transparent 36%),
+    radial-gradient(circle at 92% 0%, rgba(130, 149, 176, 0.2), transparent 32%),
+    linear-gradient(160deg, var(--page), var(--page-surface));
   color: var(--text);
-  transition: background 200ms ease, color 200ms ease;
+  transition: background 220ms ease, color 220ms ease;
 }
 
 a {
@@ -24,33 +46,49 @@ a {
   text-decoration: none;
 }
 
+::selection {
+  background: rgba(255, 122, 32, 0.3);
+  color: var(--text);
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
 :root,
 :root[data-theme='dark'] {
-  --page: #050505;
-  --card: #111111;
-  --card-subtle: #181818;
-  --card-border: rgba(255, 255, 255, 0.06);
-  --text: #f7f7f7;
-  --muted: #cfcfcf;
-  --field-bg: #0d0d0d;
-  --field-border: rgba(255, 255, 255, 0.1);
-  --tab-bg: rgba(255, 255, 255, 0.06);
-  --pill-bg: rgba(255, 255, 255, 0.05);
-  --progress-bg: rgba(255, 255, 255, 0.08);
-  --icon-contrast: #ffffff;
+  --page: #12161d;
+  --page-surface: #161c26;
+  --card: #1a212c;
+  --card-subtle: #212937;
+  --card-border: rgba(226, 232, 240, 0.14);
+  --text: #edf2f9;
+  --muted: #aeb8c8;
+  --field-bg: #151c27;
+  --field-border: rgba(226, 232, 240, 0.2);
+  --tab-bg: rgba(255, 255, 255, 0.08);
+  --pill-bg: rgba(255, 255, 255, 0.06);
+  --progress-bg: rgba(255, 255, 255, 0.12);
+  --icon-contrast: #121820;
 }
 
 :root[data-theme='light'] {
-  --page: #f3f4f6;
+  --page: #edf2f7;
+  --page-surface: #f6f9fc;
   --card: #ffffff;
-  --card-subtle: #f7f8fa;
-  --card-border: #e5e7eb;
-  --text: #0f172a;
-  --muted: #4b5563;
+  --card-subtle: #f3f6fa;
+  --card-border: #d2dae7;
+  --text: #182334;
+  --muted: #607088;
   --field-bg: #ffffff;
-  --field-border: #d1d5db;
-  --tab-bg: #e5e7eb;
-  --pill-bg: #f3f4f6;
-  --progress-bg: #e5e7eb;
-  --icon-contrast: #0b0b0b;
+  --field-border: #c3cfde;
+  --tab-bg: #e6edf6;
+  --pill-bg: #edf2f8;
+  --progress-bg: #d9e2ef;
+  --icon-contrast: #182334;
+  --accent-soft: rgba(255, 122, 32, 0.16);
+  --shadow-md: 0 14px 30px rgba(21, 33, 54, 0.1);
+  --shadow-lg: 0 24px 54px rgba(21, 33, 54, 0.14);
+  --ring: 0 0 0 2px rgba(255, 122, 32, 0.35);
 }

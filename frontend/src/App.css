@@ -970,16 +970,16 @@ h4 {
   border: 1px solid var(--card-border);
   background: var(--card-subtle);
   border-radius: var(--radius-md);
-  padding: 14px;
+  padding: 12px;
   color: var(--text);
   text-align: left;
   box-shadow: var(--shadow-md);
   display: grid;
-  align-content: space-between;
-  gap: 8px;
+  align-content: start;
+  gap: 6px;
   cursor: pointer;
   transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
-  min-height: 164px;
+  min-height: 136px;
 }
 
 .pillar-card.active {
@@ -1451,7 +1451,7 @@ h4 {
   }
 
   .hero-title {
-    font-size: clamp(1.5rem, 8.2vw, 2rem);
+    font-size: clamp(1.38rem, 7.4vw, 1.84rem);
     letter-spacing: 0.01em;
     line-height: 1.02;
   }

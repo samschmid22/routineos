@@ -242,7 +242,7 @@ const HabitsTable = ({ system, habits, nextOrderIndex, onSaveHabit, onDeleteHabi
           onChange={(list) => setEditing({ ...editing, subHabits: list })}
         />
 
-        <div className="row gap-8 wrap">
+        <div className="row gap-8 wrap habit-edit-actions">
           <button type="button" className="btn-primary" onClick={save}>
             Save habit
           </button>

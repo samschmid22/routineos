@@ -583,7 +583,7 @@ function App() {
         <div className="title-block">
           <h1 className="hero-title section-title">
             <span className="hero-line">Run Your Life</span>
-            <span className="hero-line">Operating System</span>
+            <span className="hero-line">Like an Operating System</span>
           </h1>
         </div>
       </header>

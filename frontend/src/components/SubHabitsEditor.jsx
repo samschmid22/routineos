@@ -36,21 +36,21 @@ const SubHabitsEditor = ({ value = [], onChange }) => {
 
   return (
     <div className="subhabits-editor">
-      <div className="row spaced align-center">
-        <h4>Sub-habits</h4>
-        <button type="button" className="btn-primary small-btn" onClick={addSubHabit}>
+      <div className="row spaced align-center subhabits-editor-header">
+        <h4 className="subhabits-editor-title">Sub-habits</h4>
+        <button type="button" className="btn-primary small-btn subhabits-add-btn" onClick={addSubHabit}>
           + Sub-habit
         </button>
       </div>
-      {value.length === 0 && <p className="muted small">No sub-habits yet.</p>}
-      <div className="stack sm">
+      {value.length === 0 && <p className="muted small subhabits-empty">No sub-habits yet.</p>}
+      <div className="stack sm subhabits-list">
         {value.map((sub, index) => {
           const displayName = sub.name?.trim() ? sub.name : `Item ${index + 1}`;
           return (
             <div key={sub.id} className="subhabit-card">
-              <div className="row spaced align-center">
-                <strong>{displayName}</strong>
-                <div className="row gap-6">
+              <div className="row spaced align-center subhabit-card-header">
+                <strong className="subhabit-card-title">{displayName}</strong>
+                <div className="row gap-6 subhabit-card-controls">
                   <button type="button" className="btn-ghost small-btn" onClick={() => move(sub.id, 'up')}>
                     ↑
                   </button>

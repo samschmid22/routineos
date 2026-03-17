@@ -66,6 +66,12 @@
   color: transparent;
 }
 
+.app-brand {
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  margin: 0;
+}
+
 h1 {
   margin: 0 0 6px;
   font-size: clamp(2rem, 4vw, 2.75rem);
@@ -160,16 +166,21 @@ h4 {
   margin-bottom: 10px;
 }
 
-.top-bar {
-  align-items: center;
+.row.top-bar {
+  align-items: flex-start;
   width: 100%;
   display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 10px;
+  flex-wrap: nowrap;
 }
 
-.top-controls {
+.row.top-controls {
+  width: 100%;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
   flex-wrap: nowrap;
 }
 
@@ -380,7 +391,13 @@ h4 {
   color: #fff;
   border: none;
   border-radius: 14px;
-  padding: 10px 16px;
+  min-height: 42px;
+  padding: 11px 18px;
+  font-size: 0.9rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 10px 24px rgba(255, 122, 32, 0.26);
@@ -405,8 +422,15 @@ h4 {
   border: 1px solid var(--card-border);
   background: var(--card-subtle);
   color: var(--text);
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
+  min-height: 42px;
+  padding: 11px 18px;
+  font-size: 0.9rem;
+  line-height: 1;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
   cursor: pointer;
   transition: opacity 120ms ease, transform 120ms ease, border-color 120ms ease, background 120ms ease;
 }
@@ -417,9 +441,10 @@ h4 {
 }
 
 .small-btn {
-  padding: 7px 11px;
-  border-radius: 10px;
-  font-size: 0.82rem;
+  min-height: 42px;
+  padding: 11px 18px;
+  border-radius: 14px;
+  font-size: 0.9rem;
 }
 
 .btn-ghost:hover {
@@ -1461,18 +1486,19 @@ h4 {
     gap: 12px;
   }
 
-  .top-bar {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
+  .row.top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
     gap: 8px;
     flex-wrap: nowrap;
   }
 
-  .top-controls {
-    gap: 5px;
+  .row.top-controls {
+    width: 100%;
+    gap: 6px;
+    justify-content: flex-start;
     flex-wrap: nowrap;
-    margin-left: auto;
   }
 
   .theme-toggle {
@@ -1494,6 +1520,11 @@ h4 {
     width: 34px;
     height: 34px;
     font-size: 0.8rem;
+  }
+
+  .app-brand {
+    font-size: 0.9rem;
+    letter-spacing: 0.11em;
   }
 
   h2 {
@@ -1527,6 +1558,11 @@ h4 {
 
   .card {
     padding: 14px;
+  }
+
+  .footer {
+    margin-top: 30px;
+    margin-bottom: calc(116px + env(safe-area-inset-bottom));
   }
 
   .tabs {
@@ -1567,9 +1603,6 @@ h4 {
 
   .habits-table-header .btn-primary {
     margin-left: auto;
-    padding: 9px 13px;
-    border-radius: 12px;
-    font-size: 0.78rem;
     white-space: nowrap;
     flex-shrink: 0;
   }
@@ -1601,8 +1634,9 @@ h4 {
   }
 
   .subhabits-add-btn {
-    padding: 7px 10px;
-    font-size: 0.74rem;
+    min-height: 42px;
+    padding: 11px 18px;
+    font-size: 0.9rem;
   }
 
   .subhabit-card {

@@ -557,8 +557,8 @@ function App() {
   return (
     <div className={`app theme-${theme}`}>
       <header className="header">
-        <div className="row spaced align-center top-bar">
-          <p className="eyebrow brand">Routine OS</p>
+        <div className="row top-bar">
+          <p className="eyebrow brand app-brand">Routine OS</p>
           <div className="row gap-8 align-center top-controls">
             <div className="theme-toggle" role="group" aria-label="Theme toggle">
               <button
@@ -583,7 +583,7 @@ function App() {
         <div className="title-block">
           <h1 className="hero-title section-title">
             <span className="hero-line">Run Your Life</span>
-            <span className="hero-line">Like an Operating System</span>
+            <span className="hero-line">Like a System</span>
           </h1>
         </div>
       </header>

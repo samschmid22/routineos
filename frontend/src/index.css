@@ -35,7 +35,7 @@ body {
   background-color: var(--page);
   background-image:
     radial-gradient(circle at 8% -12%, rgba(255, 122, 32, 0.16), transparent 36%),
-    radial-gradient(circle at 92% 0%, rgba(130, 149, 176, 0.2), transparent 32%),
+    radial-gradient(circle at 92% 0%, rgba(146, 146, 146, 0.14), transparent 32%),
     linear-gradient(160deg, var(--page), var(--page-surface));
   color: var(--text);
   transition: background 220ms ease, color 220ms ease;
@@ -58,37 +58,39 @@ a {
 
 :root,
 :root[data-theme='dark'] {
-  --page: #12161d;
-  --page-surface: #161c26;
-  --card: #1a212c;
-  --card-subtle: #212937;
-  --card-border: rgba(226, 232, 240, 0.14);
-  --text: #edf2f9;
-  --muted: #aeb8c8;
-  --field-bg: #151c27;
-  --field-border: rgba(226, 232, 240, 0.2);
+  --page: #22252a;
+  --page-surface: #2a2d33;
+  --card: #33373e;
+  --card-subtle: #3a3f47;
+  --card-border: rgba(245, 247, 250, 0.16);
+  --text: #f2f4f7;
+  --muted: #c0c4cc;
+  --field-bg: #2b3038;
+  --field-border: rgba(245, 247, 250, 0.22);
   --tab-bg: rgba(255, 255, 255, 0.08);
   --pill-bg: rgba(255, 255, 255, 0.06);
   --progress-bg: rgba(255, 255, 255, 0.12);
   --icon-contrast: #121820;
+  --shadow-md: 0 14px 30px rgba(7, 8, 10, 0.28);
+  --shadow-lg: 0 24px 54px rgba(7, 8, 10, 0.36);
 }
 
 :root[data-theme='light'] {
-  --page: #edf2f7;
-  --page-surface: #f6f9fc;
-  --card: #ffffff;
-  --card-subtle: #f3f6fa;
-  --card-border: #d2dae7;
+  --page: #e6e8eb;
+  --page-surface: #eceef2;
+  --card: #f7f8fa;
+  --card-subtle: #f1f3f6;
+  --card-border: #c3cad4;
   --text: #182334;
-  --muted: #607088;
-  --field-bg: #ffffff;
-  --field-border: #c3cfde;
-  --tab-bg: #e6edf6;
-  --pill-bg: #edf2f8;
-  --progress-bg: #d9e2ef;
+  --muted: #58657a;
+  --field-bg: #fbfcfd;
+  --field-border: #b8c3d1;
+  --tab-bg: #dde3eb;
+  --pill-bg: #e8edf3;
+  --progress-bg: #d2dbe7;
   --icon-contrast: #182334;
   --accent-soft: rgba(255, 122, 32, 0.16);
-  --shadow-md: 0 14px 30px rgba(21, 33, 54, 0.1);
-  --shadow-lg: 0 24px 54px rgba(21, 33, 54, 0.14);
+  --shadow-md: 0 14px 30px rgba(21, 33, 54, 0.12);
+  --shadow-lg: 0 24px 54px rgba(21, 33, 54, 0.16);
   --ring: 0 0 0 2px rgba(255, 122, 32, 0.35);
 }

@@ -47,7 +47,7 @@ const SystemEditor = ({ system, onChange, onSave, onDelete, isNew }) => {
   };
 
   return (
-    <div className="card">
+    <div className="card system-editor-card">
       <div className="card-header">
         <div>
           <p className="eyebrow">{isNew ? 'New system' : 'Edit system'}</p>
@@ -56,27 +56,27 @@ const SystemEditor = ({ system, onChange, onSave, onDelete, isNew }) => {
       </div>
       <div className="stack sm">
         <label className="stack xs">
-          <span className="label">Name</span>
+          <span className="label">System name</span>
           <input
             className="input"
             value={local?.name || ''}
             onChange={(e) => updateField('name', e.target.value)}
-            placeholder="Morning Routine"
+            placeholder="e.g., Body"
           />
         </label>
         <label className="stack xs">
-          <span className="label">Description</span>
+          <span className="label">Purpose</span>
           <textarea
             className="input minimal-textarea"
             rows={3}
             value={local?.description || ''}
             onChange={(e) => updateField('description', e.target.value)}
-            placeholder="Why this system exists"
+            placeholder="What this system improves and why it matters"
           />
         </label>
         <div className="row gap-16 wrap align-center color-symbol-row">
           <label className="stack xs">
-            <span className="label">Color</span>
+            <span className="label">Accent color</span>
             <button
               type="button"
               className="color-swatch"
@@ -92,7 +92,7 @@ const SystemEditor = ({ system, onChange, onSave, onDelete, isNew }) => {
             </button>
           </label>
           <label className="stack xs icon-picker" ref={pickerRef}>
-            <span className="label">Symbol</span>
+            <span className="label">Icon</span>
             <div className="symbol-picker">
               <button
                 type="button"
@@ -129,7 +129,7 @@ const SystemEditor = ({ system, onChange, onSave, onDelete, isNew }) => {
           </button>
           {!isNew && (
             <button type="button" className="btn-ghost danger" onClick={onDelete}>
-              Delete system
+              Remove system
             </button>
           )}
         </div>

@@ -41,22 +41,28 @@ const normalizeHabitPayload = (habits = [], systems = [], statusMap = {}) => {
     });
 };
 
+const compactText = (value, max = 110) => {
+  if (!value || typeof value !== 'string') return '';
+  const clean = value.replace(/\s+/g, ' ').trim();
+  if (!clean) return '';
+  if (clean.length <= max) return clean;
+  return `${clean.slice(0, max - 1)}…`;
+};
+
 const PredictionRow = ({ prediction }) => {
   const likelihood = Math.max(0, Math.min(100, Math.round(prediction?.likelihood ?? 0)));
   return (
-    <div className="stack xs">
+    <div className="stack xs prediction-row">
       <div className="row spaced align-center small">
-        <div className="stack xs">
+        <div className="stack xs prediction-labels">
           <strong>{prediction.habitName}</strong>
           <span className="muted small">{prediction.systemName}</span>
         </div>
-        <strong>{likelihood}%</strong>
+        <strong className="prediction-score">{likelihood}%</strong>
       </div>
-      <div className="progress" style={{ height: 8 }}>
+      <div className="progress prediction-progress">
         <div className="progress-fill" style={{ width: `${likelihood}%` }} />
       </div>
-      {prediction.reasoning && <p className="muted small">{prediction.reasoning}</p>}
-      {prediction.guidance && <p className="muted small">{prediction.guidance}</p>}
     </div>
   );
 };
@@ -140,34 +146,32 @@ const HabitCompletionLikelihood = ({ habits, systems, statusMap }) => {
 
   const isLoading = state.status === 'loading' || state.status === 'refreshing';
   const hasHabits = normalizedHabits.length > 0;
+  const summaryText = compactText(state.summary, 96);
 
   return (
-    <div className="mini-card">
+    <div className="mini-card forecast-card">
       <div className="row spaced align-center">
-        <h4>Habit completion likelihood</h4>
+        <h4>Completion forecast</h4>
         <button type="button" className="btn-ghost small-btn" onClick={handleRefresh} disabled={isLoading}>
           {isLoading ? 'Updating…' : 'Refresh'}
         </button>
       </div>
-      <p className="muted small">
-        AI estimates of the chance each habit gets completed the next time it is scheduled (next 7 days).
-      </p>
-      {state.status === 'idle' && hasHabits && <div className="muted small">Preparing predictions…</div>}
-      {state.status === 'loading' && <div className="muted small">Generating predictions…</div>}
-      {state.status === 'refreshing' && <div className="muted small">Refreshing with latest data…</div>}
+      {state.status === 'idle' && hasHabits && <div className="muted small forecast-status">Preparing…</div>}
+      {state.status === 'loading' && <div className="muted small forecast-status">Analyzing…</div>}
+      {state.status === 'refreshing' && <div className="muted small forecast-status">Refreshing…</div>}
       {state.status === 'error' && (
-        <div className="muted small">Could not load predictions right now. Try refreshing in a moment.</div>
+        <div className="muted small forecast-status">Unavailable right now.</div>
       )}
-      {!hasHabits && <div className="muted small">Add a habit to unlock AI likelihood estimates.</div>}
+      {!hasHabits && <div className="muted small forecast-status">Add habits to see forecast.</div>}
       {hasHabits && !isLoading && !state.error && state.predictions.length === 0 && (
-        <div className="muted small">Complete a few routines to give the AI something to learn from.</div>
+        <div className="muted small forecast-status">Not enough history yet.</div>
       )}
-      <div className="stack sm">
+      <div className="stack sm prediction-list">
         {state.predictions.map((prediction) => (
           <PredictionRow key={prediction.habitId || prediction.habitName} prediction={prediction} />
         ))}
       </div>
-      {state.summary && <p className="muted small">{state.summary}</p>}
+      {summaryText && <p className="muted small forecast-summary">{summaryText}</p>}
     </div>
   );
 };

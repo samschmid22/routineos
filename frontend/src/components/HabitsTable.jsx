@@ -116,24 +116,31 @@ const HabitsTable = ({ system, habits, nextOrderIndex, onSaveHabit, onDeleteHabi
 
   const renderForm = () => {
     if (!editing) return null;
+    const isExisting = currentHabits.some((habit) => habit.id === editing.id);
 
     return (
-      <div className="card subtle row-editor">
+      <div className="card row-editor habit-edit-card">
+        <div className="card-header habit-edit-header">
+          <div>
+            <p className="eyebrow">{isExisting ? 'Edit habit' : 'New habit'}</p>
+            <h3>{editing.name?.trim() || 'Untitled habit'}</h3>
+          </div>
+        </div>
         <div className="grid two">
           <label className="stack xs">
-            <span className="label">Name</span>
+            <span className="label">Habit name</span>
             <input
               className="input"
               value={editing.name}
               onChange={(e) => setEditing({ ...editing, name: e.target.value })}
-              placeholder="Gym"
+              placeholder="e.g., Morning walk"
             />
           </label>
         </div>
 
         <div className="grid two">
           <label className="stack xs">
-            <span className="label">Frequency</span>
+            <span className="label">Schedule</span>
             <div className="select-shell">
               <select
                 className="input select-input"
@@ -155,7 +162,7 @@ const HabitsTable = ({ system, habits, nextOrderIndex, onSaveHabit, onDeleteHabi
                 <option value="daily">Every day</option>
                 <option value="everyOtherDay">Every other day</option>
                 <option value="every_x_days">Every X days</option>
-                <option value="daysOfWeek">Specific days of the week</option>
+                <option value="daysOfWeek">Specific days</option>
               </select>
               <span className="select-caret" aria-hidden="true">
                 ⌄
@@ -181,7 +188,7 @@ const HabitsTable = ({ system, habits, nextOrderIndex, onSaveHabit, onDeleteHabi
         )}
         {editing.frequency.type === 'every_x_days' && (
           <label className="stack xs">
-            <span className="label">Number of days</span>
+            <span className="label">Interval (days)</span>
             <input
               className="input"
               type="number"
@@ -200,7 +207,7 @@ const HabitsTable = ({ system, habits, nextOrderIndex, onSaveHabit, onDeleteHabi
 
         <div className="grid two">
           <label className="stack xs">
-            <span className="label">Duration (min)</span>
+            <span className="label">Target duration (minutes)</span>
             <input
               className="input"
               type="text"
@@ -221,10 +228,10 @@ const HabitsTable = ({ system, habits, nextOrderIndex, onSaveHabit, onDeleteHabi
             <span className="label">Notes</span>
             <textarea
               className="input"
-              rows={2}
+              rows={3}
               value={editing.notes}
               onChange={(e) => setEditing({ ...editing, notes: e.target.value })}
-              placeholder="What does good look like?"
+              placeholder="What does success look like for this habit?"
             />
           </label>
           <div />{/* spacer to balance the grid */}
@@ -240,7 +247,7 @@ const HabitsTable = ({ system, habits, nextOrderIndex, onSaveHabit, onDeleteHabi
             Save habit
           </button>
           <button type="button" className="btn-ghost" onClick={() => setEditing(null)}>
-            Cancel
+            Close editor
           </button>
         </div>
       </div>
@@ -348,11 +355,11 @@ const HabitsTable = ({ system, habits, nextOrderIndex, onSaveHabit, onDeleteHabi
   const isNewDraft = editing && !currentHabits.some((h) => h.id === editing.id);
 
   return (
-    <div className="card">
+    <div className="card habits-table-card">
       <div className="card-header row spaced align-center">
         <div>
           <p className="eyebrow">Habits</p>
-          <h2>{system.name}</h2>
+          <h2 className="section-title">Habits for {system.name}</h2>
         </div>
         <button type="button" className="btn-primary" onClick={startNew}>
           + Add habit

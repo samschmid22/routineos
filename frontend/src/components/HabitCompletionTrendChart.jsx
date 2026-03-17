@@ -43,7 +43,7 @@ export function HabitCompletionTrendChart({ data = [] }) {
       </div>
       <div className="completion-chart-wrapper">
         {showEmptyState ? (
-          <div className="muted small">No habit schedules logged during the last 7 days.</div>
+          <div className="muted small">No trend data yet.</div>
         ) : (
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={chartData} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>

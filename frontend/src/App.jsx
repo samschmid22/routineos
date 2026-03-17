@@ -581,10 +581,7 @@ function App() {
           </div>
         </div>
         <div className="title-block">
-          <h1 className="hero-title section-title">Run your life like an operating system</h1>
-          <p className="muted hero-subtitle">
-            Build clear routines, execute the right habits each day, and track progress with confidence.
-          </p>
+          <h1 className="hero-title section-title">Run Your Life Like an Operating System</h1>
         </div>
       </header>
 

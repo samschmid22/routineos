@@ -61,7 +61,7 @@ const TodayView = ({
   };
 
   return (
-    <div className="card">
+    <div className="card today-view-shell">
       <div className="card-header">
         <div>
           <p className="eyebrow">Today</p>
@@ -95,15 +95,28 @@ const TodayView = ({
                   >
                     ⋮⋮
                   </button>
-                  <div className="stack xs">
+                  <div className="stack xs habit-content">
                     <div className="row gap-6 align-center">
                       <h3>{habit.name}</h3>
                     </div>
-                    <div className="row gap-8 wrap">
+                    <div className="row gap-8 wrap habit-meta-row">
                       <span className="pill ghost pill-system">
                         <span className="system-dot tiny" style={{ background: systemMap[habit.systemId]?.color }} />
                         {systemMap[habit.systemId]?.name || 'System'}
                       </span>
+                      {habit.notes && (
+                        <button
+                          type="button"
+                          className={`details-chip ${openDetails.includes(habit.id) ? 'active' : ''}`}
+                          onClick={() =>
+                            setOpenDetails((prev) =>
+                              prev.includes(habit.id) ? prev.filter((id) => id !== habit.id) : [...prev, habit.id],
+                            )
+                          }
+                        >
+                          {openDetails.includes(habit.id) ? 'Hide notes' : 'Notes'}
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -116,23 +129,10 @@ const TodayView = ({
                   >
                     ✓
                   </button>
-                  {habit.notes && (
-                    <button
-                      type="button"
-                      className="btn-ghost small-btn"
-                      onClick={() =>
-                        setOpenDetails((prev) =>
-                          prev.includes(habit.id) ? prev.filter((id) => id !== habit.id) : [...prev, habit.id],
-                        )
-                      }
-                    >
-                      {openDetails.includes(habit.id) ? 'Hide details' : 'Details'}
-                    </button>
-                  )}
                 </div>
               </div>
 
-              {openDetails.includes(habit.id) && habit.notes && <p className="muted small">{habit.notes}</p>}
+              {openDetails.includes(habit.id) && habit.notes && <p className="muted small habit-notes">{habit.notes}</p>}
 
               {hasSubHabits && (
                 <div className="habit-footer">

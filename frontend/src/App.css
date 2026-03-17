@@ -1,5 +1,5 @@
 .app {
-  max-width: 1260px;
+  max-width: 1140px;
   margin: 0 auto;
   padding: 40px 22px 84px;
   display: flex;
@@ -165,7 +165,7 @@ h4 {
   border: 1px solid var(--card-border);
   border-radius: 999px;
   padding: 6px;
-  align-self: flex-start;
+  align-self: center;
   justify-content: center;
   gap: 6px;
   width: auto;
@@ -182,7 +182,7 @@ h4 {
   border-radius: 999px;
   cursor: pointer;
   font-weight: 700;
-  font-size: 0.94rem;
+  font-size: 0.92rem;
   letter-spacing: 0.01em;
   opacity: 0.78;
   font-family: 'Sora', 'Avenir Next', 'Segoe UI Variable', sans-serif;
@@ -211,7 +211,10 @@ h4 {
 }
 
 .grid.split {
-  grid-template-columns: 5fr 7fr;
+  grid-template-columns: 4.6fr 5.4fr;
+  max-width: 1080px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .grid.three {
@@ -750,11 +753,18 @@ h4 {
 
 .habit-wide h3 {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 1.24rem;
+  letter-spacing: -0.01em;
 }
 
 .today-list {
   width: 100%;
+}
+
+.today-view-shell {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
 }
 
 .today-habit {
@@ -777,13 +787,62 @@ h4 {
 .habit-row {
   gap: 12px;
   padding: 2px 0;
+  align-items: flex-start;
 }
 
 .habit-actions {
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.habit-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.habit-content {
+  min-width: 0;
+}
+
+.habit-meta-row {
+  margin-top: 2px;
+}
+
+.details-chip {
+  border: 1px solid var(--card-border);
+  background: transparent;
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: border-color 120ms ease, color 120ms ease, background 120ms ease;
+}
+
+.details-chip:hover {
+  border-color: rgba(255, 122, 32, 0.42);
+  color: var(--text);
+}
+
+.details-chip.active {
+  background: rgba(255, 122, 32, 0.18);
+  border-color: rgba(255, 122, 32, 0.42);
+  color: var(--text);
+}
+
+.habit-notes {
+  margin-top: 10px;
+  margin-bottom: 0;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .checklist-indicator {
@@ -997,6 +1056,26 @@ h4 {
   margin-top: 8px;
 }
 
+.habits-table-card {
+  border-color: rgba(255, 122, 32, 0.16);
+}
+
+.habit-edit-card {
+  border: 1px solid rgba(255, 122, 32, 0.26);
+  background:
+    linear-gradient(180deg, rgba(255, 122, 32, 0.08), rgba(255, 122, 32, 0.02) 45%, var(--card)),
+    var(--card);
+}
+
+.habit-edit-header {
+  margin-bottom: 14px;
+}
+
+.system-editor-card {
+  max-width: 560px;
+  width: 100%;
+}
+
 .notes-panel {
   grid-column: 1 / -1;
   padding: 10px;
@@ -1134,6 +1213,72 @@ h4 {
   gap: 6px;
 }
 
+.analytics-metric-head {
+  gap: 12px;
+}
+
+.analytics-metric-value {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.2;
+}
+
+.analytics-highlights .mini-card {
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.highlight-list {
+  gap: 8px;
+}
+
+.highlight-item strong {
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+}
+
+.highlight-empty {
+  margin: 0;
+}
+
+.forecast-card {
+  margin-top: 4px;
+}
+
+.forecast-status {
+  margin: 2px 0 0;
+}
+
+.prediction-list {
+  margin-top: 4px;
+  gap: 10px;
+}
+
+.prediction-row {
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 9px 10px;
+}
+
+.prediction-labels {
+  min-width: 0;
+}
+
+.prediction-score {
+  font-size: 0.92rem;
+}
+
+.prediction-progress {
+  height: 7px;
+}
+
+.forecast-summary {
+  margin: 2px 0 0;
+}
+
 .purpose-mind {
   background: rgba(59, 130, 246, 0.15);
   color: #bfdbfe;
@@ -1221,6 +1366,19 @@ h4 {
 
   .grid.split {
     grid-template-columns: 1fr;
+    max-width: 100%;
+  }
+
+  .today-view-shell {
+    max-width: 100%;
+  }
+
+  .habit-row {
+    gap: 10px;
+  }
+
+  .details-chip {
+    font-size: 0.72rem;
   }
 }
 
@@ -1332,8 +1490,8 @@ h4 {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  width: 72px;
-  height: 72px;
+  width: 82px;
+  height: 82px;
   border-radius: 999px;
   border: none;
   cursor: pointer;
@@ -1341,8 +1499,8 @@ h4 {
   box-shadow: 0 18px 34px rgba(255, 122, 32, 0.35);
   color: #fff;
   font-weight: 800;
-  font-size: 1rem;
-  letter-spacing: 0.06em;
+  font-size: 0.84rem;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   display: flex;
   align-items: center;

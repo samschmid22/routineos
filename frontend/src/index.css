@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap');
 
 :root {
-  font-family: 'Manrope', 'Avenir Next', 'Segoe UI Variable', 'SF Pro Text', sans-serif;
-  line-height: 1.6;
-  font-weight: 500;
+  font-family: 'Sora', 'Manrope', 'Avenir Next', 'Segoe UI Variable', 'SF Pro Text', sans-serif;
+  line-height: 1.58;
+  font-weight: 600;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

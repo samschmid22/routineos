@@ -26,7 +26,7 @@ const SystemsList = ({
       <div className="card-header row spaced align-center">
         <div>
           <p className="eyebrow">Your pillars</p>
-          <h2 className="section-title systems-heading">Systems overview</h2>
+          <h2 className="section-title systems-heading">Systems Overview</h2>
         </div>
         <button
           type="button"
@@ -59,8 +59,8 @@ const SystemsList = ({
               <span className="pillar-icon">{system.icon || '★'}</span>
             </div>
             <div className="stack xs align-start">
-              <strong>{system.name}</strong>
-              <span className="muted small">{system.description}</span>
+              <strong className="pillar-title">{system.name}</strong>
+              <span className="muted small pillar-description">{system.description}</span>
             </div>
           </button>
         ))}

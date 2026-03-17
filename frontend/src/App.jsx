@@ -559,7 +559,7 @@ function App() {
       <header className="header">
         <div className="row spaced align-center top-bar">
           <p className="eyebrow brand">Routine OS</p>
-          <div className="row gap-8 align-center">
+          <div className="row gap-8 align-center top-controls">
             <div className="theme-toggle" role="group" aria-label="Theme toggle">
               <button
                 type="button"
@@ -581,7 +581,10 @@ function App() {
           </div>
         </div>
         <div className="title-block">
-          <h1 className="hero-title section-title">Run Your Life Like an Operating System</h1>
+          <h1 className="hero-title section-title">
+            <span className="hero-line">Run Your Life</span>
+            <span className="hero-line">Operating System</span>
+          </h1>
         </div>
       </header>
 

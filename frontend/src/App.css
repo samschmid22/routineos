@@ -76,10 +76,19 @@ h1 {
 
 .hero-title {
   font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  line-height: 1.03;
+  text-transform: uppercase;
   text-wrap: balance;
+}
+
+.hero-line {
+  display: inline-block;
+}
+
+.hero-line + .hero-line {
+  margin-left: 0.34em;
 }
 
 .hero-subtitle {
@@ -157,6 +166,10 @@ h4 {
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
+}
+
+.top-controls {
+  flex-wrap: nowrap;
 }
 
 .tabs {
@@ -300,7 +313,24 @@ h4 {
   border: 1px solid var(--field-border);
   background: var(--field-bg);
   color: var(--text);
+  font-family: 'Manrope', 'Avenir Next', 'Segoe UI Variable', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.45;
+  caret-color: var(--accent);
   transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.input::placeholder {
+  color: rgba(173, 186, 205, 0.86);
+}
+
+.input:focus {
+  border-color: var(--accent);
+  box-shadow: var(--ring);
 }
 
 .select-shell {
@@ -745,6 +775,7 @@ h4 {
   font-weight: 700;
   font-size: 0.8rem;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .habit-wide {
@@ -925,13 +956,14 @@ h4 {
 .pillars-row {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(220px, 1fr);
+  grid-auto-columns: minmax(180px, 206px);
   gap: 14px;
   overflow-x: auto;
   padding-bottom: 14px;
   margin-top: 16px;
   padding-top: 8px;
   scrollbar-width: thin;
+  justify-content: flex-start;
 }
 
 .pillar-card {
@@ -943,9 +975,11 @@ h4 {
   text-align: left;
   box-shadow: var(--shadow-md);
   display: grid;
+  align-content: space-between;
   gap: 8px;
   cursor: pointer;
   transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+  min-height: 164px;
 }
 
 .pillar-card.active {
@@ -981,6 +1015,17 @@ h4 {
 .systems-heading {
   margin-bottom: 8px;
   display: inline-block;
+  font-size: 1.42rem;
+}
+
+.pillar-title {
+  font-size: 1.08rem;
+  line-height: 1.2;
+}
+
+.pillar-description {
+  font-size: 0.83rem;
+  line-height: 1.28;
 }
 
 .symbol-picker {
@@ -1060,6 +1105,10 @@ h4 {
   border-color: rgba(255, 122, 32, 0.16);
 }
 
+.habits-table-header {
+  width: 100%;
+}
+
 .habit-edit-card {
   border: 1px solid rgba(255, 122, 32, 0.26);
   background:
@@ -1100,6 +1149,26 @@ h4 {
   margin-top: 8px;
   padding-left: 0;
   grid-column: 1 / -1;
+}
+
+.habit-mobile-meta {
+  display: none;
+  margin-top: 2px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.28;
+}
+
+.habit-mobile-meta .freq-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta-dot {
+  opacity: 0.55;
 }
 
 .mini-cards {
@@ -1328,22 +1397,81 @@ h4 {
 
 @media (max-width: 780px) {
   .app {
-    padding: 24px 14px 72px;
+    padding: 22px 12px 70px;
   }
 
   .header {
     flex-direction: column;
-    padding: 18px;
+    padding: 15px;
+    gap: 12px;
   }
 
   .top-bar {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
+  .top-controls {
+    gap: 5px;
+    flex-wrap: nowrap;
+    margin-left: auto;
+  }
+
+  .theme-toggle {
+    padding: 2px;
+  }
+
+  .toggle.icon-only {
+    width: 36px;
+    font-size: 0.98rem;
+  }
+
+  .date-chip {
+    padding: 7px 9px;
+    font-size: 0.68rem;
+    letter-spacing: 0.02em;
+  }
+
+  .profile-trigger {
+    width: 34px;
+    height: 34px;
+    font-size: 0.8rem;
+  }
+
+  h2 {
+    font-size: 1.14rem;
+  }
+
+  .eyebrow {
+    font-size: 0.64rem;
+    letter-spacing: 0.1em;
+  }
+
+  .hero-title {
+    font-size: clamp(1.5rem, 8.2vw, 2rem);
+    letter-spacing: 0.01em;
+    line-height: 1.02;
+  }
+
+  .hero-line {
+    display: block;
+  }
+
+  .hero-line + .hero-line {
+    margin-left: 0;
+    margin-top: 0.06em;
   }
 
   .card-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .card {
+    padding: 14px;
   }
 
   .tabs {
@@ -1355,13 +1483,57 @@ h4 {
   .tab {
     flex: 1;
     text-align: center;
-    padding: 10px 8px;
-    font-size: 0.84rem;
+    padding: 9px 6px;
+    font-size: 0.78rem;
+    letter-spacing: 0;
   }
 
   .table-head,
   .table-row {
     grid-template-columns: 1fr;
+  }
+
+  .habits-table-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .habits-table-header > div {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .habits-table-header .section-title {
+    margin: 0;
+    font-size: clamp(1rem, 4.4vw, 1.1rem);
+  }
+
+  .habits-table-header .btn-primary {
+    margin-left: auto;
+    padding: 9px 13px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .table-row.notes-row {
+    gap: 6px;
+  }
+
+  .habit-mobile-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    white-space: nowrap;
+  }
+
+  .habit-table-meta,
+  .habit-table-duration {
+    display: none;
   }
 
   .grid.split {
@@ -1377,8 +1549,25 @@ h4 {
     gap: 10px;
   }
 
+  .habit-actions {
+    flex-shrink: 0;
+  }
+
   .details-chip {
-    font-size: 0.72rem;
+    font-size: 0.68rem;
+    padding: 3px 8px;
+  }
+
+  .input,
+  .auth-label input,
+  .chat-panel-input-row input,
+  .select-input,
+  textarea.input {
+    font-size: 16px;
+  }
+
+  .label {
+    font-size: 0.8rem;
   }
 }
 
@@ -1472,7 +1661,14 @@ h4 {
   background: var(--field-bg);
   color: var(--text);
   padding: 11px 14px;
+  font-family: 'Manrope', 'Avenir Next', 'Segoe UI Variable', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  caret-color: var(--accent);
   transition: border-color 120ms ease, box-shadow 120ms ease;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .chat-panel-input-row button {
@@ -1700,6 +1896,13 @@ h4 {
   padding: 11px 12px;
   background: var(--field-bg);
   color: var(--text);
+  font-family: 'Manrope', 'Avenir Next', 'Segoe UI Variable', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  caret-color: var(--accent);
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .auth-error {

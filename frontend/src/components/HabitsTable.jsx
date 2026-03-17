@@ -356,7 +356,7 @@ const HabitsTable = ({ system, habits, nextOrderIndex, onSaveHabit, onDeleteHabi
 
   return (
     <div className="card habits-table-card">
-      <div className="card-header row spaced align-center">
+      <div className="card-header row spaced align-center habits-table-header">
         <div>
           <p className="eyebrow">Habits</p>
           <h2 className="section-title">Habits for {system.name}</h2>
@@ -369,11 +369,6 @@ const HabitsTable = ({ system, habits, nextOrderIndex, onSaveHabit, onDeleteHabi
       {isNewDraft && renderForm()}
 
       <div className="table">
-        <div className="table-head">
-          <div>Habit</div>
-          <div>Frequency</div>
-          <div>Duration</div>
-        </div>
         {currentHabits.length === 0 && <div className="muted">No habits yet.</div>}
         {currentHabits.map((habit) => {
           const showNotes = habit.notes && openNotesIds.includes(habit.id);
@@ -383,10 +378,19 @@ const HabitsTable = ({ system, habits, nextOrderIndex, onSaveHabit, onDeleteHabi
               <div>
                 <strong>{habit.name}</strong>
               </div>
-              <div className="muted small freq-text">
+              <div className="row gap-8 align-center muted small habit-mobile-meta">
+                <span className="freq-text">
+                  {frequencyLabel(habit.frequency, habit.frequencyType, habit.daysOfWeek, habit.intervalDays)}
+                </span>
+                <span className="meta-dot" aria-hidden="true">
+                  •
+                </span>
+                <span>{habit.durationMinutes} min</span>
+              </div>
+              <div className="muted small freq-text habit-table-meta">
                 {frequencyLabel(habit.frequency, habit.frequencyType, habit.daysOfWeek, habit.intervalDays)}
               </div>
-              <div>{habit.durationMinutes} min</div>
+              <div className="habit-table-duration">{habit.durationMinutes} min</div>
               <div className="row gap-6 wrap actions-row">
                 <div className="row gap-6">
                   {habit.notes && (

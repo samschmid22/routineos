@@ -513,6 +513,13 @@ h4 {
   outline-offset: 2px;
 }
 
+@media (pointer: coarse) {
+  .drag-handle {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+}
+
 .status-dropdown {
   position: relative;
   min-width: 200px;

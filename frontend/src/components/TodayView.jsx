@@ -13,6 +13,7 @@ const TodayView = ({
   const [expandedHabits, setExpandedHabits] = useState([]);
   const [draggedHabitId, setDraggedHabitId] = useState(null);
   const [dragOverHabitId, setDragOverHabitId] = useState(null);
+  const isTouchReorder = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches;
 
   const systemMap = systems.reduce((acc, system) => ({ ...acc, [system.id]: system }), {});
 
@@ -30,6 +31,20 @@ const TodayView = ({
     const next = orderedIds.filter((id) => id !== draggedId);
     const targetIndex = next.indexOf(targetId);
     next.splice(targetIndex, 0, draggedId);
+    onReorder(next);
+  };
+
+  const moveHabitByOffset = (habitId, offset) => {
+    if (!habitId || !offset) return;
+    const orderedIds = habitsForToday.map(({ habit }) => habit.id);
+    const fromIndex = orderedIds.indexOf(habitId);
+    if (fromIndex === -1) return;
+    const targetIndex = fromIndex + offset;
+    if (targetIndex < 0 || targetIndex >= orderedIds.length) return;
+
+    const next = [...orderedIds];
+    const [movedHabitId] = next.splice(fromIndex, 1);
+    next.splice(targetIndex, 0, movedHabitId);
     onReorder(next);
   };
 
@@ -70,9 +85,10 @@ const TodayView = ({
       </div>
       {habitsForToday.length === 0 && <div className="muted">No habits scheduled for today.</div>}
       <div className="stack md today-list">
-        {habitsForToday.map(({ habit, status }) => {
+        {habitsForToday.map(({ habit, status }, index) => {
           const hasSubHabits = Array.isArray(habit.subHabits) && habit.subHabits.length > 0;
           const isExpanded = expandedHabits.includes(habit.id);
+          const isLastHabit = index === habitsForToday.length - 1;
           return (
             <div
               key={habit.id}
@@ -87,11 +103,15 @@ const TodayView = ({
                   <button
                     type="button"
                     className="drag-handle"
-                    draggable
-                    onDragStart={(event) => handleDragStart(event, habit.id)}
-                    onDragEnd={handleDragEnd}
-                    aria-label={`Drag to reorder ${habit.name}`}
-                    title="Drag to reorder"
+                    draggable={!isTouchReorder}
+                    onDragStart={isTouchReorder ? undefined : (event) => handleDragStart(event, habit.id)}
+                    onDragEnd={isTouchReorder ? undefined : handleDragEnd}
+                    onClick={() => {
+                      if (!isTouchReorder) return;
+                      moveHabitByOffset(habit.id, isLastHabit ? -1 : 1);
+                    }}
+                    aria-label={isTouchReorder ? `Tap to move ${habit.name}` : `Drag to reorder ${habit.name}`}
+                    title={isTouchReorder ? 'Tap to move' : 'Drag to reorder'}
                   >
                     ⋮⋮
                   </button>

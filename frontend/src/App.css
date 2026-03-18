@@ -818,6 +818,13 @@ h4 {
   letter-spacing: -0.01em;
 }
 
+.habit-wide .today-habit-title {
+  margin: 0;
+  font-size: clamp(0.98rem, 1.15vw + 0.6rem, 1.08rem);
+  line-height: 1.18;
+  letter-spacing: 0;
+}
+
 .today-list {
   width: 100%;
 }
@@ -1710,6 +1717,11 @@ h4 {
 
   .habit-row {
     gap: 10px;
+  }
+
+  .habit-wide .today-habit-title {
+    font-size: 0.96rem;
+    line-height: 1.16;
   }
 
   .habit-actions {

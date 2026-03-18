@@ -97,7 +97,7 @@ const TodayView = ({
                   </button>
                   <div className="stack xs habit-content">
                     <div className="row gap-6 align-center">
-                      <h3>{habit.name}</h3>
+                      <h3 className="today-habit-title">{habit.name}</h3>
                     </div>
                     <div className="row gap-8 wrap habit-meta-row">
                       <span className="pill ghost pill-system">

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
 const AuthPage = () => {
-  const [mode, setMode] = useState('signup');
+  const [mode, setMode] = useState('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -26,13 +26,18 @@ const AuthPage = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     resetMessages();
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail) {
+      setError('Enter your email address.');
+      return;
+    }
     setLoading(true);
     try {
       if (mode === 'login') {
-        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+        const { error: signInError } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password });
         if (signInError) throw signInError;
       } else {
-        const { error: signUpError } = await supabase.auth.signUp({ email, password });
+        const { error: signUpError } = await supabase.auth.signUp({ email: normalizedEmail, password });
         if (signUpError) throw signUpError;
         setSuccessMessage('Account created. Check your email and verify your account before signing in.');
         setMode('login');
@@ -56,9 +61,10 @@ const AuthPage = () => {
   };
 
   const handleResendVerification = async () => {
-    if (!email) return;
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail) return;
     setResendStatus('sending');
-    const { error: resendError } = await supabase.auth.resend({ type: 'signup', email });
+    const { error: resendError } = await supabase.auth.resend({ type: 'signup', email: normalizedEmail });
     if (resendError) {
       console.error(resendError);
       setResendStatus('error');
@@ -78,14 +84,15 @@ const AuthPage = () => {
   };
 
   const handleResetPassword = async () => {
-    if (!email.trim()) {
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail) {
       setResetStatus('error');
       setResetMessage('Enter your email first, then request a reset link.');
       return;
     }
     setResetStatus('sending');
     setResetMessage('');
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email);
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(normalizedEmail);
     if (resetError) {
       console.error(resetError);
       setResetStatus('error');

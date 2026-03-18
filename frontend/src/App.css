@@ -860,6 +860,18 @@ h4 {
   flex-shrink: 0;
 }
 
+.reorder-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.reorder-btn {
+  width: 34px;
+  height: 34px;
+  font-size: 0.9rem;
+}
+
 .habit-left {
   flex: 1;
   min-width: 0;

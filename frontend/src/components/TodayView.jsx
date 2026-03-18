@@ -33,6 +33,20 @@ const TodayView = ({
     onReorder(next);
   };
 
+  const moveHabitByOffset = (habitId, offset) => {
+    if (!habitId || !offset) return;
+    const orderedIds = habitsForToday.map(({ habit }) => habit.id);
+    const fromIndex = orderedIds.indexOf(habitId);
+    if (fromIndex === -1) return;
+    const targetIndex = fromIndex + offset;
+    if (targetIndex < 0 || targetIndex >= orderedIds.length) return;
+
+    const next = [...orderedIds];
+    const [movedId] = next.splice(fromIndex, 1);
+    next.splice(targetIndex, 0, movedId);
+    onReorder(next);
+  };
+
   const handleDragStart = (event, habitId) => {
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('text/plain', habitId);
@@ -70,9 +84,11 @@ const TodayView = ({
       </div>
       {habitsForToday.length === 0 && <div className="muted">No habits scheduled for today.</div>}
       <div className="stack md today-list">
-        {habitsForToday.map(({ habit, status }) => {
+        {habitsForToday.map(({ habit, status }, index) => {
           const hasSubHabits = Array.isArray(habit.subHabits) && habit.subHabits.length > 0;
           const isExpanded = expandedHabits.includes(habit.id);
+          const isFirstHabit = index === 0;
+          const isLastHabit = index === habitsForToday.length - 1;
           return (
             <div
               key={habit.id}
@@ -121,6 +137,28 @@ const TodayView = ({
                   </div>
                 </div>
                 <div className="row gap-10 align-center habit-actions">
+                  <div className="reorder-controls" role="group" aria-label={`Move ${habit.name}`}>
+                    <button
+                      type="button"
+                      className="btn-icon reorder-btn"
+                      onClick={() => moveHabitByOffset(habit.id, -1)}
+                      disabled={isFirstHabit}
+                      aria-label={`Move ${habit.name} up`}
+                      title="Move up"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-icon reorder-btn"
+                      onClick={() => moveHabitByOffset(habit.id, 1)}
+                      disabled={isLastHabit}
+                      aria-label={`Move ${habit.name} down`}
+                      title="Move down"
+                    >
+                      ↓
+                    </button>
+                  </div>
                   <button
                     type="button"
                     className={`status-check ${status === 'completed' ? 'completed' : ''}`}

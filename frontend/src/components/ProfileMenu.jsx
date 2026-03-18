@@ -100,9 +100,6 @@ const ProfileMenu = () => {
             <p>
               <span className="muted">Email:</span> {user?.email}
             </p>
-            <p>
-              <span className="muted">User ID:</span> {user?.id}
-            </p>
             <button type="button" className="profile-secondary-btn" onClick={handlePasswordReset}>
               Send password reset email
             </button>

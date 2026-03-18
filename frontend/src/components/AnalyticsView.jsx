@@ -75,43 +75,45 @@ const AnalyticsView = ({ systems, habits, statusMap }) => {
               <h2 className="section-title">Highlights</h2>
             </div>
           </div>
-          <div className="grid two mini-cards analytics-highlights">
-            <div className="mini-card">
-              <div className="row spaced align-center">
-                <h4>Top done</h4>
-                <span className="muted small">Today</span>
+          <div className="analytics-highlights-block">
+            <div className="grid two mini-cards analytics-highlights">
+              <div className="mini-card">
+                <div className="row spaced align-center">
+                  <h4>Top done</h4>
+                  <span className="muted small">Today</span>
+                </div>
+                {topCompleted.length === 0 && <p className="muted small highlight-empty">No completions yet.</p>}
+                <div className="stack xs highlight-list">
+                  {topCompleted.map(({ habit }, idx) => (
+                    <div key={habit.id} className="row spaced small highlight-item">
+                      <span>
+                        {idx + 1}. {habit.name}
+                      </span>
+                      <strong>Done</strong>
+                    </div>
+                  ))}
+                </div>
               </div>
-              {topCompleted.length === 0 && <p className="muted small highlight-empty">No completions yet.</p>}
-              <div className="stack xs highlight-list">
-                {topCompleted.map(({ habit }, idx) => (
-                  <div key={habit.id} className="row spaced small highlight-item">
-                    <span>
-                      {idx + 1}. {habit.name}
-                    </span>
-                    <strong>Done</strong>
-                  </div>
-                ))}
+              <div className="mini-card">
+                <div className="row spaced align-center">
+                  <h4>Top skipped</h4>
+                  <span className="muted small">Today</span>
+                </div>
+                {topSkipped.length === 0 && <p className="muted small highlight-empty">No skips today.</p>}
+                <div className="stack xs highlight-list">
+                  {topSkipped.map(({ habit }, idx) => (
+                    <div key={habit.id} className="row spaced small highlight-item">
+                      <span>
+                        {idx + 1}. {habit.name}
+                      </span>
+                      <strong>Skipped</strong>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-            <div className="mini-card">
-              <div className="row spaced align-center">
-                <h4>Top skipped</h4>
-                <span className="muted small">Today</span>
-              </div>
-              {topSkipped.length === 0 && <p className="muted small highlight-empty">No skips today.</p>}
-              <div className="stack xs highlight-list">
-                {topSkipped.map(({ habit }, idx) => (
-                  <div key={habit.id} className="row spaced small highlight-item">
-                    <span>
-                      {idx + 1}. {habit.name}
-                    </span>
-                    <strong>Skipped</strong>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <HabitCompletionLikelihood habits={habits} systems={systems} statusMap={statusMap} />
           </div>
-          <HabitCompletionLikelihood habits={habits} systems={systems} statusMap={statusMap} />
         </div>
       </div>
     </div>

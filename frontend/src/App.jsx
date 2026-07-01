@@ -82,7 +82,7 @@ const sortHabitsByOrder = (a, b) => {
 };
 
 function App() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, error: authError, refreshAuth } = useAuth();
   const userId = user?.id;
   const [activeTab, setActiveTab] = useState('Today');
   const [theme, setTheme] = useState('dark');
@@ -91,6 +91,7 @@ function App() {
   const [habits, setHabits] = useState([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [dataError, setDataError] = useState(null);
+  const [lastLoadedAt, setLastLoadedAt] = useState(null);
   const [subHabitStatuses, setSubHabitStatuses] = useState({});
   const [selectedSystemId, setSelectedSystemId] = useState(null);
   const [systemDraft, setSystemDraft] = useState(null);
@@ -110,22 +111,34 @@ function App() {
     setIsLoadingData(true);
     setDataError(null);
 
-    const [systemsRes, habitsRes] = await Promise.all([
-      supabase
-        .from('systems')
-        .select('*')
-        .eq('user_id', userId)
-        .order('order_index', { ascending: true }),
-      supabase
-        .from('habits')
-        .select('*')
-        .eq('user_id', userId)
-        .order('order_index', { ascending: true }),
-    ]);
+    let systemsRes;
+    let habitsRes;
+
+    try {
+      [systemsRes, habitsRes] = await Promise.all([
+        supabase
+          .from('systems')
+          .select('*')
+          .eq('user_id', userId)
+          .order('order_index', { ascending: true }),
+        supabase
+          .from('habits')
+          .select('*')
+          .eq('user_id', userId)
+          .order('order_index', { ascending: true }),
+      ]);
+    } catch (error) {
+      console.error('Error loading data', error);
+      setDataError(error);
+      setIsLoadingData(false);
+      setHydrated(true);
+      return;
+    }
 
     if (systemsRes.error || habitsRes.error) {
-      console.error('Error loading data', systemsRes.error || habitsRes.error);
-      setDataError(systemsRes.error || habitsRes.error);
+      const error = systemsRes.error || habitsRes.error;
+      console.error('Error loading data', error);
+      setDataError(error);
       setIsLoadingData(false);
       setHydrated(true);
       return;
@@ -148,8 +161,18 @@ function App() {
     setSelectedSystemId(initialSystem?.id || null);
     setSystemDraft(initialSystem);
     setHydrated(true);
+    setLastLoadedAt(new Date());
     setIsLoadingData(false);
   }, [userId]);
+
+  const refreshData = useCallback(async () => {
+    if (!userId) {
+      await refreshAuth();
+      return;
+    }
+
+    await loadUserData();
+  }, [loadUserData, refreshAuth, userId]);
 
   // Load systems & habits for the signed-in user.
   useEffect(() => {
@@ -532,6 +555,19 @@ function App() {
   if (authLoading) {
     return <div className="auth-page-wrapper">Loading Routine OS...</div>;
   }
+  if (authError) {
+    return (
+      <div className="auth-page-wrapper">
+        <div className="card stack sm">
+          <h2 className="section-title">Could not connect to Supabase</h2>
+          <p className="muted">The project may still be waking up. Try refreshing the session.</p>
+          <button type="button" className="btn-primary" onClick={refreshAuth}>
+            Retry connection
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
     return <AuthPage />;
@@ -541,7 +577,17 @@ function App() {
     return <div className="auth-page-wrapper">Loading your data...</div>;
   }
   if (dataError) {
-    return <div className="auth-page-wrapper">Error loading data. Check console for details.</div>;
+    return (
+      <div className="auth-page-wrapper">
+        <div className="card stack sm">
+          <h2 className="section-title">Could not load your data</h2>
+          <p className="muted">Supabase may still be resuming. Retry the data refresh now that the project is active.</p>
+          <button type="button" className="btn-primary" onClick={refreshData} disabled={isLoadingData}>
+            {isLoadingData ? 'Refreshing...' : 'Retry data refresh'}
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -567,6 +613,9 @@ function App() {
               </button>
             </div>
             <div className="date-chip">{formatDisplayDate(new Date())}</div>
+            <button type="button" className="btn-ghost small-btn" onClick={refreshData} disabled={isLoadingData}>
+              {isLoadingData ? 'Refreshing...' : lastLoadedAt ? 'Refresh' : 'Load'}
+            </button>
             <ProfileMenu />
           </div>
         </div>

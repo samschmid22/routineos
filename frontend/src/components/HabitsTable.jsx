@@ -4,7 +4,7 @@ import { generateId } from '../utils/ids';
 import { todayString } from '../utils/date';
 import SubHabitsEditor from './SubHabitsEditor';
 import { supabase } from '../lib/supabaseClient';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useAuth } from '../context/authContextValue';
 
 const DAYS = [
   { label: 'Sun', value: 0 },
@@ -288,6 +288,10 @@ const HabitsTable = ({ system, habits, nextOrderIndex, onSaveHabit, onDeleteHabi
 
   const save = async () => {
     if (!editing?.name?.trim()) return;
+    if (!user?.id) {
+      console.error('No user; cannot save habit');
+      return;
+    }
     const frequencyValue = editing.frequency?.type || editing.frequencyType || 'daily';
     const daysOfWeekValue = editing.frequency?.daysOfWeek || editing.daysOfWeek || [];
     const daysForDb = JSON.stringify(
@@ -297,7 +301,7 @@ const HabitsTable = ({ system, habits, nextOrderIndex, onSaveHabit, onDeleteHabi
     const intervalValue =
       frequencyValue === 'every_x_days' ? Math.max(1, Number(editing.intervalDays) || 1) : null;
 
-    if (isNewDraft && user) {
+    if (isNewDraft) {
       const insertPayload = {
         user_id: user.id,
         system_id: system.id,
@@ -340,7 +344,13 @@ const HabitsTable = ({ system, habits, nextOrderIndex, onSaveHabit, onDeleteHabi
       last_completed_on: editing.lastCompletedOn || null,
     };
 
-    const { data, error } = await supabase.from('habits').update(updatePayload).eq('id', editing.id).select().single();
+    const { data, error } = await supabase
+      .from('habits')
+      .update(updatePayload)
+      .eq('id', editing.id)
+      .eq('user_id', user.id)
+      .select()
+      .single();
 
     if (error) {
       console.error('Supabase update error (habits):', error.message, error.details, error.hint);

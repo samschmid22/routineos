@@ -7,7 +7,6 @@ const SystemsList = ({
   onCreateSystem = () => {},
   onReorder = () => {},
 }) => {
-  console.log('SystemsList mounted; onCreateSystem type:', typeof onCreateSystem);
   void habits;
   const handleDragStart = (event, systemId) => {
     event.dataTransfer.setData('text/system-id', systemId);
@@ -32,7 +31,6 @@ const SystemsList = ({
           type="button"
           className="btn-primary"
           onClick={() => {
-            console.log('New system button clicked; onCreateSystem is:', typeof onCreateSystem);
             onCreateSystem({
               name: 'New system',
               color: '#FF7A20',

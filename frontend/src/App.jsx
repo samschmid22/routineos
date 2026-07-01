@@ -9,7 +9,7 @@ import Tabs from './components/Tabs';
 import TodayView from './components/TodayView';
 import AuthPage from './components/AuthPage';
 import ProfileMenu from './components/ProfileMenu';
-import { useAuth } from './context/AuthContext.jsx';
+import { useAuth } from './context/authContextValue';
 import { formatDisplayDate, isHabitScheduledForDate, todayString } from './utils/date';
 import { getEffectiveHabitStatus } from './utils/status';
 import { loadTheme, loadSubHabitStatuses, saveTheme } from './utils/storage';
@@ -83,6 +83,7 @@ const sortHabitsByOrder = (a, b) => {
 
 function App() {
   const { user, loading: authLoading } = useAuth();
+  const userId = user?.id;
   const [activeTab, setActiveTab] = useState('Today');
   const [theme, setTheme] = useState('dark');
 
@@ -105,7 +106,7 @@ function App() {
   }, []);
 
   const loadUserData = useCallback(async () => {
-    if (!user?.id) return;
+    if (!userId) return;
     setIsLoadingData(true);
     setDataError(null);
 
@@ -113,12 +114,12 @@ function App() {
       supabase
         .from('systems')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .order('order_index', { ascending: true }),
       supabase
         .from('habits')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .order('order_index', { ascending: true }),
     ]);
 
@@ -137,7 +138,6 @@ function App() {
         lastCompletedOn: habit.last_completed_on ?? habit.lastCompletedOn ?? null,
       }))
       .map(normalizeHabit);
-    console.log('Loaded habits from Supabase', normalizedHabits);
     const systemIds = new Set(normalizedSystems.map((sys) => sys.id));
     const filteredHabits = normalizedHabits
       .filter((habit) => systemIds.has(habit.systemId))
@@ -149,13 +149,13 @@ function App() {
     setSystemDraft(initialSystem);
     setHydrated(true);
     setIsLoadingData(false);
-  }, [user?.id]);
+  }, [userId]);
 
   // Load systems & habits for the signed-in user.
   useEffect(() => {
     if (authLoading) return;
 
-    if (!user?.id) {
+    if (!userId) {
       setSystems([]);
       setHabits([]);
       setSelectedSystemId(null);
@@ -167,7 +167,7 @@ function App() {
     }
 
     loadUserData();
-  }, [user?.id, authLoading, loadUserData]);
+  }, [userId, authLoading, loadUserData]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -176,11 +176,11 @@ function App() {
 
   const persistHabitOrder = useCallback(
     async (orderedIds) => {
-      if (!user?.id || !orderedIds.length) return;
+      if (!userId || !orderedIds.length) return;
       try {
         const updates = await Promise.all(
           orderedIds.map((id, index) =>
-            supabase.from('habits').update({ order_index: index }).eq('id', id).eq('user_id', user.id),
+            supabase.from('habits').update({ order_index: index }).eq('id', id).eq('user_id', userId),
           ),
         );
         const failed = updates.find((result) => result.error);
@@ -196,7 +196,7 @@ function App() {
         console.error('Unexpected habit order persistence error:', error);
       }
     },
-    [user?.id],
+    [userId],
   );
 
   const orderedHabits = useMemo(() => [...habits].sort(sortHabitsByOrder), [habits]);
@@ -232,21 +232,17 @@ function App() {
   }, [currentSystem]);
 
   const createSystem = async (newSystemInput = {}) => {
-    if (!user?.id) {
+    if (!userId) {
       console.error('No user; cannot create system');
       return;
     }
-    console.log('createSystem called with', newSystemInput);
-
     const payload = {
-      user_id: user.id,
+      user_id: userId,
       name: newSystemInput.name || 'New system',
       color: newSystemInput.color || '#FF7A20',
       icon: newSystemInput.icon || '★',
       order_index: systems.length,
     };
-
-    console.log('createSystem payload:', payload);
 
     const { data, error } = await supabase.from('systems').insert([payload]).select().single();
 
@@ -254,8 +250,6 @@ function App() {
       console.error('Supabase insert error (systems):', error.message, error.details, error.hint);
       return;
     }
-
-    console.log('Supabase insert success (systems):', data);
 
     const normalized = normalizeSystem(data);
     setSystems((prev) => [...prev, normalized]);
@@ -277,7 +271,7 @@ function App() {
 
   const saveSystem = async () => {
     if (!systemDraft || !systemDraft.name.trim()) return;
-    if (!user?.id) {
+    if (!userId) {
       console.error('No user; cannot save system');
       return;
     }
@@ -293,7 +287,7 @@ function App() {
       .from('systems')
       .update(payload)
       .eq('id', systemDraft.id)
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .select()
       .single();
 
@@ -311,19 +305,19 @@ function App() {
 
   const deleteSystem = async () => {
     if (!currentSystem) return;
-    if (!user?.id) {
+    if (!userId) {
       console.error('No user; cannot delete system');
       return;
     }
 
-    const { error } = await supabase.from('systems').delete().eq('id', currentSystem.id);
+    const { error } = await supabase.from('systems').delete().eq('id', currentSystem.id).eq('user_id', userId);
 
     if (error) {
       console.error('Supabase delete error (systems):', error.message, error.details, error.hint);
       return;
     }
 
-    await supabase.from('habits').delete().eq('system_id', currentSystem.id);
+    await supabase.from('habits').delete().eq('system_id', currentSystem.id).eq('user_id', userId);
 
     const nextSystems = systems.filter((sys) => sys.id !== currentSystem.id);
     const nextHabits = habits.filter((habit) => habit.systemId !== currentSystem.id);
@@ -367,9 +361,7 @@ function App() {
     async (habitId, newStatus) => {
       const today = todayString();
       const lastCompletedOn = newStatus === 'completed' ? today : null;
-      console.log('Updating habit status', { habitId, newStatus, lastCompletedOn });
-
-      if (!user?.id) {
+      if (!userId) {
         setHabits((prev) =>
           prev.map((habit) =>
             habit.id === habitId ? { ...habit, status: newStatus, lastCompletedOn, last_completed_on: lastCompletedOn } : habit,
@@ -386,7 +378,7 @@ function App() {
             last_completed_on: lastCompletedOn,
           })
           .eq('id', habitId)
-          .eq('user_id', user.id)
+          .eq('user_id', userId)
           .select()
           .single();
 
@@ -404,7 +396,7 @@ function App() {
         console.error('Unexpected habit status persistence error:', error);
       }
     },
-    [user?.id],
+    [userId],
   );
 
   const upsertHabit = (habit) => {
@@ -421,14 +413,14 @@ function App() {
   };
 
   const deleteHabit = async (habitId) => {
-    if (!user?.id) {
+    if (!userId) {
       console.error('No user; cannot delete habit');
       return;
     }
 
     const habit = habits.find((h) => h.id === habitId);
 
-    const { error } = await supabase.from('habits').delete().eq('id', habitId);
+    const { error } = await supabase.from('habits').delete().eq('id', habitId).eq('user_id', userId);
 
     if (error) {
       console.error('Supabase delete error (habits):', error.message, error.details, error.hint);
@@ -498,8 +490,6 @@ function App() {
   const handleStatusChange = async (habitId, status) => {
     const habit = habits.find((h) => h.id === habitId);
     if (!habit) return;
-    console.log('Status change', habitId, status);
-
     if (habit.subHabits?.length) {
       setSubHabitStatuses((prev) => {
         const next = { ...prev };
